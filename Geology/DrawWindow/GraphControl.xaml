@@ -1,0 +1,145 @@
+﻿<UserControl x:Uid="UserControl_1" x:Class="Geology.Controls.GraphControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Geology"
+             xmlns:openglwin="clr-namespace:Geology.DrawWindow"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid x:Uid="Grid_1" x:Name="MainGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Uid="ColumnDefinition_1" Width="87*"/>
+            <ColumnDefinition Width="2"/>
+            <ColumnDefinition x:Uid="ColumnDefinition_2" Width="200"/>
+        </Grid.ColumnDefinitions>
+        <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="1"/>
+        <WindowsFormsHost x:Uid="WindowsFormsHost_1" Grid.Column="0">
+            <openglwin:CView2DGraph x:Uid="TGraph" x:Name="TGraph"/>
+        </WindowsFormsHost>
+        <Grid x:Uid="TelGraphPanel" x:Name="TelGraphPanel" Grid.Column="2" Background="AliceBlue">
+            <Grid.Resources>
+                <Image x:Uid="Image_1" x:Key="CurvesViewAllImage" Source="..\Resources\CurvesViewAll.bmp"/>
+                <Image x:Uid="Image_2" x:Key="CurvesViewAll0Image" Source="..\Resources\CurvesViewAll0.bmp"/>
+                <Image x:Uid="Image_3" x:Key="CurvesZoomImage" Source="..\Resources\CurvesZoom.bmp"/>
+                <Image x:Uid="Image_4" x:Key="CurvesZoomBackImage" Source="..\Resources\CurvesZoomBack.bmp"/>
+                <Image x:Uid="Image_5" x:Key="CurvesZoom21Image" Source="..\Resources\CurvesZoom21.bmp"/>
+                <Image x:Uid="Image_6" x:Key="CurvesOpenImage" Source="..\Resources\CurvesOpen.bmp"/>
+                <Image x:Uid="Image_7" x:Key="CurvesSaveImage" Source="..\Resources\CurvesSave.bmp"/>
+                <Image x:Uid="Image_8" x:Key="CurvesResetImage" Source="..\Resources\CurvesReset.bmp"/>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition x:Uid="RowDefinition_1" Height="*"/>
+                <RowDefinition x:Uid="RowDefinition_2" Height="50"/>
+            </Grid.RowDefinitions>
+            <DataGrid x:Uid="CurvesList" 
+                      x:Name="CurvesList"
+                      CanUserDeleteRows="False"
+                      AutoGenerateColumns="False"
+                      CanUserReorderColumns="False"
+                      CanUserResizeRows="False" 
+                      CanUserSortColumns="False"
+                      VerticalContentAlignment="Stretch"
+                      CanUserAddRows="False"
+                      PreviewMouseRightButtonDown="CurvesList_PreviewMouseRightButtonDown"
+                      Focusable="False"
+                      CellEditEnding="CurvesList_CellEditEnding"
+                      Margin="0,26,0,0">
+                <DataGrid.Resources>
+                    <SolidColorBrush x:Uid="SolidColorBrush_1" x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#00894a"/>
+                    <Style x:Uid="Style_1" TargetType="{x:Type DataGridRow}">
+                        <EventSetter x:Uid="EventSetter_1" Event="Control.MouseDoubleClick" Handler="MouseDoubleClickCurvesList"/>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.ContextMenu>
+                    <ContextMenu x:Uid="GraphContextMenu" Name="GraphContextMenu" LostMouseCapture="GraphContextMenuLostMouse">
+                        <MenuItem x:Uid="MenuItemResetSelected" x:Name="MenuItemResetSelected" Header="Reset selected" Click="SelectedCurvesReset_Click" FontWeight="SemiBold"></MenuItem>
+                        <MenuItem x:Uid="MenuItemSettings" x:Name="MenuItemSettings" Header="Settings" Click="CurvesSettings_Click" FontWeight="SemiBold"></MenuItem>
+                        <MenuItem x:Uid="MenuItemSaveSelected" x:Name="MenuItemSaveSelected" Header="Save selected" Click="CurvesSaveSelected_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemSetColor" x:Name="MenuItemSetColor" Header="Set color" Click="CurvesSetColor_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemDelete" x:Name="MenuItemDelete" Header="Delete" Click="CurvesDelete_Click"></MenuItem>
+                        <Separator x:Uid="Separator_1"/>
+                        <MenuItem x:Uid="MenuItemCalculateResidual" x:Name="MenuItemCalculateResidual" Header="Calculate residual" Click="CalculateResidual_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemNormalize" x:Name="MenuItemNormalize" Header="Normalize" Click="CurvesNormalize_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemAdd" x:Name="MenuItemAdd" Header="Add" Click="CurvesAdd_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemSubstruct" x:Name="MenuItemSubstruct" Header="Substruct" Click="CurvesSubstruct_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemMultiply" x:Name="MenuItemMultiply" Header="Multiply" Click="CurvesMultiply_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemDivide" x:Name="MenuItemDivide" Header="Divide" Click="CurvesDivide_Click"></MenuItem>
+                        <Separator x:Uid="Separator_2"/>
+                        <MenuItem x:Uid="MenuItemDifferentiate" x:Name="MenuItemDifferentiate" Header="Differentiate" Click="CurvesDiff_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemAbs" x:Name="MenuItemAbs" Header="Abs" Click="CurvesAbs_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemSign" x:Name="MenuItemSign" Header="Sign" Click="CurvesSign_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemSquare" x:Name="MenuItemSquare" Header="Square" Click="CurvesSquare_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemRoot" x:Name="MenuItemRoot" Header="Root" Click="CurvesRoot_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemCubeRoot" x:Name="MenuItemCubeRoot" Header="Cube root" Click="CurvesCubeRoot_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemSmooth" x:Name="MenuItemSmooth" Header="Smooth" Click="CurvesSmooth_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemAverage" x:Name="MenuItemAverage" Header="Average" Click="CurvesAverage_Click"></MenuItem>
+                        <Separator x:Uid="Separator_3"/>
+                        <MenuItem x:Uid="MenuItemCutLeft" x:Name="MenuItemCutLeft" Header="Cut left" Click="CurvesCutLeft_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemCutRight" x:Name="MenuItemCutRight" Header="Cut right" Click="CurvesCutRight_Click"></MenuItem>
+                        <Separator x:Uid="Separator_4"/>
+                        <MenuItem x:Uid="MenuItemBuildSpline" x:Name="MenuItemBuildSpline" Header="Build spline" Click="BuildSpline_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemWeld" x:Name="MenuItemWeld" Header="Weld" Click="Weld_Click"></MenuItem>
+                        <MenuItem x:Uid="MenuItemWeldx2" x:Name="MenuItemWeldx2" Header="Weld x 2" Click="Weldx2_Click"></MenuItem>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn x:Uid="DataGridCheckBoxColumn_1" Width="25" Binding = "{Binding Visible, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <DataGridCheckBoxColumn.HeaderTemplate>
+                            <DataTemplate x:Uid="dtAllChkBx" x:Name="dtAllChkBx">
+                                <CheckBox x:Uid="cbxAll" Name="cbxAll" Checked="chkSelectAllCurves_Checked" Unchecked="chkSelectAllCurves_UnChecked"/>
+                            </DataTemplate>
+                        </DataGridCheckBoxColumn.HeaderTemplate>
+                        <DataGridCheckBoxColumn.CellStyle>
+                            <Style x:Uid="Style_2" TargetType="DataGridCell">
+                                <Style.Triggers>
+                                    <Trigger x:Uid="Trigger_1" Property="IsMouseOver" Value="True">
+                                        <Setter x:Uid="Setter_1" Property="IsEditing" Value="True" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridCheckBoxColumn.CellStyle>
+                        <DataGridCheckBoxColumn.EditingElementStyle>
+                            <Style x:Uid="Style_3" TargetType="{x:Type CheckBox}">
+                                <Setter x:Uid="Setter_2" Property="HorizontalAlignment" Value="Center" />
+                                <EventSetter x:Uid="EventSetter_2" Event="ToggleButton.Checked" Handler="CurvesListCheckedVis" />
+                                <EventSetter x:Uid="EventSetter_3" Event="ToggleButton.Unchecked" Handler="CurvesListCheckedVis" />
+                            </Style>
+                        </DataGridCheckBoxColumn.EditingElementStyle>
+                    </DataGridCheckBoxColumn>
+                    <DataGridTextColumn x:Uid="DataGridTextColumn_1" Header="C" IsReadOnly = "true" >
+                        <DataGridTextColumn.CellStyle>
+                            <Style x:Uid="Style_4" TargetType="{x:Type DataGridCell}">
+                                <Setter x:Uid="Setter_3" Property="Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush x:Uid="SolidColorBrush_2" Color="{Binding Color}"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn x:Uid="DataGridTextColumn_2" Header="Curve" IsReadOnly="False" Binding = "{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                    <DataGridTextColumn x:Uid="DataGridTextColumn_3" Header="Value" IsReadOnly="True" Binding="{Binding Val}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button x:Uid="CurvesViewAll" x:Name="CurvesViewAll" Content="{StaticResource CurvesViewAllImage}" HorizontalAlignment="Left" Margin="0,0,0,0" Grid.Row="1" VerticalAlignment="Top" Width="25" ToolTip="View all" Height="25" Click="CurvesViewAll_Click"/>
+            <Button x:Uid="CurvesViewAll0" x:Name="CurvesViewAll0" Content="{StaticResource CurvesViewAll0Image}" HorizontalAlignment="Left" Margin="25,0,0,0" Grid.Row="1" VerticalAlignment="Top" Width="25" ToolTip="View all with 0" Height="25" Click="CurvesViewAll0_Click"/>
+            <Button x:Uid="CurvesZoom" x:Name="CurvesZoom" Content="{StaticResource CurvesZoomImage}" HorizontalAlignment="Left" Margin="50,0,0,0" Grid.Row="1" VerticalAlignment="Top" Width="25" Height="25" ToolTip="Zoom" Click="CurvesZoom_Click"/>
+            <Button x:Uid="CurvesZoomBack" x:Name="CurvesZoomBack" Content="{StaticResource CurvesZoomBackImage}" HorizontalAlignment="Left" Margin="75,0,0,0" Grid.Row="1" VerticalAlignment="Top" Width="25" ToolTip="Zoom back" Height="25" Click="CurvesZoomBack_Click"/>
+            <Button x:Uid="CurvesZoom21" x:Name="CurvesZoom21" Content="{StaticResource CurvesZoom21Image}" HorizontalAlignment="Left" Margin="100,0,0,0" Grid.Row="1" VerticalAlignment="Top" Width="25" ToolTip="Scale" Height="25" Click="CurvesScale_Click"/>
+            <Button x:Uid="CurvesOpen" x:Name="CurvesOpen" Content="{StaticResource CurvesOpenImage}" HorizontalAlignment="Left" Margin="125,0,0,0" Grid.Row="1" VerticalAlignment="Top" Width="25" ToolTip="Open" Height="25" Click="CurvesLoad_Click"/>
+            <Button x:Uid="CurvesSave" x:Name="CurvesSave" Content="{StaticResource CurvesSaveImage}" HorizontalAlignment="Left" Margin="150,0,0,0" Grid.Row="1" VerticalAlignment="Top" Width="25" ToolTip="Save" Height="25" Click="CurvesSave_Click"/>
+            <Button x:Uid="CurvesReset" x:Name="CurvesReset" Content="{StaticResource CurvesResetImage}" HorizontalAlignment="Left" Margin="175,0,0,0" Grid.Row="1" VerticalAlignment="Top" Width="25" ToolTip="Reset" Height="25" Click="CurvesReset_Click"/>
+            <CheckBox x:Uid="fLogX" x:Name="fLogX" Content="LogX" HorizontalAlignment="Left" Height="20" Margin="5,30,0,0" Grid.Row="1" VerticalAlignment="Top" Width="50" Checked="LogXCheck" Unchecked="LogXUnchecked"/>
+            <CheckBox x:Uid="fLogY" x:Name="fLogY" Content="LogY" HorizontalAlignment="Left" Height="20" Margin="105,30,0,0" Grid.Row="1" VerticalAlignment="Top" Width="50" Checked="LogYCheck" Unchecked="LogYUnchecked"/>
+            <!--<Slider x:Uid="sLogX" x:Name="sLogX" HorizontalAlignment="Left" Margin="55,27,0,0" Grid.Row="1" Height="25" Width="45" VerticalAlignment="Top" Minimum="-15" Maximum="-1" Value="-8" ValueChanged="sLogX_ValueChanged" IsEnabled="False" SmallChange="1" IsSnapToTickEnabled="True"/>
+            <Slider x:Uid="sLogY" x:Name="sLogY" HorizontalAlignment="Left" Margin="155,27,0,0" Grid.Row="1" Height="25" Width="45" VerticalAlignment="Top" Minimum="-15" Maximum="-1" Value="-8" ValueChanged="sLogY_ValueChanged" IsEnabled="False" IsSnapToTickEnabled="True" SmallChange="1"/>-->
+            <Button x:Uid="buttonUpX" x:Name="buttonUpX" Content="↑" Click="buttonUpX_Click" Margin="55,0,0,2" VerticalAlignment="Bottom" Height="18" ToolTip="Up" HorizontalContentAlignment="Center" Grid.Row="1" HorizontalAlignment="Left" Width="20"/>
+            <Button x:Uid="buttonDownX" x:Name="buttonDownX" Content="↓" Click="buttonDownX_Click" VerticalAlignment="Bottom" Height="18" ToolTip="Down" HorizontalContentAlignment="Center" Grid.Row="1" Margin="80,0,0,2" HorizontalAlignment="Left" Width="20"/>
+            <Button x:Uid="buttonUpY" x:Name="buttonUpY" Content="↑" Click="buttonUpY_Click" Margin="154,0,0,2" VerticalAlignment="Bottom" Height="18" ToolTip="Up" HorizontalContentAlignment="Center" Grid.Row="1" HorizontalAlignment="Left" Width="20"/>
+            <Button x:Uid="buttonDownY" x:Name="buttonDownY" Content="↓" Click="buttonDownY_Click" VerticalAlignment="Bottom" Height="18" ToolTip="Down" HorizontalContentAlignment="Center" Margin="178,0,0,2" Grid.Row="1" HorizontalAlignment="Left" Width="20"/>
+            <Label x:Uid="Label_1" Content="Arg:" HorizontalAlignment="Left" VerticalAlignment="Top" Width="32"/>
+            <Label x:Uid="LabelArgument" x:Name="LabelArgument" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="158" Margin="32,0,0,0"/>
+        </Grid>
+    </Grid>
+</UserControl>

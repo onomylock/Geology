@@ -1,0 +1,156 @@
+﻿<Window
+        x:Uid="Window_1" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Geology"
+        xmlns:openglwin="clr-namespace:Geology.DrawWindow"
+        xmlns:openglwinnew="clr-namespace:Geology.DrawNewWindow.View"
+        xmlns:controls ="clr-namespace:Geology.Controls"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="Geology.MainWindow"
+        Title="Geology" Height="1050.866" Width="1840.895"
+         >
+
+    <Window.CommandBindings>
+
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding x:Uid="KeyBinding_1" Key="O" Modifiers="Control" Command="Open"></KeyBinding>
+        <KeyBinding x:Uid="KeyBinding_2" Key="S" Modifiers="Control" Command="Save"></KeyBinding>
+        <KeyBinding x:Uid="KeyBinding_3" Key="Z" Modifiers="Control" Command="Undo"></KeyBinding>
+        <KeyBinding x:Uid="KeyBinding_4" Key="S" Modifiers="Control+Shift" Command="SaveAs"></KeyBinding>
+    </Window.InputBindings>
+    <DockPanel x:Uid="DockPanel_1">
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+            <StatusBar x:Uid="StatusBar_1" Background="AliceBlue" >
+                <StatusBar.ItemsPanel>
+                    <ItemsPanelTemplate x:Uid="ItemsPanelTemplate_1">
+                        <Grid x:Uid="Grid_1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition x:Uid="ColumnDefinition_1" Width="300" />
+                                <ColumnDefinition x:Uid="ColumnDefinition_2" Width="Auto" />
+                                <ColumnDefinition x:Uid="ColumnDefinition_3" Width="200" />
+                                <ColumnDefinition x:Uid="ColumnDefinition_4" Width="Auto" />
+                                <ColumnDefinition x:Uid="ColumnDefinition_5" Width="100" />
+                                <ColumnDefinition x:Uid="ColumnDefinition_6" Width="Auto" />
+                                <ColumnDefinition x:Uid="ColumnDefinition_7" Width="100" />
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </ItemsPanelTemplate>
+                </StatusBar.ItemsPanel>
+                <StatusBarItem x:Uid="StatusBarItem_1">
+                    <TextBlock x:Uid="lblCursorPosition" x:Name="lblCursorPosition" />
+                </StatusBarItem>
+                <Separator x:Uid="Separator_4" Grid.Column="1"/>
+                <StatusBarItem x:Uid="StatusBarItem_2" Grid.Column="0">
+                    <TextBlock x:Uid="StatusBarLeft" x:Name="StatusBarLeft"  Text="Ready" />
+                </StatusBarItem>
+                <Separator x:Uid="Separator_5" Grid.Column="3"/>
+                <StatusBarItem x:Uid="StatusBarItem_3" Grid.Column="2">
+                    <TextBlock x:Uid="StatusBarView" x:Name="StatusBarView"  Text="View:" />
+                </StatusBarItem>
+                <StatusBarItem x:Uid="StatusBarItem_4" Grid.Column="4">
+                    <TextBlock x:Uid="StatusBarldle" x:Name="StatusBarldle"  Text="ldle" />
+                </StatusBarItem>
+                <Separator x:Uid="Separator_6" Grid.Column="5"/>
+                <StatusBarItem x:Uid="StatusBarItem_5" Grid.Column="6">
+                    <TextBlock x:Uid="StatusBarRight" x:Name="StatusBarRight"  Text=" " />
+                </StatusBarItem>
+            </StatusBar>
+            <Label Content="DX:" x:Name="labelDX"/>
+            <TextBox x:Name="TextBoxDX" Text="{Binding DiscreteX}" Width="75" VerticalContentAlignment="Center"/>
+            <Label Content="DY:" x:Name="labelDY"/>
+            <TextBox x:Name="TextBoxDY" Text="{Binding DiscreteY}" Width="75" VerticalContentAlignment="Center"/>
+            <Label Content="DZ:" x:Name="labelDZ"/>
+            <TextBox x:Name="TextBoxDZ" Text="{Binding DiscreteZ}" Width="75" VerticalContentAlignment="Center"/>
+        </StackPanel>
+        <DockPanel x:Uid="DockPanel_2">
+            <Grid x:Uid="GridControlBar" x:Name="GridControlBar">
+                <Grid.RowDefinitions>
+                    <RowDefinition x:Uid="RowDefinition_1" Height="0"/>
+                    <RowDefinition x:Uid="RowDefinition_2" Height="0"/>
+                    <RowDefinition x:Uid="RowDefinition_3" Height="2*"/>
+                </Grid.RowDefinitions>
+
+                <TabControl x:Uid="TabControl_1" Grid.Row="2" x:Name="TabControlBottom">
+                    <TabItem x:Uid="TabItem_1" Header="Model" x:Name="TabControlBottom_TabItemModel">
+                        <DockPanel x:Uid="Testel" x:Name="Testel"  Grid.Row="2" >
+                            <Grid x:Uid="Grid_30" x:Name="BottomGrid">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition x:Uid="RowDefinition_20" Height="*"/>
+                                    <RowDefinition x:Uid="RowDefinition_21" Height="4"/>
+                                    <RowDefinition x:Uid="RowDefinition_22" Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_85" Width="144*"/>
+                                    <ColumnDefinition Width="463*"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_86" Width="4"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_87" Width="607*"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_88" Width="4"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_89" Width="606*"/>
+                                </Grid.ColumnDefinitions>
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_1" Grid.Column="0" Margin="0,0,3.667,0.333" Grid.ColumnSpan="3">
+                                    <openglwin:CObject3DDraw2D x:Uid="XZOpenGlWindow" x:Name="XZOpenGlWindow"   />
+                                    <!--<openglwin:CObject3DDraw2D x:Name="XYOpenGlWindow"  />-->
+                                </WindowsFormsHost>
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_2" Grid.Column="0" Margin="0,3.667,3.667,-0.333" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="2">
+                                    <openglwin:CObject3DDraw2D  x:Uid="YZOpenGlWindow" x:Name="YZOpenGlWindow"/>
+                                </WindowsFormsHost>
+                                <WindowsFormsHost x:Uid="topMiddleWindow" Grid.Column="3" x:Name="topMiddleWindow" Grid.RowSpan="3" Margin="0.333,0,0.334,-0.333">
+                                    <!--<openglwin:CObject3DDraw2D x:Name="XZOpenGlWindow"   />-->
+                                    <openglwin:CObject3DDraw2D x:Uid="XYOpenGlWindow" x:Name="XYOpenGlWindow"  />
+                                </WindowsFormsHost>
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_3" Grid.Column="4" Margin="3.666,0,0.334,-0.333" Grid.RowSpan="3" Grid.ColumnSpan="2" >
+                                    <!--<openglwin:CView3D x:Name="View3DWindow" />-->
+
+                                    <openglwin:CView3D x:Uid="View3DWindow" x:Name="View3DWindow" />
+                                </WindowsFormsHost>
+
+                                <GridSplitter x:Uid="GridSplitter_2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="2" Grid.RowSpan="3" Grid.ColumnSpan="2" Margin="0.333,0,606.334,-0.333"/>
+                                <GridSplitter x:Uid="GridSplitter_3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="3" Grid.RowSpan="3" Grid.ColumnSpan="2" Margin="606.333,0,0.334,-0.333"/>
+                                <GridSplitter x:Uid="GridSplitter_4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,481,3.667,0.333" Grid.RowSpan="2"/>
+                            </Grid>
+
+                        </DockPanel>
+                    </TabItem>
+                    <TabItem x:Uid="TabItem_2" Header="Graphs" x:Name="TabItemGraphs">
+                        <TabControl x:Uid="TabControl_2">
+                            <TabItem x:Uid="TabItem_3" Header="InPoint" x:Name="TabItemGraphsInPoint">
+                                <controls:GraphControl  x:Uid="graphViewerControl" x:Name="graphViewerControl"  Margin="0"/>
+                            </TabItem>
+                        </TabControl>
+                    </TabItem>
+                    <TabItem x:Uid="TabItem_4" Header="NewWindow" x:Name="newGraphViewerControl" >
+                        <DockPanel  x:Uid="DockPanelNewWindow" x:Name="DockPanelNewWindow"  Grid.Row="2">
+                            <Grid x:Uid="Grid_newWindow" x:Name="BottomNewGrid">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition x:Uid="RowDefinition_23" Height="*"/>
+                                    <RowDefinition x:Uid="RowDefinition_24" Height="4"/>
+                                    <RowDefinition x:Uid="RowDefinition_25" Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_90" Width="606*"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_91" Width="4"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_92" Width="606*"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_93" Width="4"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_94" Width="605*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_4" Grid.Column="0" Margin="0">
+                                    <openglwinnew:ViewWindow x:Uid="OpenGlWin" x:Name="OpenGlWin"   />
+                                </WindowsFormsHost>
+                                <GridSplitter x:Uid="GridSplitter_5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="1" Grid.RowSpan="3"/>
+                                <GridSplitter x:Uid="GridSplitter_6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="3" Grid.RowSpan="3"/>
+                                <GridSplitter x:Uid="GridSplitter_7" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="0" Grid.Row="1"/>
+                            </Grid>
+
+                            <!--<Button x:Uid="Button_Cl" x:Name="Button_Cl" 
+                                HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                FontSize="40" Click="Button_Click" Height="150" Width="275" Content="{Binding Click}">
+                            </Button>-->
+                        </DockPanel>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </DockPanel>
+    </DockPanel>
+</Window>

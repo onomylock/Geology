@@ -1,0 +1,423 @@
+﻿using Geology.Observing;
+/*
+ Файл содержит классы:
+ * 
+ * CObject3DDraw2D, потомок CView2D - используется для отображения
+ * трехмерных объектов в проекциях
+ * 
+ */
+using Observing;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using System.Windows.Input;
+using GLContex = Geology.OpenGL.OpenGL;
+
+namespace Geology.DrawWindow
+{
+    public  class CView2DFitMesh :CView2D
+    {
+        public Meshes.MeshRegular2D mesh;
+        public enum EPlaneType        
+        { XY=0,XZ,YZ,XYZ}
+        double prevX = 0, prevY = 0;
+        double dragStartX = 0, dragStartY = 0;
+        bool mouseMoving = false;
+        bool LMBDown, RMBDown;
+        bool draggingObject = false;
+        bool selection;
+        bool contextMenuOpened;
+        private double zRange;
+        public Inversion.ReliefFitMeshEditor editor;
+
+        EPlaneType axisType; 
+        
+        ContextMenuStrip mnuObj;
+
+        public CView2DFitMesh()
+            : base()
+        {
+            axisType = EPlaneType.XY;
+            zRange = 1e+7;
+            ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });
+
+            this.MouseMove += CView2DFitMesh_MouseMove;
+            this.MouseDown += CView2DFitMesh_MouseDown;
+            this.MouseUp += CView2DFitMesh_MouseUp;
+
+            base.MouseMove -= CView2D_MouseMove;
+            base.MouseDown -= CView2D_MouseDown;
+            base.MouseUp -= CView2D_MouseUp;
+            mesh = null;
+
+            draggingObject = false;
+            LMBDown = RMBDown = false;
+            mouseMoving = false;
+            selection = false;
+            contextMenuOpened = false;
+        }
+        private void CView2DFitMesh_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                CView2DFitMesh_RightMouseDown(sender, e);
+
+            if (e.Button == MouseButtons.Left)
+                CView2DFitMesh_LeftMouseDown(sender, e);
+        }
+        private void CView2DFitMesh_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                CView2DFitMesh_RightMouseUp(sender, e);
+
+            if (e.Button == MouseButtons.Left)
+                CView2DFitMesh_LeftMouseUp(sender, e);
+        }
+        private void CView2DFitMesh_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.X != XPrevious || e.Y != YPrevious)
+            {
+                if (contextMenuOpened)
+                {
+                    XPrevious = e.X;
+                    YPrevious = e.Y;
+                    return;
+                }
+                mouseMoving = true;
+                CView2DFitMesh_MouseMoved(sender, e);
+            }
+            else
+                mouseMoving = false;
+        }
+
+        private void CView2DFitMesh_LeftMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (contextMenuOpened)
+            {
+                XPrevious = e.X;
+                YPrevious = e.Y;
+                contextMenuOpened = false;
+                editor.ResetHighlight();
+            }
+            LMBDown = true;
+            mouseMoving = false;
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+        }
+        private void CView2DFitMesh_LeftMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            LMBDown = false;
+            double curX, curY;
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+            if (!mouseMoving)
+                CView2DFitMesh_LeftMouseClick(sender, e);
+
+            if (selection)
+            {
+                selection = false;
+                editor.EndSelection(curX, curY);
+                Invalidate();
+            }
+        }
+        private void CView2DFitMesh_RightMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            RMBDown = true;
+            mouseMoving = false;
+            MakeContextMenu();
+            contextMenuOpened = true;
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+        }
+        private void CView2DFitMesh_RightMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            RMBDown = false;
+            if (!mouseMoving)
+                CView2DFitMesh_RightMouseClick(sender, e);
+        }
+        private void CView2DFitMesh_LeftMouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            RMBDown = false;
+            editor.LClick();
+            Invalidate();
+        }
+        private void CView2DFitMesh_RightMouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            RMBDown = false;
+            editor.RClick();
+            Invalidate();
+        }
+        
+        private void CView2DFitMesh_MouseMoved(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            double curX, curY;
+
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+            if (LMBDown == true && RMBDown == false)
+            {
+                if (!CheckSelect(sender, e))
+                {
+                    if (!CheckDraggingObject(sender, e))
+                    {
+                        draggingObject = false;
+                        DragScreen(sender, e);
+                    }
+                    else
+                    {
+                        if (!draggingObject)
+                        {
+                            dragStartX = curX;
+                            dragStartY = curY;
+                            draggingObject = true;
+                        }
+                        DragObject(sender, e);
+                    }
+                }
+                else
+                {
+                    if (!selection)
+                    {
+                        selection = true;
+                        editor.StartSelection(curX, curY);
+                    }
+                    else
+                    {
+                        editor.ContinueSelection(curX, curY);
+                        Invalidate();
+                    }
+                }
+            }
+            else
+            {
+                double dX;
+
+                Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X + 4, e.Y, out dX, out curY, captionHorAndVert.GetIndentVert);
+                dX -= curX;
+                if (editor.HighLight(curX, curY, dX) == true ||
+                    editor.UpdateAddingLine(curX, curY) == true ||
+                    editor.UpdateDeletingLine(curX, curY, dX) == true)
+                {
+                    Invalidate();
+                }
+            }
+
+            XPrevious = e.X; YPrevious = e.Y;
+        }
+        protected void DragScreen(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            double prevX, prevY, curX, curY;
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, XPrevious, YPrevious, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+            Ortho.Translate(-curX + prevX, -curY + prevY);
+            Resize_Window();
+            Invalidate();
+        }
+        protected bool CheckDraggingObject(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (editor.SomeNodeIsHighlighted || editor.SomeLineIsHighlighted)
+                return true;
+
+            return false;
+            /*
+            double prevX, prevY, curX, curY;
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, XPrevious, YPrevious, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+            model.layeredModel.DragNodes(curX - prevX, curY - prevY);
+            if (curX + prevX != 0 || -curY + prevY != 0)
+                mouseMoved = true;
+            XPrevious = e.X; YPrevious = e.Y;
+            Invalidate();
+            */
+        }
+        protected bool CheckSelect(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (editor.selectContent != Inversion.ReliefFitMeshEditor.SelectionContent.None)
+                return true;
+            return false;
+            /*
+            double prevX, prevY, curX, curY;
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, XPrevious, YPrevious, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+            model.layeredModel.DragNodes(curX - prevX, curY - prevY);
+            if (curX + prevX != 0 || -curY + prevY != 0)
+                mouseMoved = true;
+            XPrevious = e.X; YPrevious = e.Y;
+            Invalidate();
+            */
+        }
+        protected void DragObject(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            double prevX, prevY, curX, curY;
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, XPrevious, YPrevious, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+            editor.DragObjects(curX - prevX, curY - prevY, curX, curY);
+            Invalidate();
+        }
+
+
+        void mnuToggleFit_Click(object sender, EventArgs e)
+        {
+            editor.ToggleFitSelection();
+            Invalidate();
+        }
+        void mnuFit_Click(object sender, EventArgs e)
+        {
+            editor.FitSelection();
+            Invalidate();
+        }
+        void mnuDoNotFit_Click(object sender, EventArgs e)
+        {
+            editor.DoNotFitSelection();
+            Invalidate();
+        }
+        void mnuSetCoordinateNode_Click(object sender, EventArgs e)
+        {
+            editor.SetCoordinatesToNodes();
+            Invalidate();
+        }
+        void mnuSetCoordinateLine_Click(object sender, EventArgs e)
+        {
+            editor.SetCoordinatesToLines();
+            Invalidate();
+        }
+        
+        
+        void mnuSelectNodes_Click(object sender, EventArgs e)
+        {
+            editor.selectContent = Inversion.ReliefFitMeshEditor.SelectionContent.Nodes;
+        }
+        void mnuSelectLinesX_Click(object sender, EventArgs e)
+        {
+            editor.selectContent = Inversion.ReliefFitMeshEditor.SelectionContent.LinesX;
+        }
+        void mnuSelectLinesY_Click(object sender, EventArgs e)
+        {
+            editor.selectContent = Inversion.ReliefFitMeshEditor.SelectionContent.LinesY;
+        }
+        void mnuShowGrid_Click(object sender, EventArgs e)
+        {
+            captionHorAndVert.DrawGridFlag = ((System.Windows.Forms.ToolStripMenuItem)sender).Checked;
+            Resize_Window();
+            Invalidate();
+        }
+        void mnuStartView_Click(object sender, EventArgs e)
+        {
+            Ortho.ClearView();
+            Resize_Window();
+            Invalidate();
+        }
+        
+        
+        protected void MakeContextMenu()
+        {
+            System.Windows.Forms.ContextMenuStrip mnu = new System.Windows.Forms.ContextMenuStrip();
+            System.Windows.Forms.ToolStripMenuItem mnuShowGrid = new System.Windows.Forms.ToolStripMenuItem("Show grid");
+            System.Windows.Forms.ToolStripMenuItem mnuStartView = new System.Windows.Forms.ToolStripMenuItem("Start view");
+
+            mnuShowGrid.CheckOnClick = true;
+            mnuShowGrid.Checked = captionHorAndVert.DrawGridFlag;
+            mnuShowGrid.Click += mnuShowGrid_Click;
+
+            mnuStartView.Click += mnuStartView_Click;
+            mnu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuShowGrid, mnuStartView });
+
+            mnu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+
+            System.Windows.Forms.ToolStripMenuItem mnuSelect = new System.Windows.Forms.ToolStripMenuItem("Select");
+            System.Windows.Forms.ToolStripMenuItem mnuSelectNodes = new System.Windows.Forms.ToolStripMenuItem("Nodes"); mnuSelectNodes.Click += mnuSelectNodes_Click;
+            System.Windows.Forms.ToolStripMenuItem mnuSelectLinesX = new System.Windows.Forms.ToolStripMenuItem("Lines X"); mnuSelectLinesX.Click += mnuSelectLinesX_Click;
+            System.Windows.Forms.ToolStripMenuItem mnuSelectLinesY = new System.Windows.Forms.ToolStripMenuItem("Lines Y"); mnuSelectLinesY.Click += mnuSelectLinesY_Click;
+            mnuSelect.DropDownItems.Add(mnuSelectNodes);
+            mnuSelect.DropDownItems.Add(mnuSelectLinesX);
+            mnuSelect.DropDownItems.Add(mnuSelectLinesY);
+            mnu.Items.Add(mnuSelect);
+
+            
+
+            if (editor.SomeNodeIsHighlighted)
+            {
+                mnu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+                System.Windows.Forms.ToolStripMenuItem mnuToggleFit = new System.Windows.Forms.ToolStripMenuItem("Toggle Fit"); mnuToggleFit.Click += mnuToggleFit_Click;
+                System.Windows.Forms.ToolStripMenuItem mnuFit = new System.Windows.Forms.ToolStripMenuItem("Fit"); mnuFit.Click += mnuFit_Click;
+                System.Windows.Forms.ToolStripMenuItem mnuDoNotFitFit = new System.Windows.Forms.ToolStripMenuItem("Do not Fit"); mnuDoNotFitFit.Click += mnuDoNotFit_Click;
+
+                System.Windows.Forms.ToolStripMenuItem mnuSetCoordinateNode = new System.Windows.Forms.ToolStripMenuItem("SetCoordinate"); mnuSetCoordinateNode.Click += mnuSetCoordinateNode_Click;
+
+                mnu.Items.Add(mnuToggleFit);
+                mnu.Items.Add(mnuFit);
+                mnu.Items.Add(mnuDoNotFitFit);
+                mnu.Items.Add(mnuSetCoordinateNode);
+            }
+
+            if (editor.SomeLineIsHighlighted)
+            {
+                mnu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+                System.Windows.Forms.ToolStripMenuItem mnuSetCoordinateLine = new System.Windows.Forms.ToolStripMenuItem("SetCoordinate"); mnuSetCoordinateLine.Click += mnuSetCoordinateLine_Click;
+
+                mnu.Items.Add(mnuSetCoordinateLine);
+            }
+
+            this.ContextMenuStrip = mnu;
+        }
+        public void ChangeBoundingBox(double[] newBoundingBox)
+        {
+            double[] newOrtho = new double[] { -1, 1, -1, 1, -1, 1 };
+            for (int i = 0; i < 6; i++) BoundingBox[i] = newBoundingBox[i];
+        }
+
+        public void ChangeOrtho(double[] globalOrthoBox)
+        {
+            double[] newOrtho = new double[] { -1, 1, -1, 1, -1, 1 };
+
+            switch (axisType)
+            {
+                case EPlaneType.XY: 
+                    newOrtho[0] = globalOrthoBox[0];
+                    newOrtho[1] = globalOrthoBox[1];
+                    newOrtho[2] = globalOrthoBox[2];
+                    newOrtho[3] = globalOrthoBox[3];
+                    newOrtho[4] = -zRange;
+                    newOrtho[5] =  zRange;
+                break;
+                case EPlaneType.XZ:
+                    newOrtho[0] = globalOrthoBox[0];
+                    newOrtho[1] = globalOrthoBox[1];
+                    newOrtho[2] = globalOrthoBox[4];
+                    newOrtho[3] = globalOrthoBox[5];
+                    newOrtho[4] = -zRange;
+                    newOrtho[5] =  zRange;
+                break;
+                case EPlaneType.YZ:
+                    newOrtho[0] = globalOrthoBox[2];
+                    newOrtho[1] = globalOrthoBox[3];
+                    newOrtho[2] = globalOrthoBox[4];
+                    newOrtho[3] = globalOrthoBox[5];
+                    newOrtho[4] = -zRange;
+                    newOrtho[5] =  zRange;
+                break;
+            }
+
+            Ortho.SetOrtho(newOrtho);
+            Ortho.SetZBuffer(newOrtho[4], newOrtho[5]);
+            Resize_Window();
+        }
+        public void setRotateAndNameAxes(EPlaneType numAxis)
+        {
+            axisType = numAxis;
+            switch (axisType)
+            {
+                case EPlaneType.XY: Ortho.HorAxisName = "X"; Ortho.VertAxisName = "Y"; break;
+                case EPlaneType.XZ: Ortho.HorAxisName = "X"; Ortho.VertAxisName = "Z"; break;
+                case EPlaneType.YZ: Ortho.HorAxisName = "Y"; Ortho.VertAxisName = "Z"; break;
+            }
+        }
+        protected override void DrawObjetcs()
+        {
+            double[] OrthoLayers = new double[6];//{ 0, 0, 0, 0, BoundingBox[4], BoundingBox[5] };
+            double[] drawBox = new double[6];
+
+            
+            if (editor != null)
+                editor.Draw(fontRecievers);
+        }
+    }
+}

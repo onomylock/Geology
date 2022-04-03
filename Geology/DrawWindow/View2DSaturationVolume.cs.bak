@@ -1,0 +1,390 @@
+﻿/*
+ Файл содержит классы:
+ * 
+ * CObject3DDraw2D, потомок CView2D - используется для отображения
+ * трехмерных объектов в проекциях
+ * 
+ */
+using Geology.Objects;
+using Observing;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using System.Windows.Input;
+using Geology.Objects.SaturationModel;
+using GLContex = Geology.OpenGL.OpenGL;
+
+namespace Geology.DrawWindow
+{
+    public class CView2DSaturationVolume : CView2D
+    {
+        public enum EPlaneType
+        { XY = 0, XZ, YZ, XYZ }
+        private double prevX = 0, prevY = 0;
+        private double dragStartX = 0, dragStartY = 0;
+        private bool mouseMoving = false;
+        private bool LMBDown, RMBDown;
+        private bool draggingObject = false;
+        private bool selection;
+        private bool contextMenuOpened;
+        public int currentVolumeNumber = -1;
+        private double zRange;
+        public Objects.SaturationModel.SaturationVolume volume;
+        public Objects.SaturationModel.SaturationVolumeStack volumeStack;
+        public Observing.ObservingSystem observingSystem;
+        public int topBottom = 0;
+        public int currentLayer;
+        public ObservableCollection<Objects.SaturationModel.SaturationVolumeStack> stacks;
+        public int stackNumber;
+        public ObservableCollection<Objects.CGeoObject> objects;
+
+        EPlaneType axisType;
+
+        ContextMenuStrip mnuObj;
+
+        public CView2DSaturationVolume()
+            : base()
+        {
+            axisType = EPlaneType.XY;
+            zRange = 1e+7;
+            ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });
+
+            this.MouseMove += View2DSaturationVolume_MouseMove;
+            this.MouseDown += View2DSaturationVolume_MouseDown;
+            this.MouseUp += View2DSaturationVolume_MouseUp;
+
+            base.MouseMove -= CView2D_MouseMove;
+            base.MouseDown -= CView2D_MouseDown;
+            base.MouseUp -= CView2D_MouseUp;
+            draggingObject = false;
+            LMBDown = RMBDown = false;
+            mouseMoving = false;
+            selection = false;
+            contextMenuOpened = false;
+            volume = null;
+            volumeStack = null;
+            observingSystem = new Observing.ObservingSystem();
+            stacks = new ObservableCollection<SaturationVolumeStack>();
+            stackNumber = -1;
+            currentLayer = -1;
+            objects = new ObservableCollection<CGeoObject>();
+        }
+        private void View2DSaturationVolume_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                View2DSaturationVolume_RightMouseDown(sender, e);
+
+            if (e.Button == MouseButtons.Left)
+                View2DSaturationVolume_LeftMouseDown(sender, e);
+        }
+        private void View2DSaturationVolume_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                View2DSaturationVolume_RightMouseUp(sender, e);
+
+            if (e.Button == MouseButtons.Left)
+                View2DSaturationVolume_LeftMouseUp(sender, e);
+        }
+        private void View2DSaturationVolume_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.X != XPrevious || e.Y != YPrevious)
+            {
+                if (contextMenuOpened)
+                {
+                    XPrevious = e.X;
+                    YPrevious = e.Y;
+                    return;
+                }
+                mouseMoving = true;
+                View2DSaturationVolume_MouseMoved(sender, e);
+            }
+            else
+                mouseMoving = false;
+        }
+
+        private void View2DSaturationVolume_LeftMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (contextMenuOpened)
+            {
+                XPrevious = e.X;
+                YPrevious = e.Y;
+                contextMenuOpened = false;
+                if (volume != null) volume.ResetHighlight();
+            }
+            LMBDown = true;
+            mouseMoving = false;
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+        }
+        private void View2DSaturationVolume_LeftMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            LMBDown = false;
+            double curX, curY;
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+            if (!mouseMoving)
+                View2DSaturationVolume_LeftMouseClick(sender, e);
+
+            if (selection)
+            {
+                selection = false;
+                if (volume != null) volume.EndSelection(curX, curY);
+                Invalidate();
+            }
+        }
+        private void View2DSaturationVolume_RightMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            RMBDown = true;
+            mouseMoving = false;
+            MakeContextMenu();
+            contextMenuOpened = true;
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+        }
+        private void View2DSaturationVolume_RightMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            RMBDown = false;
+            if (!mouseMoving)
+                View2DSaturationVolume_RightMouseClick(sender, e);
+        }
+        private void View2DSaturationVolume_LeftMouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            RMBDown = false;
+            if (volume != null) volume.LClick();
+            Invalidate();
+        }
+        private void View2DSaturationVolume_RightMouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            RMBDown = false;
+            if (volume != null) volume.RClick();
+            Invalidate();
+        }
+
+        private void View2DSaturationVolume_MouseMoved(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            double curX, curY;
+
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+            if (LMBDown == true && RMBDown == false)
+            {
+                if (!CheckSelect(sender, e))
+                {
+                    if (!CheckDraggingObject(sender, e))
+                    {
+                        draggingObject = false;
+                        DragScreen(sender, e);
+                    }
+                    else
+                    {
+                        if (!draggingObject)
+                        {
+                            dragStartX = curX;
+                            dragStartY = curY;
+                            draggingObject = true;
+                        }
+                        DragObject(sender, e);
+                    }
+                }
+                else
+                {
+                    if (!selection)
+                    {
+                        selection = true;
+                        if (volume != null) volume.StartSelection(curX, curY);
+                    }
+                    else
+                    {
+                        if (volume != null) volume.ContinueSelection(curX, curY);
+                        Invalidate();
+                    }
+                }
+            }
+            else
+            {
+                double dX;
+
+                Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X + 4, e.Y, out dX, out curY, captionHorAndVert.GetIndentVert);
+                dX -= curX;
+                if (volume != null)
+                    if (volume.Highlight(curX, curY, dX))
+                        //    editor.UpdateAddingLine(curX, curY) == true ||
+                        //    editor.UpdateDeletingLine(curX, curY, dX) == true)
+                        //{
+                        Invalidate();
+                //}
+            }
+
+            XPrevious = e.X; YPrevious = e.Y;
+        }
+        protected void DragScreen(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            double prevX, prevY, curX, curY;
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, XPrevious, YPrevious, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+            Ortho.Translate(-curX + prevX, -curY + prevY);
+            Resize_Window();
+            Invalidate();
+        }
+        protected bool CheckDraggingObject(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (volume != null)
+                if (volume.SomeNodeIsHighlighted)
+                    return true;
+
+            return false;
+        }
+        protected bool CheckSelect(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+                return true;
+
+            return false;
+        }
+        protected void DragObject(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            double prevX, prevY, curX, curY;
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, XPrevious, YPrevious, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+            if (volume != null) volume.DragNodes(curX - prevX, curY - prevY, curX, curY);
+            Invalidate();
+        }
+
+        protected void mnuAddPoint_Click(object sender, EventArgs e)
+        {
+            if (volume != null) volume.StartAddingPoint();
+            Invalidate();
+        }
+        protected void mnuDelPoint_Click(object sender, EventArgs e)
+        {
+            if (volume != null) volume.DeletePoints();
+            Invalidate();
+        }
+        protected void mnuSetCoord_Click(object sender, EventArgs e)
+        {
+            if (volume != null) volume.SetCoordinatesToNodes();
+            Invalidate();
+        }
+        protected void mnuSplitContour_Click(object sender, EventArgs e)
+        {
+            if (volume != null) volume.StartSplitting(volumeStack);
+            Invalidate();
+        }
+        
+        protected void MakeContextMenu()
+        {
+            System.Windows.Forms.ContextMenuStrip mnu = new System.Windows.Forms.ContextMenuStrip();
+            System.Windows.Forms.ToolStripMenuItem mnuShowGrid = new System.Windows.Forms.ToolStripMenuItem("Show grid");
+            System.Windows.Forms.ToolStripMenuItem mnuStartView = new System.Windows.Forms.ToolStripMenuItem("Start view");
+
+            mnuShowGrid.CheckOnClick = true;
+            mnuShowGrid.Checked = captionHorAndVert.DrawGridFlag;
+            mnuShowGrid.Click += mnuShowGrid_Click;
+
+            mnuStartView.Click += mnuStartView_Click;
+            mnu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuShowGrid, mnuStartView });
+
+            mnu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+
+
+            System.Windows.Forms.ToolStripMenuItem mnuAddPoint = new System.Windows.Forms.ToolStripMenuItem("Add point");
+            mnuAddPoint.Click += mnuAddPoint_Click;
+            System.Windows.Forms.ToolStripMenuItem mnuDelPoint = new System.Windows.Forms.ToolStripMenuItem("Del point");
+            mnuDelPoint.Click += mnuDelPoint_Click;
+            System.Windows.Forms.ToolStripMenuItem mnuSetCoord = new System.Windows.Forms.ToolStripMenuItem("Set coordinate");
+            mnuSetCoord.Click += mnuSetCoord_Click;
+            System.Windows.Forms.ToolStripMenuItem mnuSplitContour = new System.Windows.Forms.ToolStripMenuItem("Split contour");
+            mnuSplitContour.Click += mnuSplitContour_Click;
+            mnu.Items.Add(mnuAddPoint);
+            mnu.Items.Add(mnuDelPoint);
+            mnu.Items.Add(mnuSetCoord);
+            mnu.Items.Add(mnuSplitContour);
+
+            mnu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+
+
+            this.ContextMenuStrip = mnu;
+        }
+        public void ChangeBoundingBox(double[] newBoundingBox)
+        {
+            double[] newOrtho = new double[] { -1, 1, -1, 1, -1, 1 };
+            for (int i = 0; i < 6; i++) BoundingBox[i] = newBoundingBox[i];
+        }
+
+        public void ChangeOrtho(double[] globalOrthoBox)
+        {
+            double[] newOrtho = new double[] { -1, 1, -1, 1, -1, 1 };
+
+            switch (axisType)
+            {
+                case EPlaneType.XY:
+                    newOrtho[0] = globalOrthoBox[0];
+                    newOrtho[1] = globalOrthoBox[1];
+                    newOrtho[2] = globalOrthoBox[2];
+                    newOrtho[3] = globalOrthoBox[3];
+                    newOrtho[4] = -zRange;
+                    newOrtho[5] = zRange;
+                    break;
+                case EPlaneType.XZ:
+                    newOrtho[0] = globalOrthoBox[0];
+                    newOrtho[1] = globalOrthoBox[1];
+                    newOrtho[2] = globalOrthoBox[4];
+                    newOrtho[3] = globalOrthoBox[5];
+                    newOrtho[4] = -zRange;
+                    newOrtho[5] = zRange;
+                    break;
+                case EPlaneType.YZ:
+                    newOrtho[0] = globalOrthoBox[2];
+                    newOrtho[1] = globalOrthoBox[3];
+                    newOrtho[2] = globalOrthoBox[4];
+                    newOrtho[3] = globalOrthoBox[5];
+                    newOrtho[4] = -zRange;
+                    newOrtho[5] = zRange;
+                    break;
+            }
+
+            Ortho.SetOrtho(newOrtho);
+            Ortho.SetZBuffer(newOrtho[4], newOrtho[5]);
+            Resize_Window();
+        }
+        public void setRotateAndNameAxes(EPlaneType numAxis)
+        {
+            axisType = numAxis;
+            switch (axisType)
+            {
+                case EPlaneType.XY: Ortho.HorAxisName = "X"; Ortho.VertAxisName = "Y"; break;
+                case EPlaneType.XZ: Ortho.HorAxisName = "X"; Ortho.VertAxisName = "Z"; break;
+                case EPlaneType.YZ: Ortho.HorAxisName = "Y"; Ortho.VertAxisName = "Z"; break;
+            }
+        }
+        protected override void DrawObjetcs()
+        {
+            GLContex.glEnable(GLContex.GL_BLEND);
+            GLContex.glBlendFunc(GLContex.GL_SRC_ALPHA, GLContex.GL_ONE_MINUS_SRC_ALPHA);
+
+            double z = 1000.0;
+
+            foreach (var obj in objects)
+                obj.Draw(CObject3DDraw2D.EPlaneType.XY);
+
+
+            for (int i = 0; i < stacks.Count; i++)
+                if (stackNumber != i)
+                    foreach (var vol in stacks[i].volumes)
+                        vol.DrawEdit(wellFont, z, 0.3f);
+
+            if (volumeStack != null)
+                for (int i = 0; i < volumeStack.volumes.Count; i++)
+                    if (i != currentVolumeNumber)
+                        volumeStack.volumes[i].DrawEdit(wellFont, z);
+
+            if (volume != null)
+                volume.DrawEdit(wellFont, z + 1000);
+
+            if (observingSystem != null)
+                observingSystem.Draw(fontRecievers);
+
+
+            GLContex.glDisable(GLContex.GL_BLEND);
+        }
+    }
+}

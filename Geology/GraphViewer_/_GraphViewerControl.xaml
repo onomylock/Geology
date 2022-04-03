@@ -1,0 +1,126 @@
+﻿<UserControl x:Uid="UserControl_1" x:Class="Geology.GraphViewer.GraphViewerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Geology.GraphViewer"
+             xmlns:control="clr-namespace:Geology.Controls"
+             xmlns:openglwin="clr-namespace:Geology.DrawWindow"
+             xmlns:lang="clr-namespace:Geology.LanguageSupport"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="1319">
+    <UserControl.Resources>
+        <lang:EnumDescriptionConverter x:Key="descConverter"></lang:EnumDescriptionConverter>
+    </UserControl.Resources>
+    <Grid x:Uid="Grid_1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Uid="ColumnDefinition_1" Width="443*"/>
+            <ColumnDefinition x:Uid="ColumnDefinition_2" Width="5"/>
+            <ColumnDefinition x:Uid="ColumnDefinition_3" Width="292*"/>
+        </Grid.ColumnDefinitions>
+        <Grid x:Uid="Grid_2" Grid.Column="0">
+            <control:GraphControl x:Uid="GraphOpenGlWindow" x:Name="GraphOpenGlWindow" Grid.Column="0"/>
+        </Grid>
+        <GridSplitter x:Uid="GridSplitter_1" Grid.Column="1" HorizontalAlignment="Stretch" Background="AliceBlue"/>
+        <Grid x:Uid="Grid_3" Grid.Column="2" Grid.ColumnSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition x:Uid="RowDefinition_1" Height="57*"/>
+                <RowDefinition x:Uid="RowDefinition_2" Height="5"/>
+                <RowDefinition x:Uid="RowDefinition_3" Height="91*"/>
+            </Grid.RowDefinitions>
+            <Grid x:Uid="Grid_4" Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition x:Uid="RowDefinition_4" Height="22*"/>
+                    <RowDefinition x:Uid="RowDefinition_5" Height="169*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition x:Uid="ColumnDefinition_4" Width="0*" MaxWidth="0"/>
+                    <ColumnDefinition x:Uid="ColumnDefinition_5" Width="188*"/>
+                    <ColumnDefinition x:Uid="ColumnDefinition_6" Width="71*"/>
+                    <ColumnDefinition x:Uid="ColumnDefinition_7" Width="149*"/>
+                    <ColumnDefinition x:Uid="ColumnDefinition_8" Width="149*"/>
+                </Grid.ColumnDefinitions>
+
+                <!--<Label Grid.Column="0" Grid.Row="0" Content="Settings" HorizontalContentAlignment="Center" Background="{DynamicResource {x:Static SystemColors.GradientActiveCaptionBrushKey}}" Padding="0"/>
+
+                <Label Content="Device:" Grid.Column="0" Grid.Row ="1" HorizontalAlignment="Center" Margin="-6,7,74,0" VerticalAlignment="Top" Height="23" Width="46"/>
+                <ComboBox x:Name="comboBoxDevice" Grid.Column="0" Grid.Row ="1" HorizontalAlignment="Center" Margin="36,7,6,0" VerticalAlignment="Top" Width="72" DropDownOpened="comboBoxDevice_DropDownOpened" SelectedItem="{Binding DeviceName}" Height="21"/>
+
+                <Label Content="Task:" Grid.Column="0" Grid.Row ="1" HorizontalAlignment="Center" Margin="-1,31,79,0" VerticalAlignment="Top" Height="23" Width="36"/>
+                <ComboBox x:Name="comboBoxTypeTask" Grid.Column="0" Grid.Row ="1" HorizontalAlignment="Center" Margin="37,31,7,0" VerticalAlignment="Top" Width="70" SelectedItem="{Binding TaskType}" IsSynchronizedWithCurrentItem="True" Height="21"/>
+
+                <Label Content="Graph:" Grid.Column="0" Grid.Row ="1" HorizontalAlignment="Center" Margin="-4,0,76,0" VerticalAlignment="Bottom" Height="23" Width="42"/>
+                <ComboBox x:Name="comboBoxGraphWindowRegime" Grid.Column="0" Grid.Row ="1" HorizontalAlignment="Center" Margin="37,0,7,3" VerticalAlignment="Bottom" Width="70" SelectedItem="{Binding GraphWindowRegime}" IsSynchronizedWithCurrentItem="True" Height="21"/>-->
+
+                <Label x:Uid="Label_1" Grid.Row="0" Grid.Column="1" Content="Graphs" HorizontalContentAlignment="Center" Background="{DynamicResource {x:Static SystemColors.GradientActiveCaptionBrushKey}}" Padding="0"/>
+                <DataGrid x:Uid="dataGridGraphs" x:Name="dataGridGraphs" ItemsSource="{Binding Values}" SelectedItem="{Binding SelectedItem}" Grid.Column="1" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" Margin="0,0,0,27">
+                    <DataGrid.Columns>
+                        <!--<DataGridTextColumn Header="N" Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Converter={local:RowToIndexConverter}}" />-->
+                        <DataGridTextColumn x:Uid="DataGridTextColumn_1" Header="N" Binding = "{Binding Index, UpdateSourceTrigger=PropertyChanged}" Width="Auto" CanUserSort="False" IsReadOnly="True"/>
+                        <DataGridCheckBoxColumn x:Uid="DataGridCheckBoxColumn_1" Header="Sel" Binding = "{Binding Selected, UpdateSourceTrigger=PropertyChanged}" Width="Auto" CanUserSort="False"/>
+                        <DataGridComboBoxColumn x:Uid="dataGridGraphsDeviceComboBox" x:Name="dataGridGraphsDeviceComboBox" Header="Device" Width="Auto" TextBinding="{Binding DeviceName, UpdateSourceTrigger=PropertyChanged}" CanUserSort="False">
+                            <DataGridComboBoxColumn.EditingElementStyle>
+                                <Style x:Uid="Style_1" TargetType="{x:Type ComboBox}">
+                                    <EventSetter x:Uid="EventSetter_1" Event="PreviewMouseLeftButtonDown" Handler="dataGridGraphsDeviceComboBox_PreviewMouseDown"/>
+                                </Style>
+                            </DataGridComboBoxColumn.EditingElementStyle>
+                        </DataGridComboBoxColumn>
+                        <DataGridComboBoxColumn x:Uid="dataGridGraphsGraphTypeComboBox" x:Name="dataGridGraphsGraphTypeComboBox" Header="GraphType" Width="Auto" TextBinding="{Binding TaskType, UpdateSourceTrigger=PropertyChanged}" CanUserSort="False"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Button x:Uid="buttonAddGraph" x:Name="buttonAddGraph" Grid.Column="1" Content="+" Click="buttonAddGraph_Click" HorizontalAlignment="Right" Margin="0,0,0,2" VerticalAlignment="Bottom" Width="20" Height="25" ToolTip="Add contour" HorizontalContentAlignment="Center" Grid.Row="1"/>
+                <Button x:Uid="buttonRemoveGraph" x:Name="buttonRemoveGraph" Grid.Column="1" Content="-" Click="buttonRemoveGraph_Click" HorizontalAlignment="Right" Margin="0,0,20,2" VerticalAlignment="Bottom" Width="20" Height="25" ToolTip="Add contour" HorizontalContentAlignment="Center" Grid.Row="1"/>
+                <Button x:Uid="buttonResetCurves" x:Name="buttonResetCurves" Grid.Column="1" Content="Reset" Click="buttonResetCurves_Click" HorizontalAlignment="Right" Margin="0,0,45,2" VerticalAlignment="Bottom" Width="40" Height="25" ToolTip="Reload all curves" HorizontalContentAlignment="Center" Grid.Row="1"/>
+
+                <Label x:Uid="Label_2" Grid.Column="2" Grid.Row="0" Content="Receivers" HorizontalContentAlignment="Center" Background="{DynamicResource {x:Static SystemColors.GradientActiveCaptionBrushKey}}" Padding="0"/>
+                <DataGrid x:Uid="dataGridReceivers" x:Name="dataGridReceivers" Grid.Column="2" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn x:Uid="DataGridTextColumn_2" Header="N" Binding = "{Binding Index, UpdateSourceTrigger=PropertyChanged}" Width="Auto" CanUserSort="False" IsReadOnly="True"/>
+                        <DataGridCheckBoxColumn x:Uid="DataGridCheckBoxColumn_2" Header="Sel" Binding = "{Binding Selected, UpdateSourceTrigger=PropertyChanged}" Width="Auto" CanUserSort="False"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <Label x:Uid="Label_3" Grid.Column="3" Grid.Row="0" Content="Tasks" HorizontalContentAlignment="Center" Background="{DynamicResource {x:Static SystemColors.GradientActiveCaptionBrushKey}}" Padding="0"/>
+                <DataGrid x:Uid="dataGridTasks" x:Name="dataGridTasks" Grid.Column="3" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn x:Uid="DataGridTextColumn_3" Header="N" Binding = "{Binding Index, UpdateSourceTrigger=PropertyChanged}" Width="Auto" CanUserSort="False" IsReadOnly="True"/>
+                        <DataGridTextColumn x:Uid="DataGridTextColumn_4" Header="Name" Binding = "{Binding TypeModel, UpdateSourceTrigger=PropertyChanged}" Width="Auto" CanUserSort="False" IsReadOnly="True"/>
+                        <DataGridCheckBoxColumn x:Uid="DataGridCheckBoxColumn_3" Header="Sel" Binding = "{Binding Selected, UpdateSourceTrigger=PropertyChanged}" Width="Auto" CanUserSort="False"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <Label x:Uid="Label_4" Grid.Column="4" Grid.Row="0" Content="Positions" HorizontalContentAlignment="Center" Background="{DynamicResource {x:Static SystemColors.GradientActiveCaptionBrushKey}}" Padding="0"/>
+                <DataGrid x:Uid="dataGridPositions" x:Name="dataGridPositions" Grid.Column="4" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" Margin="0,0,0,0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn x:Uid="DataGridTextColumn_5" Header="N" Binding = "{Binding Index, UpdateSourceTrigger=PropertyChanged}" Width="Auto" CanUserSort="False" IsReadOnly="True"/>
+                        <DataGridTextColumn x:Uid="DataGridTextColumn_6" Header="Name" Binding = "{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="Auto" CanUserSort="False" IsReadOnly="True"/>
+                        <!--<DataGridCheckBoxColumn Header="Sel" Binding = "{Binding Selected}" Width="Auto" CanUserSort="False"/>-->
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Button x:Uid="buttonRemovePosition" Visibility="Collapsed" x:Name="buttonRemovePosition" Grid.Column="4" Content="-" Click="buttonRemovePosition_Click" HorizontalAlignment="Right" Margin="0,0,0,2" VerticalAlignment="Bottom" Width="20" Height="25" ToolTip="Add contour" HorizontalContentAlignment="Center" Grid.Row="1"/>
+                <Button x:Uid="buttonClearAllPositions" Visibility="Collapsed" x:Name="buttonClearAllPositions" Grid.Column="4" Content="Clear all" Click="buttonClearAllPositions_Click" HorizontalAlignment="Right" Margin="0,0,20,2" VerticalAlignment="Bottom" Width="51" Height="25" ToolTip="Add contour" HorizontalContentAlignment="Center" Grid.Row="1" RenderTransformOrigin="-1.15,0.56"/>
+
+                <!--<Label Content="Time:" Grid.Column="0" Grid.Row ="1" HorizontalAlignment="Center" Margin="-2,0,78,27" VerticalAlignment="Bottom" Height="23" Width="38"/>
+                <ComboBox x:Name="comboBoxTime" Grid.Column="0" Grid.Row ="1" HorizontalAlignment="Center" Margin="37,0,0,28" VerticalAlignment="Bottom" Width="70" SelectedItem="{Binding Time}" DropDownOpened="comboBoxTime_DropDownOpened" Height="21"/>-->
+                <Button x:Uid="buttonCopyToAllPositions" Visibility="Collapsed" x:Name="buttonCopyToAllPositions" Grid.Column="4" Content="Copy to all" Click="buttonCopyToAllPositions_Click" HorizontalAlignment="Right" Margin="0,0,76,2" VerticalAlignment="Bottom" Width="64" Height="25" ToolTip="Add contour" HorizontalContentAlignment="Center" Grid.Row="1" RenderTransformOrigin="-1.15,0.56"/>
+            </Grid>
+            <GridSplitter x:Uid="GridSplitter_2" Grid.Row="1" HorizontalAlignment="Stretch" Background="AliceBlue"/>
+            <Grid x:Uid="Grid_5" Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition x:Uid="ColumnDefinition_9" Width="181*"/>
+                    <ColumnDefinition x:Uid="ColumnDefinition_10" Width="80*"/>
+                </Grid.ColumnDefinitions>
+                <WindowsFormsHost x:Uid="WindowsFormsHost_1" Grid.Row="0" Grid.Column="0">
+                    <local:ModelXYGraphViewer x:Uid="XYOpenGlWindow" x:Name="XYOpenGlWindow"/>
+                </WindowsFormsHost>
+
+                <DataGrid x:Uid="dataGridCurves" x:Name="dataGridCurves" Grid.Row="0" Grid.Column="1" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn x:Uid="DataGridTextColumn_7" Header="Name" Binding="{Binding Name}" Width="Auto" CanUserSort="False" IsReadOnly="True"/>
+                        <DataGridCheckBoxColumn x:Uid="DataGridCheckBoxColumn_4" Header="Sel" Binding = "{Binding Selected, UpdateSourceTrigger=PropertyChanged}" Width="Auto" CanUserSort="False"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

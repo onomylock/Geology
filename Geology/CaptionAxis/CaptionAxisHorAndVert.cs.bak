@@ -1,0 +1,86 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using GLContex = Geology.OpenGL.OpenGL;
+
+namespace Geology.DrawWindow
+{
+    class CaptionAxisHorAndVert
+    {
+        public FontGeology myfontHor;
+        public FontGeology myfontVert;
+        CaptionAxisHor captionHor;
+        CaptionAxisVert captionVert;
+        bool drawGrid;
+
+        public bool DrawGridFlag { get { return drawGrid; } set { drawGrid = value; } }
+        public int GetIndentHor { get { return myfontVert.GetHeightTemplStr; } }
+        public int GetIndentVert { get { return myfontHor.GetHeightTemplStr; } }
+        public CaptionAxisHorAndVert(IntPtr hdc, int oglcontext, string fontName, int size, IOrthoControl Ortho, int Width, int Height)
+        {
+            drawGrid = true;
+            myfontHor = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, fontName, size);
+            myfontVert = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Vertical, fontName, size - 2);
+            captionHor = new CaptionAxisHor(myfontHor, Ortho);
+            captionVert = new CaptionAxisVert(myfontVert, Ortho);
+        }
+        public CaptionAxisHorAndVert()
+        {
+            myfontHor = null;
+            myfontVert = null; 
+            captionHor = null; 
+            captionVert = null; 
+        }
+        public void GenerateGrid(int ClientWidth, int ClientHeight)
+        {
+            double step;
+            if (captionHor != null && captionVert != null)
+            {
+                step = captionHor.GenerateGrid(ClientWidth, ClientHeight, captionVert.GetWidthText);
+                captionVert.GenerateGrid(step/*ClientWidth, ClientHeight, captionHor.GetHeightText*/);
+            }
+        }
+        public void DrawScaleLbls(int ClientWidth, int ClientHeight)
+        {
+            if (captionHor != null && captionVert != null)
+            {
+                captionHor.DrawScaleLbls(ClientWidth, ClientHeight, captionVert.GetWidthText);
+                captionVert.DrawScaleLbls(ClientWidth, ClientHeight, captionHor.GetHeightText);
+                int[] resView;
+                GetNewViewport(ClientWidth, ClientHeight, out resView);
+                GLContex.glViewport(resView[0], resView[1], resView[2], resView[3]);
+                if (DrawGridFlag)
+                    DrawGrid(resView[2], resView[3]);
+            }
+        }
+        public void DrawGrid(int ClientWidth, int ClientHeight)
+        {
+            if (captionHor != null && captionVert != null)
+            {
+                captionHor.DrawGrid(ClientHeight);
+                captionVert.DrawGrid(ClientWidth);
+            }
+        }
+        public void GetNewViewport(int ClientWidth, int ClientHeight, out int[] newView)
+        {
+            newView = new int[] { 0, 0, ClientWidth, ClientHeight };
+            if (captionHor != null && captionVert != null)
+            {
+                int[] resVert;
+                int[] resHor;
+                captionHor.GetNewViewport(ClientWidth, ClientHeight, out resHor);
+                captionVert.GetNewViewport(ClientWidth, ClientHeight, out resVert);
+                newView[0] = resVert[0];
+                newView[1] = resHor[1];
+                newView[2] = resVert[2];
+                newView[3] = resHor[3];
+            }
+        }
+        public void ClearFont()
+        {
+            myfontHor.ClearFont();
+            myfontVert.ClearFont();
+        }
+    }
+}

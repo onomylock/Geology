@@ -1,0 +1,1002 @@
+﻿using Geology.Objects.GeoModel;
+using Geology.Controls;
+using Geology.Observing;
+/*
+ Файл содержит классы:
+ * 
+ * CObject3DDraw2D, потомок CView2D - используется для отображения
+ * трехмерных объектов в проекциях
+ * 
+ */
+using Observing;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using GLContex = Geology.OpenGL.OpenGL;
+
+namespace Geology.DrawWindow
+{
+    public class CObject3DDraw2D : CView2D
+    {
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            if (Focused) Parent.Focus();
+        }
+
+        protected override void OnMouseEnter(EventArgs e)
+        {
+            if (!Focused) Focus();
+        }
+
+        public ObservableCollection<Objects.CGeoLayer> layers;
+        public ObservableCollection<Objects.CGeoObject> objects;
+        public ObservingSystem observingSystem;
+        public Inversion.InversionSystem inverseSystem;
+        public PostProcessing.PostProcessingSystem postProcessingSystem;
+        VisibleLayers3D visibleLayers;
+        private double zRange;
+        public double horizon;
+
+        public ObservableCollection<ELine> LineGenerators;
+        public ObservableCollection<ELine> LineRecievers;
+        public ObservableCollection<ELoop> LoopGenerators;
+        public ObservableCollection<ELoop> LoopRecievers;
+        public ObservableCollection<ELoopPoly> LoopPolyGenerators;
+        public ObservableCollection<ELoopPoly> LoopPolyRecievers;
+        public GeoModelSimpleRegCollection modelCollection;
+
+        private Objects.GeoModel.GeoModel model;
+        public enum EPlaneType
+        { XY = 0, XZ, YZ, XYZ }
+        public enum SLineType
+        { slNo, slHor, slVer }
+        double prevX = 0, prevY = 0;
+        double curX = 0, curY = 0;
+        bool mouseDown = false;
+        bool mouseMoving = false;
+        bool mouseMoved = true;
+        bool mouseSelecting = false;
+        int editObject = -1;
+
+        EPlaneType axisType;
+
+        SLineType SLine;
+        double SLineCoord;
+
+        Objects.CGeoObject.BorderType bt;
+
+        ContextMenuStrip mnuObj;
+
+        public CObject3DDraw2D()
+            : base(true)
+        {
+            axisType = EPlaneType.XY;
+            zRange = 1e+7;
+            ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });
+            layers = new ObservableCollection<Objects.CGeoLayer>();
+            objects = new ObservableCollection<Objects.CGeoObject>();
+            observingSystem = new ObservingSystem();
+            inverseSystem = new Inversion.InversionSystem();
+            visibleLayers = new VisibleLayers3D();
+            horizon = 0;
+
+            LineGenerators = new ObservableCollection<ELine>();
+            LineRecievers = new ObservableCollection<ELine>();
+            LoopGenerators = new ObservableCollection<ELoop>();
+            LoopRecievers = new ObservableCollection<ELoop>();
+            LoopPolyGenerators = new ObservableCollection<ELoopPoly>();
+            LoopPolyRecievers = new ObservableCollection<ELoopPoly>();
+            modelCollection = new GeoModelSimpleRegCollection();
+
+            postProcessingSystem = new PostProcessing.PostProcessingSystem();
+
+            this.MouseMove += CObject3DDraw2D_MouseMove;
+            this.MouseDown += CObject3DDraw2D_MouseDown;
+            this.MouseUp += CObject3DDraw2D_MouseUp;
+
+
+            base.MouseMove -= CView2D_MouseMove;
+            base.MouseDown -= CView2D_MouseDown;
+            base.MouseUp -= CView2D_MouseUp;
+
+            bt = Objects.CGeoObject.BorderType.btNone;
+
+            System.Windows.Forms.ToolStripMenuItem mnuSelectGroup = new System.Windows.Forms.ToolStripMenuItem("Select group");
+            mnuSelectGroup.Click += mnuSelectGroup_Click;
+            mnu.Items.Add(mnuSelectGroup);
+            System.Windows.Forms.ToolStripMenuItem mnuUnselectAll = new System.Windows.Forms.ToolStripMenuItem("Unselect all");
+            mnuUnselectAll.Click += mnuUnselectAll_Click;
+            mnu.Items.Add(mnuUnselectAll);
+
+            mnuObj = new System.Windows.Forms.ContextMenuStrip();
+            ToolStripMenuItem mnuDelete = new ToolStripMenuItem("Delete");
+            ToolStripMenuItem mnuMove = new ToolStripMenuItem("Move");
+            ToolStripMenuItem mnuCopy = new ToolStripMenuItem("Copy");
+
+            model = new Objects.GeoModel.GeoModel();
+
+            mnuDelete.Click += mnuDelete_Click;
+            mnuMove.Click += mnuMove_Click;
+            mnuCopy.Click += mnuCopy_Click;
+
+            mnuObj.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuDelete, mnuMove, mnuCopy });
+
+            mnuObj.Opening += new System.ComponentModel.CancelEventHandler(mnuObjOpening);
+            mnuObj.Closing += new ToolStripDropDownClosingEventHandler(mnuObjClosing);
+
+            SLine = SLineType.slNo;
+            SLineCoord = 0;
+        }
+        private void SetObjectSelectedStatus(bool st)
+        {
+            if (editObject >= 0 && editObject < objects.Count)
+                objects[editObject].Selected = st;
+            else
+                foreach (var p in objects)
+                    p.Selected = false;
+            if (window != null)
+                window.UpdateAllView();
+            else
+                Invalidate();
+        }
+        private void SetBaseState()
+        {
+            bt = Objects.CGeoObject.BorderType.btNone;
+            if (this.Cursor != Cursors.Cross)
+                this.Cursor = Cursors.Default;
+            base.SetBaseContextMenu();
+        }
+        private void mnuDelete_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < objects.Count; i++)
+            {
+                if (objects[i].Selected)
+                {
+                    objects[i].PropertyChanged -= window.ObjectPropertyChanged;
+                    objects.RemoveAt(i--);
+                }
+            }
+            foreach (var p in objects)
+                p.recalcNumber(editObject);
+            if (window != null)
+                window.UpdateAllView();
+            else
+                Invalidate();
+            SetBaseState();
+        }
+        private void mnuMove_Click(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.SizeAll;
+            bt = Objects.CGeoObject.BorderType.btObj;
+            mouseMoving = true;
+            mouseMoved = false;
+        }
+        private void mnuCopy_Click(object sender, EventArgs e)
+        {
+            int j = objects.Count;
+            for (int i = 0; i < j; i++)
+            {
+                if (objects[i].Selected)
+                {
+                    objects.Add((Objects.CGeoObject)objects[i].Clone());
+                    objects[objects.Count - 1].Num = objects.Count;
+                    objects[objects.Count - 1].PropertyChanged += window.ObjectPropertyChanged;
+                }
+            }
+            this.Cursor = Cursors.SizeAll;
+            mouseMoving = true;
+            mouseMoved = false;
+        }
+        private void mnuSelectGroup_Click(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.Cross;
+        }
+        private void mnuUnselectAll_Click(object sender, EventArgs e)
+        {
+            SetObjectSelectedStatus(false);
+        }
+        private void mnuObjOpening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            SetObjectSelectedStatus(true);
+        }
+        private void mnuObjClosing(object sender, ToolStripDropDownClosingEventArgs e)
+        {
+            if (e.CloseReason != ToolStripDropDownCloseReason.ItemClicked)
+            {
+                SetObjectSelectedStatus(false);
+                SetBaseState();
+            }
+        }
+
+        //protected void CObject3DDraw2D_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        //{
+        //    if (e.Button == MouseButtons.Right)
+        //        return;
+
+        //    if (this.Cursor == Cursors.Cross)
+        //    {
+        //        mouseSelecting = true;
+        //        Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+        //        return;
+        //    }
+        //    if (bt == Objects.CGeoObject.BorderType.btNone || bt == Objects.CGeoObject.BorderType.btObj && !mouseMoving)
+        //        base.CView2D_MouseDown(sender, e);
+        //    else
+        //    {
+        //        mouseDown = true;
+        //        Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+        //    }
+        //}
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            if (!Focused) Focus();
+
+            if (e.Button == MouseButtons.Right)
+                return;
+
+            if (this.Cursor == Cursors.Cross)
+            {
+                mouseSelecting = true;
+                Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+                return;
+            }
+            if (bt == Objects.CGeoObject.BorderType.btNone || bt == Objects.CGeoObject.BorderType.btObj && !mouseMoving)
+                base.OnMouseDown(e);
+            else
+            {
+                mouseDown = true;
+                Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+            }
+        }
+
+        //protected void CObject3DDraw2D_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        //{
+        //    if (e.Button == MouseButtons.Right)
+        //        return;
+        //    if (this.Cursor == Cursors.Cross)
+        //    {
+        //        this.Cursor = Cursors.Default;
+        //        mouseSelecting = false;
+        //        Invalidate();
+        //        return;
+        //    }
+        //    if (bt == Objects.CGeoObject.BorderType.btNone || bt == Objects.CGeoObject.BorderType.btObj && !mouseMoving)
+        //        base.CView2D_MouseUp(sender, e);
+        //    else
+        //    {
+        //        mouseDown = false;
+        //        SLine = SLineType.slNo;
+        //        SetObjectSelectedStatus(mouseMoving);
+        //    }
+        //}
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            if (!Focused) Focus();
+
+            if (e.Button == MouseButtons.Right)
+                return;
+            if (this.Cursor == Cursors.Cross)
+            {
+                this.Cursor = Cursors.Default;
+                mouseSelecting = false;
+                Invalidate();
+                return;
+            }
+            if (bt == Objects.CGeoObject.BorderType.btNone || bt == Objects.CGeoObject.BorderType.btObj && !mouseMoving)
+                base.OnMouseUp(e);
+            else
+            {
+                mouseDown = false;
+                SLine = SLineType.slNo;
+                SetObjectSelectedStatus(mouseMoving);
+            }
+        }
+
+        private void FindServiceLine(double cX, double cY)
+        {
+            double eps = 4 * Ortho.GetDHor / WidthLocal;
+
+            SLine = SLineType.slNo;
+            SLineCoord = 0;
+
+            for (int i = 0; i < objects.Count; i++)
+            {
+                if (i == editObject)
+                    continue;
+                Objects.CGeoObject p = objects[i];
+                switch (axisType)
+                {
+                    case EPlaneType.XY:
+                        if (Math.Abs(cX - p.parallel[0].Min) < eps &&
+                            (bt == Objects.CGeoObject.BorderType.btXmin || bt == Objects.CGeoObject.BorderType.btXmax))
+                        {
+                            SLine = SLineType.slVer;
+                            SLineCoord = p.parallel[0].Min;
+                        }
+                        else if (Math.Abs(cX - p.parallel[0].Max) < eps &&
+                            (bt == Objects.CGeoObject.BorderType.btXmin || bt == Objects.CGeoObject.BorderType.btXmax))
+                        {
+                            SLine = SLineType.slVer;
+                            SLineCoord = p.parallel[0].Max;
+                        }
+                        else if (Math.Abs(cY - p.parallel[1].Min) < eps &&
+                            (bt == Objects.CGeoObject.BorderType.btYmin || bt == Objects.CGeoObject.BorderType.btYmax))
+                        {
+                            SLine = SLineType.slHor;
+                            SLineCoord = p.parallel[1].Min;
+                        }
+                        else if (Math.Abs(cY - p.parallel[1].Max) < eps &&
+                            (bt == Objects.CGeoObject.BorderType.btYmin || bt == Objects.CGeoObject.BorderType.btYmax))
+                        {
+                            SLine = SLineType.slHor;
+                            SLineCoord = p.parallel[1].Max;
+                        }
+                        break;
+                    case EPlaneType.XZ:
+                        if (Math.Abs(cX - p.parallel[0].Min) < eps &&
+                            (bt == Objects.CGeoObject.BorderType.btXmin || bt == Objects.CGeoObject.BorderType.btXmax))
+                        {
+                            SLine = SLineType.slVer;
+                            SLineCoord = p.parallel[0].Min;
+                        }
+                        else if (Math.Abs(cX - p.parallel[0].Max) < eps &&
+                            (bt == Objects.CGeoObject.BorderType.btXmin || bt == Objects.CGeoObject.BorderType.btXmax))
+                        {
+                            SLine = SLineType.slVer;
+                            SLineCoord = p.parallel[0].Max;
+                        }
+                        else if (Math.Abs(cY - p.parallel[2].Min) < eps &&
+                            (bt == Objects.CGeoObject.BorderType.btZmin || bt == Objects.CGeoObject.BorderType.btZmax))
+                        {
+                            SLine = SLineType.slHor;
+                            SLineCoord = p.parallel[2].Min;
+                        }
+                        else if (Math.Abs(cY - p.parallel[2].Max) < eps &&
+                            (bt == Objects.CGeoObject.BorderType.btZmin || bt == Objects.CGeoObject.BorderType.btZmax))
+                        {
+                            SLine = SLineType.slHor;
+                            SLineCoord = p.parallel[2].Max;
+                        }
+                        break;
+                    case EPlaneType.YZ:
+                        if (Math.Abs(cX - p.parallel[1].Min) < eps &&
+                            (bt == Objects.CGeoObject.BorderType.btYmin || bt == Objects.CGeoObject.BorderType.btYmax))
+                        {
+                            SLine = SLineType.slVer;
+                            SLineCoord = p.parallel[1].Min;
+                        }
+                        else if (Math.Abs(cX - p.parallel[1].Max) < eps &&
+                            (bt == Objects.CGeoObject.BorderType.btYmin || bt == Objects.CGeoObject.BorderType.btYmax))
+                        {
+                            SLine = SLineType.slVer;
+                            SLineCoord = p.parallel[1].Max;
+                        }
+                        else if (Math.Abs(cY - p.parallel[2].Min) < eps &&
+                            (bt == Objects.CGeoObject.BorderType.btZmin || bt == Objects.CGeoObject.BorderType.btZmax))
+                        {
+                            SLine = SLineType.slHor;
+                            SLineCoord = p.parallel[2].Min;
+                        }
+                        else if (Math.Abs(cY - p.parallel[2].Max) < eps &&
+                            (bt == Objects.CGeoObject.BorderType.btZmin || bt == Objects.CGeoObject.BorderType.btZmax))
+                        {
+                            SLine = SLineType.slHor;
+                            SLineCoord = p.parallel[2].Max;
+                        }
+                        break;
+                }
+            }
+        }
+        private int SelectedObjectCount()
+        {
+            int i = 0;
+            foreach (var p in objects)
+                i += (p.Selected ? 1 : 0);
+            return i;
+        }
+
+        //protected void CObject3DDraw2D_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        //{
+        //    Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+
+        //    if (mouseSelecting)
+        //    {
+        //        double
+        //            c1min = Math.Min(prevX, curX), c1max = Math.Max(prevX, curX),
+        //            c2min = Math.Min(prevY, curY), c2max = Math.Max(prevY, curY);
+
+        //        for (int i = 0; i < objects.Count; i++)
+        //        {
+        //            Objects.CGeoObject p = objects[i];
+        //            if (p.ObjectInRect((int)axisType, c1min, c2min, c1max, c2max))
+        //                p.Selected = true;
+        //        }
+        //        Invalidate();
+        //        return;
+        //    }
+        //    if (!mouseDown && mouseMoved && this.Cursor != Cursors.Cross)
+        //    {
+        //        bt = Objects.CGeoObject.BorderType.btNone;
+        //        Objects.CGeoObject.BorderType btt;
+        //        editObject = -1;
+        //        double closestPlane = 0;
+        //        switch (axisType)
+        //        {
+        //            case EPlaneType.XY:
+        //                closestPlane = -Double.MaxValue;
+        //                break;
+        //            case EPlaneType.XZ:
+        //                closestPlane = Double.MaxValue;
+        //                break;
+        //            case EPlaneType.YZ:
+        //                closestPlane = -Double.MaxValue;
+        //                break;
+        //        }
+        //        for (int i = 0; i < objects.Count; i++)
+        //        {
+        //            Objects.CGeoObject p = objects[i];
+        //            if (p.MouseOnObject((int)axisType, curX, curY, (4 * Ortho.GetDHor / WidthLocal), out btt))
+        //            {
+        //                switch (axisType)
+        //                {
+        //                    case EPlaneType.XY:
+        //                        if (p.parallel[2].Max > closestPlane)
+        //                        {
+        //                            closestPlane = p.parallel[2].Max;
+
+        //                            if (Control.ModifierKeys == Keys.Control)
+        //                            {
+        //                                bt = btt;
+        //                                editObject = i;
+        //                                if (bt == Objects.CGeoObject.BorderType.btXmin || bt == Objects.CGeoObject.BorderType.btXmax)
+        //                                    this.Cursor = Cursors.SizeWE;
+        //                                else if (bt == Objects.CGeoObject.BorderType.btYmin || bt == Objects.CGeoObject.BorderType.btYmax)
+        //                                    this.Cursor = Cursors.SizeNS;
+        //                            }
+        //                        }
+        //                        break;
+        //                    case EPlaneType.XZ:
+        //                        if (p.parallel[1].Min < closestPlane)
+        //                        {
+        //                            closestPlane = p.parallel[1].Min;
+        //                            if (Control.ModifierKeys == Keys.Control)
+        //                            {
+        //                                bt = btt;
+        //                                editObject = i;
+        //                                if (bt == Objects.CGeoObject.BorderType.btXmin || bt == Objects.CGeoObject.BorderType.btXmax)
+        //                                    this.Cursor = Cursors.SizeWE;
+        //                                else if (bt == Objects.CGeoObject.BorderType.btZmin || bt == Objects.CGeoObject.BorderType.btZmax)
+        //                                    this.Cursor = Cursors.SizeNS;
+        //                            }
+        //                        }
+        //                        break;
+        //                    case EPlaneType.YZ:
+        //                        if (p.parallel[0].Max > closestPlane)
+        //                        {
+        //                            closestPlane = p.parallel[0].Max;
+        //                            if (Control.ModifierKeys == Keys.Control)
+        //                            {
+        //                                bt = btt;
+        //                                editObject = i;
+        //                                if (bt == Objects.CGeoObject.BorderType.btYmin || bt == Objects.CGeoObject.BorderType.btYmax)
+        //                                    this.Cursor = Cursors.SizeWE;
+        //                                else if (bt == Objects.CGeoObject.BorderType.btZmin || bt == Objects.CGeoObject.BorderType.btZmax)
+        //                                    this.Cursor = Cursors.SizeNS;
+        //                            }
+        //                        }
+        //                        break;
+        //                }
+        //            }
+        //        }
+        //        if (bt == Objects.CGeoObject.BorderType.btObj && !mouseMoving)
+        //        {
+        //            this.Cursor = Cursors.Default;
+        //            this.ContextMenuStrip = mnuObj;
+        //        }
+        //    }
+        //    if (mouseDown)
+        //    {
+        //        if (bt != Objects.CGeoObject.BorderType.btObj || bt == Objects.CGeoObject.BorderType.btObj && mouseMoving)
+        //        {
+        //            if (bt != Objects.CGeoObject.BorderType.btObj)
+        //            {
+        //                FindServiceLine(curX, curY);
+        //                if (SLine == SLineType.slHor)
+        //                    curY = SLineCoord;
+        //                if (SLine == SLineType.slVer)
+        //                    curX = SLineCoord;
+        //            }
+        //            if (SelectedObjectCount() > 1 && bt == Objects.CGeoObject.BorderType.btObj && mouseMoving)
+        //            {
+        //                foreach (var p in objects)
+        //                    if (p.Selected)
+        //                        p.EditByMouse(
+        //                           (int)axisType,
+        //                           curX - (bt == Objects.CGeoObject.BorderType.btObj ? prevX : 0),
+        //                           curY - (bt == Objects.CGeoObject.BorderType.btObj ? prevY : 0),
+        //                           bt);
+        //            }
+        //            else
+        //                objects[editObject].EditByMouse(
+        //                    (int)axisType,
+        //                    curX - (bt == Objects.CGeoObject.BorderType.btObj ? prevX : 0),
+        //                    curY - (bt == Objects.CGeoObject.BorderType.btObj ? prevY : 0),
+        //                    bt);
+        //            prevX = curX;
+        //            prevY = curY;
+        //            SetObjectSelectedStatus(true);
+        //            if (mouseMoving)
+        //                mouseMoved = true;
+        //        }
+        //    }
+        //    if (bt == Objects.CGeoObject.BorderType.btObj)
+        //    {
+        //        base.CView2D_MouseMove(sender, e);
+        //    }
+        //    if (bt == Objects.CGeoObject.BorderType.btNone)
+        //    {
+        //        if (mouseMoving)
+        //        {
+        //            SetObjectSelectedStatus(false);
+        //            mouseMoving = false;
+        //        }
+        //        SetBaseState();
+        //        base.CView2D_MouseMove(sender, e);
+        //    }
+        //}
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            if (!Focused) Focus();
+
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+
+            if (mouseSelecting)
+            {
+                double
+                    c1min = Math.Min(prevX, curX), c1max = Math.Max(prevX, curX),
+                    c2min = Math.Min(prevY, curY), c2max = Math.Max(prevY, curY);
+
+                for (int i = 0; i < objects.Count; i++)
+                {
+                    Objects.CGeoObject p = objects[i];
+                    if (p.ObjectInRect((int)axisType, c1min, c2min, c1max, c2max))
+                        p.Selected = true;
+                }
+                Invalidate();
+                return;
+            }
+            if (!mouseDown && mouseMoved && this.Cursor != Cursors.Cross)
+            {
+                bt = Objects.CGeoObject.BorderType.btNone;
+                Objects.CGeoObject.BorderType btt;
+                editObject = -1;
+                double closestPlane = 0;
+                switch (axisType)
+                {
+                    case EPlaneType.XY:
+                        closestPlane = -Double.MaxValue;
+                        break;
+                    case EPlaneType.XZ:
+                        closestPlane = Double.MaxValue;
+                        break;
+                    case EPlaneType.YZ:
+                        closestPlane = -Double.MaxValue;
+                        break;
+                }
+                for (int i = 0; i < objects.Count; i++)
+                {
+                    Objects.CGeoObject p = objects[i];
+                    if (p.MouseOnObject((int)axisType, curX, curY, (4 * Ortho.GetDHor / WidthLocal), out btt))
+                    {
+                        switch (axisType)
+                        {
+                            case EPlaneType.XY:
+                                if (p.parallel[2].Max > closestPlane)
+                                {
+                                    closestPlane = p.parallel[2].Max;
+
+                                    if (Control.ModifierKeys == Keys.Control)
+                                    {
+                                        bt = btt;
+                                        editObject = i;
+                                        if (bt == Objects.CGeoObject.BorderType.btXmin || bt == Objects.CGeoObject.BorderType.btXmax)
+                                            this.Cursor = Cursors.SizeWE;
+                                        else if (bt == Objects.CGeoObject.BorderType.btYmin || bt == Objects.CGeoObject.BorderType.btYmax)
+                                            this.Cursor = Cursors.SizeNS;
+                                    }
+                                }
+                                break;
+                            case EPlaneType.XZ:
+                                if (p.parallel[1].Min < closestPlane)
+                                {
+                                    closestPlane = p.parallel[1].Min;
+                                    if (Control.ModifierKeys == Keys.Control)
+                                    {
+                                        bt = btt;
+                                        editObject = i;
+                                        if (bt == Objects.CGeoObject.BorderType.btXmin || bt == Objects.CGeoObject.BorderType.btXmax)
+                                            this.Cursor = Cursors.SizeWE;
+                                        else if (bt == Objects.CGeoObject.BorderType.btZmin || bt == Objects.CGeoObject.BorderType.btZmax)
+                                            this.Cursor = Cursors.SizeNS;
+                                    }
+                                }
+                                break;
+                            case EPlaneType.YZ:
+                                if (p.parallel[0].Max > closestPlane)
+                                {
+                                    closestPlane = p.parallel[0].Max;
+                                    if (Control.ModifierKeys == Keys.Control)
+                                    {
+                                        bt = btt;
+                                        editObject = i;
+                                        if (bt == Objects.CGeoObject.BorderType.btYmin || bt == Objects.CGeoObject.BorderType.btYmax)
+                                            this.Cursor = Cursors.SizeWE;
+                                        else if (bt == Objects.CGeoObject.BorderType.btZmin || bt == Objects.CGeoObject.BorderType.btZmax)
+                                            this.Cursor = Cursors.SizeNS;
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                }
+                if (bt == Objects.CGeoObject.BorderType.btObj && !mouseMoving)
+                {
+                    this.Cursor = Cursors.Default;
+                    this.ContextMenuStrip = mnuObj;
+                }
+            }
+            if (mouseDown)
+            {
+                if (bt != Objects.CGeoObject.BorderType.btObj || bt == Objects.CGeoObject.BorderType.btObj && mouseMoving)
+                {
+                    if (bt != Objects.CGeoObject.BorderType.btObj)
+                    {
+                        FindServiceLine(curX, curY);
+                        if (SLine == SLineType.slHor)
+                            curY = SLineCoord;
+                        if (SLine == SLineType.slVer)
+                            curX = SLineCoord;
+                    }
+                    if (SelectedObjectCount() > 1 && bt == Objects.CGeoObject.BorderType.btObj && mouseMoving)
+                    {
+                        foreach (var p in objects)
+                            if (p.Selected)
+                                p.EditByMouse(
+                                   (int)axisType,
+                                   curX - (bt == Objects.CGeoObject.BorderType.btObj ? prevX : 0),
+                                   curY - (bt == Objects.CGeoObject.BorderType.btObj ? prevY : 0),
+                                   bt);
+                    }
+                    else
+                        objects[editObject].EditByMouse(
+                            (int)axisType,
+                            curX - (bt == Objects.CGeoObject.BorderType.btObj ? prevX : 0),
+                            curY - (bt == Objects.CGeoObject.BorderType.btObj ? prevY : 0),
+                            bt);
+                    prevX = curX;
+                    prevY = curY;
+                    SetObjectSelectedStatus(true);
+                    if (mouseMoving)
+                        mouseMoved = true;
+                }
+            }
+            if (bt == Objects.CGeoObject.BorderType.btObj)
+            {
+                base.OnMouseMove(e);
+            }
+            if (bt == Objects.CGeoObject.BorderType.btNone)
+            {
+                if (mouseMoving)
+                {
+                    SetObjectSelectedStatus(false);
+                    mouseMoving = false;
+                }
+                SetBaseState();
+                base.OnMouseMove(e);
+            }
+        }
+
+        public void SetObjects(ObservableCollection<Objects.CGeoLayer> _layers, ObservableCollection<Objects.CGeoObject> _objects, VisibleLayers3D _visibleLayers, ref ObservingSystem _observingSystem, Inversion.InversionSystem _inverseSystem, PostProcessing.PostProcessingSystem postProcessingSystem, Objects.GeoModel.GeoModel model)
+        {
+            layers = _layers;
+            objects = _objects;
+            visibleLayers = _visibleLayers;
+            observingSystem = _observingSystem;
+            inverseSystem = _inverseSystem;
+            this.postProcessingSystem = postProcessingSystem;
+            this.model = model;
+        }
+        public void SetObjects(ObservableCollection<ELine> _LineGenerators, ObservableCollection<ELine> _LineRecievers, ObservableCollection<ELoop> _LoopGenerators, ObservableCollection<ELoop> _LoopRecievers, ObservableCollection<ELoopPoly> _LoopPolyGenerators, ObservableCollection<ELoopPoly> _LoopPolyRecievers)
+        {
+            LineGenerators = _LineGenerators;
+            LineRecievers = _LineRecievers;
+            LoopGenerators = _LoopGenerators;
+            LoopRecievers = _LoopRecievers;
+            LoopPolyGenerators = _LoopPolyGenerators;
+            LoopPolyRecievers = _LoopPolyRecievers;
+        }
+        public void ChangeBoundingBox(double[] newBoundingBox)
+        {
+            double[] newOrtho = new double[] { -1, 1, -1, 1, -1, 1 };
+            for (int i = 0; i < 6; i++) BoundingBox[i] = newBoundingBox[i];
+        }
+
+        public void ChangeOrtho(double[] globalOrthoBox)
+        {
+            double[] newOrtho = new double[] { -1, 1, -1, 1, -1, 1 };
+
+            switch (axisType)
+            {
+                case EPlaneType.XY:
+                    newOrtho[0] = globalOrthoBox[0];
+                    newOrtho[1] = globalOrthoBox[1];
+                    newOrtho[2] = globalOrthoBox[2];
+                    newOrtho[3] = globalOrthoBox[3];
+                    newOrtho[4] = -zRange;
+                    newOrtho[5] = zRange;
+                    break;
+                case EPlaneType.XZ:
+                    newOrtho[0] = globalOrthoBox[0];
+                    newOrtho[1] = globalOrthoBox[1];
+                    newOrtho[2] = globalOrthoBox[4];
+                    newOrtho[3] = globalOrthoBox[5];
+                    newOrtho[4] = -zRange;
+                    newOrtho[5] = zRange;
+                    break;
+                case EPlaneType.YZ:
+                    newOrtho[0] = globalOrthoBox[2];
+                    newOrtho[1] = globalOrthoBox[3];
+                    newOrtho[2] = globalOrthoBox[4];
+                    newOrtho[3] = globalOrthoBox[5];
+                    newOrtho[4] = -zRange;
+                    newOrtho[5] = zRange;
+                    break;
+            }
+
+            Ortho.SetOrtho(newOrtho);
+            Ortho.SetZBuffer(newOrtho[4], newOrtho[5]);
+            Resize_Window();
+        }
+        public void setRotateAndNameAxes(EPlaneType numAxis)
+        {
+            axisType = numAxis;
+            switch (axisType)
+            {
+                case EPlaneType.XY: Ortho.HorAxisName = "X"; Ortho.VertAxisName = "Y"; break;
+                case EPlaneType.XZ: Ortho.HorAxisName = "X"; Ortho.VertAxisName = "Z"; break;
+                case EPlaneType.YZ: Ortho.HorAxisName = "Y"; Ortho.VertAxisName = "Z"; break;
+            }
+        }
+        void drawHexaderon()
+        {
+            GLContex.glBegin(GLContex.GL_QUADS);
+
+            GLContex.glColor3f(1, 0, 0);
+            GLContex.glVertex3d(-0.5, -0.5, -0.5);
+            GLContex.glVertex3d(0.5, -0.5, -0.5);
+            GLContex.glVertex3d(0.5, 0.5, -0.5);
+            GLContex.glVertex3d(-0.5, 0.5, -0.5);
+
+            GLContex.glColor3f(0, 1, 0);
+            GLContex.glVertex3d(-0.5, -0.5, 0.5);
+            GLContex.glVertex3d(0.5, -0.5, 0.5);
+            GLContex.glVertex3d(0.5, 0.5, 0.5);
+            GLContex.glVertex3d(-0.5, 0.5, 0.5);
+
+
+            GLContex.glColor3f(0, 0, 1);
+            GLContex.glVertex3d(-0.5, -0.5, -0.5);
+            GLContex.glVertex3d(0.5, -0.5, -0.5);
+            GLContex.glVertex3d(0.5, -0.5, 0.5);
+            GLContex.glVertex3d(-0.5, -0.5, 0.5);
+
+
+            GLContex.glColor3f(1, 1, 0);
+            GLContex.glVertex3d(-0.5, 0.5, -0.5);
+            GLContex.glVertex3d(0.5, 0.5, -0.5);
+            GLContex.glVertex3d(0.5, 0.5, 0.5);
+            GLContex.glVertex3d(-0.5, 0.5, 0.5);
+
+            GLContex.glColor3f(1, 0, 1);
+            GLContex.glVertex3d(-0.5, -0.5, -0.5);
+            GLContex.glVertex3d(-0.5, 0.5, -0.5);
+            GLContex.glVertex3d(-0.5, 0.5, 0.5);
+            GLContex.glVertex3d(-0.5, -0.5, 0.5);
+
+
+            GLContex.glColor3f(0, 1, 1);
+            GLContex.glVertex3d(0.5, -0.5, -0.5);
+            GLContex.glVertex3d(0.5, 0.5, -0.5);
+            GLContex.glVertex3d(0.5, 0.5, 0.5);
+            GLContex.glVertex3d(0.5, -0.5, 0.5);
+
+
+            GLContex.glEnd();
+
+        }
+        protected override void DrawObjetcs()
+        {
+            double[] OrthoLayers = new double[6];//{ 0, 0, 0, 0, BoundingBox[4], BoundingBox[5] };
+            double[] drawBox = new double[6];
+
+            double prevHeight = horizon;
+
+            switch (axisType)
+            {
+                case EPlaneType.XY:
+                    drawBox[0] = BoundingBox[0];
+                    drawBox[1] = BoundingBox[1];
+                    drawBox[2] = BoundingBox[2];
+                    drawBox[3] = BoundingBox[3];
+                    drawBox[4] = BoundingBox[4];
+                    drawBox[5] = BoundingBox[5];
+                    break;
+                case EPlaneType.XZ:
+                    drawBox[0] = BoundingBox[0];
+                    drawBox[1] = BoundingBox[1];
+                    drawBox[2] = BoundingBox[4];
+                    drawBox[3] = BoundingBox[5];
+                    drawBox[4] = BoundingBox[2];
+                    drawBox[5] = BoundingBox[3];
+                    GLContex.gluLookAt(0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
+                    break;
+                case EPlaneType.YZ:
+                    drawBox[0] = BoundingBox[2];
+                    drawBox[1] = BoundingBox[3];
+                    drawBox[2] = BoundingBox[4];
+                    drawBox[3] = BoundingBox[5];
+                    drawBox[4] = BoundingBox[0];
+                    drawBox[5] = BoundingBox[1];
+                    GLContex.gluLookAt(1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+                    break;
+            }
+
+
+            foreach (var p in layers)
+            {
+                p.Draw(axisType, prevHeight, zRange, BoundingBox);
+                prevHeight -= p.H;
+            }
+
+
+            if (inverseSystem.activeToDraw == false)
+            {
+                //model.Draw();
+
+                foreach (var p in objects)
+                    p.Draw(axisType, BoundingBox);
+
+            }
+            else
+            {
+                inverseSystem.Draw(axisType, BoundingBox);
+            }
+
+            observingSystem.Draw(fontRecievers);
+
+
+            foreach (var dev in LineGenerators)
+                dev.Draw(false);
+
+            foreach (var dev in LineRecievers)
+                dev.Draw(false);
+
+            foreach (var dev in LoopGenerators)
+                dev.Draw(false);
+
+            foreach (var dev in LoopRecievers)
+                dev.Draw(false);
+
+            foreach (var dev in LoopPolyGenerators)
+                dev.Draw(false);
+
+            foreach (var dev in LoopPolyRecievers)
+                dev.Draw(false);
+
+            if (this.Cursor == Cursors.Cross && mouseSelecting)
+            {
+                double c = 0.5 * (Ortho.GetMinZBuf + Ortho.GetMaxZBuf);
+                GLContex.glColor3f(0f, 0f, 0f);
+                GLContex.glLineWidth(1);
+                GLContex.glDisable(GLContex.GL_DEPTH_TEST);
+                GLContex.glBegin(GLContex.GL_LINE_LOOP);
+                switch (axisType)
+                {
+                    case EPlaneType.XY:
+                        GLContex.glVertex3d(prevX, prevY, c);
+                        GLContex.glVertex3d(curX, prevY, c);
+                        GLContex.glVertex3d(curX, curY, c);
+                        GLContex.glVertex3d(prevX, curY, c);
+                        break;
+                    case EPlaneType.XZ:
+                        GLContex.glVertex3d(prevX, c, prevY);
+                        GLContex.glVertex3d(curX, c, prevY);
+                        GLContex.glVertex3d(curX, c, curY);
+                        GLContex.glVertex3d(prevX, c, curY);
+                        break;
+                    case EPlaneType.YZ:
+                        GLContex.glVertex3d(c, prevX, prevY);
+                        GLContex.glVertex3d(c, curX, prevY);
+                        GLContex.glVertex3d(c, curX, curY);
+                        GLContex.glVertex3d(c, prevX, curY);
+                        break;
+                }
+                GLContex.glEnd();
+                GLContex.glEnable(GLContex.GL_DEPTH_TEST);
+            }
+
+            if (SLine != SLineType.slNo)
+            {
+                double[] orth;
+                Ortho.GetOrtho(out orth);
+                double c = 0.5 * (Ortho.GetMinZBuf + Ortho.GetMaxZBuf);
+                GLContex.glColor3f(1f, 0f, 0f);
+                GLContex.glLineWidth(2);
+                GLContex.glEnable(GLContex.GL_LINE_STIPPLE);
+                GLContex.glDisable(GLContex.GL_DEPTH_TEST);
+                GLContex.glLineStipple(1, 0x8888);
+                GLContex.glBegin(GLContex.GL_LINES);
+                switch (axisType)
+                {
+                    case EPlaneType.XY:
+                        if (SLine == SLineType.slHor)
+                        {
+                            GLContex.glVertex3d(orth[0], SLineCoord, c);
+                            GLContex.glVertex3d(orth[1], SLineCoord, c);
+                        }
+                        else
+                        {
+                            GLContex.glVertex3d(SLineCoord, orth[2], c);
+                            GLContex.glVertex3d(SLineCoord, orth[3], c);
+                        }
+                        break;
+                    case EPlaneType.XZ:
+                        if (SLine == SLineType.slHor)
+                        {
+                            GLContex.glVertex3d(orth[0], c, SLineCoord);
+                            GLContex.glVertex3d(orth[1], c, SLineCoord);
+                        }
+                        else
+                        {
+                            GLContex.glVertex3d(SLineCoord, c, orth[2]);
+                            GLContex.glVertex3d(SLineCoord, c, orth[3]);
+                        }
+                        break;
+                    case EPlaneType.YZ:
+                        if (SLine == SLineType.slHor)
+                        {
+                            GLContex.glVertex3d(c, orth[0], SLineCoord);
+                            GLContex.glVertex3d(c, orth[1], SLineCoord);
+                        }
+                        else
+                        {
+                            GLContex.glVertex3d(c, SLineCoord, orth[2]);
+                            GLContex.glVertex3d(c, SLineCoord, orth[3]);
+                        }
+                        break;
+                }
+                GLContex.glEnd();
+                GLContex.glEnable(GLContex.GL_DEPTH_TEST);
+                GLContex.glDisable(GLContex.GL_LINE_STIPPLE);
+            }
+
+
+            postProcessingSystem.Draw();
+
+            modelCollection.Draw(paletteFont, WidthLocal, HeightLocal);
+
+            if (PostProcessing.PostProcessingSystemSettings.usePaletteDrawing == true)
+            {
+                if (PostProcessing.PostProcessingSystemSettings.currentPalette >= 0 && PostProcessing.PostProcessingSystemSettings.currentPalette < postProcessingSystem.palettes.Count)
+                {
+                    postProcessingSystem.palettes[PostProcessing.PostProcessingSystemSettings.currentPalette].Draw(new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 14), WidthLocal, HeightLocal);
+                }
+            }
+
+
+        }
+    }
+}

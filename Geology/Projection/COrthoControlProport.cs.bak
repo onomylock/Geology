@@ -1,0 +1,133 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Geology.DrawWindow
+{
+    public class COrthoControlProport: IOrthoControl
+    {
+       string nameHorAxis="";
+       string nameVertAxis="";
+       double centerHor, centerVert, dHor;
+       double zBufmin,zBufmax; 
+       double baseCenterHor,baseCenterVert,basedHor; 
+       double coefHeightToWidth=1;
+       public double CoefHeightToWidth {get{return coefHeightToWidth;} set {coefHeightToWidth=value;}}
+
+
+       public COrthoControlProport(string _nameHorAxis, string _nameVertAxis,double _coefHeightToWidth)
+       {
+           nameHorAxis = _nameHorAxis;
+           nameVertAxis=_nameVertAxis;
+           _coefHeightToWidth = coefHeightToWidth;
+       }
+       public COrthoControlProport(string _nameHorAxis, string _nameVertAxis, double _coefHeightToWidth, double[] orth)
+           : this(_nameHorAxis, _nameVertAxis, _coefHeightToWidth)
+       {
+           basedHor       = dHor = (orth[1] - orth[0]) / 2;
+           baseCenterHor  = centerHor = (orth[0] + orth[1]) / 2;
+           baseCenterVert = centerVert = (orth[2] + orth[3]) / 2;
+           double hzbuf = (orth[5] - orth[4])/5;
+           zBufmin = orth[4] - hzbuf;
+           zBufmax = orth[5] + hzbuf;
+       }
+       public void ClearView()
+       {
+           dHor       = basedHor      ;
+           centerHor  = baseCenterHor ;
+           centerVert = baseCenterVert;
+       }
+       public string HorAxisName { get { return nameHorAxis; } set { nameHorAxis=value; }}
+       public string VertAxisName { get { return nameVertAxis; } set { nameVertAxis = value; } }
+       public double GetDHor { get { return 2 * dHor; } }
+       public void ConvertWordToScreenCoord(int Width, int Height, double resX, double resY, out int eX, out int eY, int indentX = 0, int indentY = 0)
+       {
+           double dx = resX - (centerHor-dHor);
+           double dy = resY - (centerVert - dHor * coefHeightToWidth);
+
+           double coef = dx / (2 * dHor);
+           eX = (int)coef * Width + indentX;
+
+           coef = dy / (2 * dHor * coefHeightToWidth);
+           eY = Height - (int)coef * Height;
+       }
+       public void ConvertScreenToWorldCoord(int Width, int Height, int eX, int eY, out double resX, out double resY, int indentX = 0, int indentY = 0)
+       {
+            double coef;
+           if (eX < indentX)
+               resX = centerHor-dHor;
+           else
+               if (eX>Width+indentX)
+                   resX = centerHor + dHor;
+               else
+               {
+                   coef= (eX-indentX) / (double)Width;
+                   resX = centerHor + (2 * coef - 1) * dHor;
+               }
+           if (eY < 0)
+               resY = centerVert + dHor * coefHeightToWidth;
+           else
+               if (eY > Height)
+                   resY = centerVert - dHor * coefHeightToWidth;
+               else
+               {
+                   coef = (Height-eY) / (double)Height;
+                   resY = centerVert + (2 * coef - 1) * dHor * coefHeightToWidth;
+               }
+       }
+       public double GetDVert { get { return 2 * dHor * coefHeightToWidth; } }
+       public double GetMinHor { get { return centerHor - dHor; } }
+       public double GetMaxHor { get { return centerHor + dHor; } }
+       public double GetMinVert { get { return centerVert - dHor * coefHeightToWidth; } }
+       public double GetMaxVert { get { return centerVert + dHor * coefHeightToWidth; } }
+       public double GetMinZBuf { get { return zBufmin; } }
+       public double GetMaxZBuf { get { return zBufmax; } }
+       public void GetOrtho(out double[] orth)
+        {
+            orth = new double[4];
+            orth[0] = GetMinHor;
+            orth[1] = orth[0] + 2 * dHor;
+            orth[2] = GetMinVert;
+            orth[3] = orth[2] + GetDVert;
+        }
+       public void SetZBuffer(double minz,double maxz)
+       {
+           double hzbuf = (maxz - minz) / 5;
+           zBufmin = minz - hzbuf;
+           zBufmax = maxz + hzbuf;
+       }
+       public void SetOrtho(double[] orth)
+        {
+            basedHor = dHor = (orth[1] - orth[0]) / 2;
+            baseCenterHor = centerHor = (orth[0] + orth[1]) / 2;
+            baseCenterVert = centerVert = (orth[2] + orth[3]) / 2;
+            double hzbuf = (orth[5] - orth[4]) / 5;
+            zBufmin = orth[4] - hzbuf;
+            zBufmax = orth[5] + hzbuf;
+        }
+       public void Translate(double hor, double vert)
+        {
+            centerHor += hor;
+            centerVert += vert;
+        }
+       public void Scale(double hor,double vert, double delt)
+        {
+            double scl = delt < 1.05 ? 1.05 : 1.0 / 1.05;
+            double centerXNew, centerYNew,dHorNew;
+            double minHor = hor + scl * (GetMinHor - hor);
+            double maxHor = hor + scl * (GetMinHor+2*dHor - hor);
+            centerXNew = (minHor + maxHor) / 2;
+            double minVert = vert + scl * (GetMinVert - vert);
+            double maxVert = vert + scl * (GetMinVert + 2 * dHor * coefHeightToWidth - vert);
+            centerYNew = (minVert + maxVert) / 2;
+            dHorNew = centerXNew - minHor;
+            if (Math.Abs(2 * dHorNew) > Math.Max(Math.Abs(centerXNew - dHor), Math.Abs(centerXNew + dHor)) * 10E-5 && Math.Abs(2 * dHorNew * coefHeightToWidth) > Math.Max(Math.Abs(centerYNew - dHor * coefHeightToWidth), Math.Abs(centerYNew + dHor * coefHeightToWidth)) * 10E-5)
+            {
+                centerHor = centerXNew;
+                centerVert = centerYNew;
+                dHor = dHorNew;
+            }
+        }
+    }
+}

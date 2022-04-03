@@ -1,0 +1,17 @@
+﻿/*
+ Файл содержит классы:
+ * 
+ * CGraphDraw, потомок CView2D - не используется
+ * 
+ */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Geology.DrawWindow
+{
+    class CGraphDraw: CView2D
+    {
+    }
+}

@@ -1,0 +1,202 @@
+﻿/*
+ Файл содержит классы:
+ * 
+ * CView2D, потомок OpenGL.OpenGLControl.OpenGLControl - область для отображения графических 
+ * объектов в 2D (в проекциях). Объекты этого типа отслеживают события нажатия мыши,
+ * обеспечивают работу со своим контекстным меню для изменения настроек отображения
+ * 
+ */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using GLContex = Geology.OpenGL.OpenGL;
+using Geology.OpenGL;
+using System.Windows.Forms;
+
+namespace Geology.DrawWindow
+{
+    public class CView2D : OpenGL.OpenGLControl.OpenGLControl
+    {
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            if (Focused) Parent.Focus();
+        }
+
+        protected override void OnMouseEnter(EventArgs e)
+        {
+            if (!Focused) Focus();
+        }
+
+        protected Geology.MainWindow window;
+        public COrthoControlProport Ortho;
+        protected CaptionAxisHorAndVert captionHorAndVert;
+        protected int XPrevious = 0, YPrevious = 0;
+        protected bool mouseDown = false;
+        public int WidthLocal, HeightLocal;
+        public FontGeology wellFont;
+		public FontGeology fontRecievers;
+        public FontGeology paletteFont;
+        protected String wellFontName;
+        protected int wellFontSize;
+        protected System.Windows.Forms.ContextMenuStrip mnu; // base context menu
+        public CView2D():base()
+        {
+         //   triang = null;
+            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+            Ortho = new COrthoControlProport("X", "Y", Height / (double)Width,  BoundingBox);
+
+            captionHorAndVert = new CaptionAxisHorAndVert(hdc, oglcontext, "Arial", 16, Ortho, Width, Height);
+
+            wellFontName = "Arial";
+            wellFontSize = 20;
+            wellFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, wellFontName, wellFontSize);
+            paletteFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 14);
+
+            fontRecievers = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 14);
+
+
+            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+            this.MouseMove += CView2D_MouseMove;
+            this.MouseDown += CView2D_MouseDown;
+            this.MouseUp += CView2D_MouseUp;
+            this.MouseWheel +=CView2D_MouseWheel;
+            this.Disposed += OpenGLControl_Disposed;
+
+            window = null;
+
+            mnu = new  System.Windows.Forms.ContextMenuStrip();
+            System.Windows.Forms.ToolStripMenuItem mnuShowGrid= new  System.Windows.Forms.ToolStripMenuItem("Show grid");
+            System.Windows.Forms.ToolStripMenuItem mnuStartView = new System.Windows.Forms.ToolStripMenuItem("Start view");
+
+            mnuShowGrid.CheckOnClick = true;
+            mnuShowGrid.Checked = captionHorAndVert.DrawGridFlag;
+            mnuShowGrid.Click += mnuShowGrid_Click;
+
+            mnuStartView.Click += mnuStartView_Click;
+            mnu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuShowGrid, mnuStartView });
+            this.ContextMenuStrip = mnu;
+          
+        }
+        protected void SetBaseContextMenu()
+        {
+            this.ContextMenuStrip = mnu;
+        }
+        private void OpenGLControl_Disposed(object sender, EventArgs e)
+        {
+            ////////////////////////////////////////////////////здесь происходит очистка шрифта необходимая функция, чтобы не утекала память
+            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+            captionHorAndVert.ClearFont();
+            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+        }
+
+        public void SetMainRef(Geology.MainWindow _window)
+        {
+            window = _window;
+        }
+
+        protected void mnuShowGrid_Click(object sender, EventArgs e)
+        {
+            captionHorAndVert.DrawGridFlag = ((System.Windows.Forms.ToolStripMenuItem)sender).Checked;
+            Resize_Window();
+            Invalidate();
+        }
+
+        private void CView2D_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            double resX,resY;
+            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out resX, out resY, captionHorAndVert.GetIndentHor, captionHorAndVert.GetIndentVert);
+            Ortho.Scale(resX,resY,e.Delta);
+
+            Resize_Window();
+            Invalidate();
+        }
+      
+        protected override void Draw() 
+        {
+            GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
+            GLContex.glLoadIdentity();
+            captionHorAndVert.GenerateGrid(Width,Height);
+            captionHorAndVert.DrawScaleLbls(Width, Height);
+   
+            DrawObjetcs();
+        }
+        protected void mnuStartView_Click(object sender, EventArgs e)
+        {
+            Ortho.ClearView();
+            Resize_Window();
+            Invalidate();
+        }
+        protected virtual void DrawObjetcs()
+        { 
+            
+        }
+ 
+        protected override void UpdateViewMatrix() 
+        {
+            try
+            {
+                int[] viewPoint;
+                captionHorAndVert.GetNewViewport(Width, Height, out viewPoint);
+                WidthLocal = viewPoint[2];
+                HeightLocal = viewPoint[3];
+
+                double[] ortho;
+                Ortho.CoefHeightToWidth = HeightLocal / (double)WidthLocal;
+                Ortho.GetOrtho(out ortho);
+
+                GLContex.glMatrixMode(GLContex.GL_PROJECTION);
+                GLContex.glLoadIdentity();
+                GLContex.glViewport(viewPoint[0], viewPoint[1], viewPoint[2], viewPoint[3]);
+                GLContex.glOrtho(ortho[0], ortho[1], ortho[2], ortho[3], Ortho.GetMinZBuf, Ortho.GetMaxZBuf);
+
+                GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
+                GLContex.glLoadIdentity();
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // CView2D
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.Name = "CView2D";
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CView2D_MouseDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.CView2D_MouseMove);
+            this.ResumeLayout(false);
+
+        }
+
+        protected void CView2D_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (mouseDown)
+            {
+                double prevX, prevY, curX, curY;
+                Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, XPrevious, YPrevious, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+                Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+                Ortho.Translate(- curX + prevX, -curY + prevY);
+                XPrevious = e.X; YPrevious = e.Y;
+                Resize_Window();
+                Invalidate();
+            }
+            if (window != null)
+                window.StatusBarView.Text = "View: " + Ortho.HorAxisName + Ortho.VertAxisName;
+        }
+
+        protected void CView2D_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            mouseDown = true;
+            XPrevious = e.X; YPrevious = e.Y;
+        }
+        protected void CView2D_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            mouseDown = false;
+        }
+    }
+}

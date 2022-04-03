@@ -1,0 +1,1026 @@
+﻿/*
+ Файл содержит классы:
+ * 
+ * CParallelep, наследует интерфейс INotifyPropertyChanged - тип для хранения и отображения
+ * координат геологических объектов.
+ * Наследование INotifyPropertyChanged позволяет контроллерам, привязанным к данным этого типа, 
+ * отслеживать изменения в свойствах привязанных объектов и автоматически обновлять отображаемую информацию
+ * 
+ * 
+ *  CGeoObject, наследует интерфейс INotifyPropertyChanged - геологический объект.
+ * Объект хранит в себе информацию о геометрических свойствах, физических свойствах и свойствах отображения.
+ * Объекты этого типа отображаются при графическом изображении модели, поэтому они имеют метод Draw, который отвечает
+ * за графическое отображение объекта этого типа.
+ * Наследование INotifyPropertyChanged позволяет контроллерам, привязанным к данным этого типа, 
+ * отслеживать изменения в свойствах привязанных объектов и автоматически обновлять отображаемую информацию
+ * 
+ */
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Media;
+using GLContex = Geology.OpenGL.OpenGL;
+using Geology.Utilities;
+using System.IO;
+
+namespace Geology.Objects
+{
+    public class CParallelep : INotifyPropertyChanged
+    {
+        private double _minCoordinate;
+        private double _maxCoordinate;
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(String property)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(property));
+            }
+        }
+        public double Min
+        {
+            get { return _minCoordinate; }
+            set { _minCoordinate = value; /*if (Min > Max)  MessageBox.Show("Min > Max", "Warning", MessageBoxButton.OK);*/ OnPropertyChanged("Min"); }
+        }
+        public double Max
+        {
+            get { return _maxCoordinate; }
+            set { _maxCoordinate = value; /*if (Min > Max)  MessageBox.Show("Min > Max", "Warning", MessageBoxButton.OK);*/ OnPropertyChanged("Max"); }
+        }
+      
+        public CParallelep()
+        {
+            Min = -2000;
+            Max = 0;
+        }
+        public CParallelep(double newMinCoordinates, double newMaxCoordinates)
+         {
+             Min = newMinCoordinates;
+             Max = newMaxCoordinates;
+         }
+
+        public int Write(ref StreamWriter outputFile)
+        {
+            try
+            {
+                outputFile.WriteLine(Min.ToString());
+                outputFile.WriteLine(Max.ToString());
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                return 1;
+            }
+        }
+        public int Read(ref StreamReader inputFile, double fileVersion)
+        {
+            try
+            {
+                String buffer;
+                if (fileVersion >= 1.0)
+                {
+                    buffer = inputFile.ReadLine(); _minCoordinate = double.Parse(buffer);
+                    buffer = inputFile.ReadLine(); _maxCoordinate = double.Parse(buffer);
+                }
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                return 1;
+            }
+        }
+     }
+   public class CGeoObject : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        private System.Windows.Media.Color _BackgroundColor;
+        private System.Windows.Media.Color paletteColor;
+        private string _Name;
+        private int _Num;
+        private double _RoH;
+        private double _RoV;
+        private int _Dep;
+        private double _Alpha;
+        private double _T0;
+        private double _Beta;
+        private double _C;
+        private bool _Vis;
+        private bool _Selected;
+        public int regN1, regN2, regN3, regN4, regN5, regN6;
+        public enum BorderType {btNone, btXmin, btXmax, btYmin, btYmax, btZmin, btZmax, btObj}; 
+       
+        public ObservableCollection<CParallelep> parallel;
+        public string Name
+        {
+            get { return _Name; }
+            set { _Name = value; OnPropertyChanged("Name"); }
+        }
+        public int Num
+        {
+            get { return _Num; }
+            set { _Num = value; OnPropertyChanged("Num"); }
+        }
+        public double RoH
+        {
+            get { return _RoH; }
+            set { _RoH = value; OnPropertyChanged("RoH"); }
+        }
+        public double RoV
+        {
+            get { return _RoV; }
+            set { _RoV = value; OnPropertyChanged("RoV"); }
+        }
+       public double SigmaH
+       {
+           get {
+               if (Math.Abs(_RoH) > 1e-13)
+                   return 1.0 / _RoH;
+               else
+                   return 1e+13;
+           }
+           set {
+               if (Math.Abs(value) > 1e-13)
+                   _RoH = 1.0 / value;
+               else
+                   _RoH = 1e+13;
+               OnPropertyChanged("RoH");
+               OnPropertyChanged("SigmaH");
+           }
+       }
+       public double SigmaV
+       {
+           get
+           {
+               if (Math.Abs(_RoV) > 1e-13)
+                   return 1.0 / _RoV;
+               else
+                   return 1e+13;
+           }
+           set
+           {
+               if (Math.Abs(value) > 1e-13)
+                   _RoV = 1.0 / value;
+               else
+                   _RoV = 1e+13;
+               OnPropertyChanged("RoV");
+               OnPropertyChanged("SigmaV");
+           }
+       }
+        public int Dep
+        {
+            get { return _Dep; }
+            set { _Dep = value; OnPropertyChanged("Dep"); }
+        }
+        public double Alpha
+        {
+            get { return _Alpha; }
+            set { _Alpha = value; OnPropertyChanged("Alpha"); }
+        }
+        public double T0
+        {
+            get { return _T0; }
+            set { _T0 = value; OnPropertyChanged("T0"); }
+        }
+        public double Beta
+        {
+            get { return _Beta; }
+            set { _Beta = value; OnPropertyChanged("Beta"); }
+        }
+        public double C
+        {
+            get { return _C; }
+            set { _C = value; OnPropertyChanged("C"); }
+        }
+public double Field
+        {
+            get {
+                switch (PostProcessing.PostProcessingSystemSettings.currentFieldType)
+                {
+                    case PostProcessing.FieldTypes.SigmaH: return SigmaH;
+                    case PostProcessing.FieldTypes.SigmaV: return SigmaV;
+                    case PostProcessing.FieldTypes.RhoH: return RoH;
+                    case PostProcessing.FieldTypes.RhoV: return RoV;
+                    case PostProcessing.FieldTypes.Alpha: return Alpha;
+                    case PostProcessing.FieldTypes.Beta: return Beta;
+                    case PostProcessing.FieldTypes.Tau: return T0;
+                    case PostProcessing.FieldTypes.C: return C;
+                }
+                
+                return 0.0; }
+        public void EditByMouse(int PlaneType, double c1, double c2, BorderType bt)
+        {
+            switch (PlaneType)
+            {
+                case 0:
+                         if (bt == BorderType.btXmin) parallel[0].Min = c1;
+                    else if (bt == BorderType.btXmax) parallel[0].Max = c1;
+                    else if (bt == BorderType.btYmin) parallel[1].Min = c2;
+                    else if (bt == BorderType.btYmax) parallel[1].Max = c2;
+                    else if (bt == BorderType.btObj)
+                         {
+                             parallel[0].Min += c1;
+                             parallel[0].Max += c1;
+                             parallel[1].Min += c2;
+                             parallel[1].Max += c2;
+                         }
+                    break;
+                case 1:
+                         if (bt == BorderType.btXmin) parallel[0].Min = c1;
+                    else if (bt == BorderType.btXmax) parallel[0].Max = c1;
+                    else if (bt == BorderType.btZmin) parallel[2].Min = c2;
+                    else if (bt == BorderType.btZmax) parallel[2].Max = c2;
+                    else if (bt == BorderType.btObj)
+                         {
+                             parallel[0].Min += c1;
+                             parallel[0].Max += c1;
+                             parallel[2].Min += c2;
+                             parallel[2].Max += c2;
+                         }
+                    break;
+                case 2:
+                         if (bt == BorderType.btYmin) parallel[1].Min = c1;
+                    else if (bt == BorderType.btYmax) parallel[1].Max = c1;
+                    else if (bt == BorderType.btZmin) parallel[2].Min = c2;
+                    else if (bt == BorderType.btZmax) parallel[2].Max = c2;
+                    else if (bt == BorderType.btObj)
+                         {
+                             parallel[1].Min += c1;
+                             parallel[1].Max += c1;
+                             parallel[2].Min += c2;
+                             parallel[2].Max += c2;
+                         }
+                    break;
+            }
+        }
+        public bool MouseOnObject(int PlaneType, double c1, double c2, double s, out BorderType bt)
+        {
+            bt = BorderType.btNone;
+            switch (PlaneType)
+            {
+                case 0:
+                    if (c1 < parallel[0].Min || c1 > parallel[0].Max || c2 < parallel[1].Min || c2 > parallel[1].Max)
+                        return false;
+                    else if (c1 > (parallel[0].Min+s) && c1 < (parallel[0].Max-s) && c2 > (parallel[1].Min+s) && c2 < (parallel[1].Max-s))
+                        bt = BorderType.btObj;
+                    else if (Math.Abs(c1 - parallel[0].Min) < s && c2 > parallel[1].Min && c2 < parallel[1].Max)
+                        bt = BorderType.btXmin;
+                    else if (Math.Abs(c1 - parallel[0].Max) < s && c2 > parallel[1].Min && c2 < parallel[1].Max)
+                        bt = BorderType.btXmax;
+                    else if (Math.Abs(c2 - parallel[1].Min) < s && c1 > parallel[0].Min && c1 < parallel[0].Max)
+                        bt = BorderType.btYmin;
+                    else if (Math.Abs(c2 - parallel[1].Max) < s && c1 > parallel[0].Min && c1 < parallel[0].Max)
+                        bt = BorderType.btYmax;
+                    break;
+                case 1:
+                    if (c1 < parallel[0].Min || c1 > parallel[0].Max || c2 < parallel[2].Min || c2 > parallel[2].Max)
+                        return false;
+                    else if (c1 > (parallel[0].Min+s) && c1 < (parallel[0].Max-s) && c2 > (parallel[2].Min+s) && c2 < (parallel[2].Max-s))
+                        bt = BorderType.btObj;
+                    else if (Math.Abs(c1 - parallel[0].Min) < s && c2 > parallel[2].Min && c2 < parallel[2].Max)
+                        bt = BorderType.btXmin;
+                    else if (Math.Abs(c1 - parallel[0].Max) < s && c2 > parallel[2].Min && c2 < parallel[2].Max)
+                        bt = BorderType.btXmax;
+                    else if (Math.Abs(c2 - parallel[2].Min) < s && c1 > parallel[0].Min && c1 < parallel[0].Max)
+                        bt = BorderType.btZmin;
+                    else if (Math.Abs(c2 - parallel[2].Max) < s && c1 > parallel[0].Min && c1 < parallel[0].Max)
+                        bt = BorderType.btZmax;
+                    break;
+                case 2:
+                    if (c1 < parallel[1].Min || c1 > parallel[1].Max || c2 < parallel[2].Min || c2 > parallel[2].Max)
+                        return false;
+                    else if (c1 > (parallel[1].Min+s) && c1 < (parallel[1].Max-s) && c2 > (parallel[2].Min+s) && c2 < (parallel[2].Max-s))
+                        bt = BorderType.btObj;
+                    else if (Math.Abs(c1 - parallel[1].Min) < s && c2 > parallel[2].Min && c2 < parallel[2].Max)
+                        bt = BorderType.btYmin;
+                    else if (Math.Abs(c1 - parallel[1].Max) < s && c2 > parallel[2].Min && c2 < parallel[2].Max)
+                        bt = BorderType.btYmax;
+                    else if (Math.Abs(c2 - parallel[2].Min) < s && c1 > parallel[1].Min && c1 < parallel[1].Max)
+                        bt = BorderType.btZmin;
+                    else if (Math.Abs(c2 - parallel[2].Max) < s && c1 > parallel[1].Min && c1 < parallel[1].Max)
+                        bt = BorderType.btZmax;
+                    break;
+            }
+            return bt!=BorderType.btNone;
+        }
+        bool ray_intersects_polygon(double[] p1, double[] p2, double[] p3, double[] p4, double[] r1, double[] r2, double[] ip)
+        {
+            if (ray_intersects_triangle(p1, p2, p3, r1, r2, ip) == true) return true;
+            if (ray_intersects_triangle(p1, p3, p4, r1, r2, ip) == true) return true;
+            return false;
+        }
+        double V_m_V(double[] V1, double[] V2)
+        {
+            int i;
+            double res;
+            res = 0.0;
+            for (i = 0; i < 3; i++)
+                res += V1[i] * V2[i];
+            return res;
+        }
+        void normalize_V(double[] V)
+        {
+            int i;
+            double norm;
+            norm = Math.Sqrt(V_m_V(V, V));
+            for (i = 0; i < 3; i++)
+                V[i] /= norm;
+        }
+        double V_norm(double[] V)
+        {
+            return Math.Sqrt(V_m_V(V, V));
+        }
+        bool ray_intersects_triangle(double[] p1, double[] p2, double[] p3, double[] r1, double[] r2, double[] ip)
+	    {
+		    int j;
+            double d, a1, a2, a3, ksi, ang, den;
+            double[] v1=new double[3], v2=new double[3], v3=new double[3], n=new double[3], dir=new double[3];
+
+		    for (j = 0; j < 3; j++)		dir[j] = r2[j] - r1[j];
+		    //normalize_V(dir);
+
+		    n[0] = (p2[1] - p1[1])*(p3[2] - p1[2]) - (p2[2] - p1[2])*(p3[1] - p1[1]);
+		    n[1] = (p2[2] - p1[2])*(p3[0] - p1[0]) - (p2[0] - p1[0])*(p3[2] - p1[2]);
+		    n[2] = (p2[0] - p1[0])*(p3[1] - p1[1]) - (p2[1] - p1[1])*(p3[0] - p1[0]);
+		    normalize_V(n);
+
+		    d = -n[0] * p1[0] - n[1] * p1[1] - n[2] * p1[2];
+
+		    den = V_m_V(n, dir);
+		    if (Math.Abs(den) < 1e-10)	return false;
+
+		    ksi = -(d + n[0] * r1[0] + n[1] * r1[1] + n[2] * r1[2]) / den;
+
+		    if (ksi < 0.0 || ksi > 1.0)	return false;
+
+		    ip[0] = r1[0] + ksi * (r2[0] - r1[0]);
+		    ip[1] = r1[1] + ksi * (r2[1] - r1[1]);
+		    ip[2] = r1[2] + ksi * (r2[2] - r1[2]);
+
+		    for (j = 0; j < 3; j++)		v1[j] = p1[j] - ip[j];
+		    for (j = 0; j < 3; j++)		v2[j] = p2[j] - ip[j];
+		    for (j = 0; j < 3; j++)		v3[j] = p3[j] - ip[j];
+
+		    if (V_norm(v1) < 1e-10)
+			    return true;
+		    if (V_norm(v2) < 1e-10)
+			    return true;
+		    if (V_norm(v3) < 1e-10)
+			    return true;
+
+		    normalize_V(v1);
+		    normalize_V(v2);
+		    normalize_V(v3);
+
+		    a1 = V_m_V(v1, v2);
+		    a2 = V_m_V(v2, v3);
+		    a3 = V_m_V(v1, v3);
+
+		    if (a1 > 1.0) a1 = 1.0 - 1e-13;
+		    if (a2 > 1.0) a2 = 1.0 - 1e-13;
+		    if (a3 > 1.0) a3 = 1.0 - 1e-13;
+
+		    if (a1 < -1.0) a1 = -1.0 + 1e-13;
+		    if (a2 < -1.0) a2 = -1.0 + 1e-13;
+		    if (a3 < -1.0) a3 = -1.0 + 1e-13;
+
+            ang = (Math.Acos(a1) + Math.Acos(a2) + Math.Acos(a3)) * 180.0 / Math.PI;
+            if (Math.Abs(ang - 360) > 1e-4) return false;
+
+		    return true;
+	    }
+        double DistanceFromLineToPoint(
+            ref double a, ref double b, ref double c,   // line, vector 
+            ref double x1, ref double y1, ref double z1,//      and start point
+            ref double x0, ref double y0, ref double z0)// point
+        {
+            double x01 = x0-x1;
+            double y01 = y0-y1;
+            double z01 = z0-z1;
+            double bc = y01 * c - z01 * b;
+            double ca = z01 * a - x01 * c;
+            double ab = x01 * b - y01 * a;
+            return Math.Sqrt(bc * bc + ca * ca + ab * ab) / Math.Sqrt(a * a + b * b + c * c);
+        }
+        void GetCenterAndRadius(out double[] c, out double r)
+        {
+            c = new double[3];
+            r = -Double.MaxValue;
+            for (int i = 0; i < 3; i++)
+            {
+                c[i] = 0.5 * (parallel[i].Min + parallel[i].Max);
+                r = Math.Max(r, Math.Abs(c[i] - parallel[i].Min));
+                r = Math.Max(r, Math.Abs(c[i] - parallel[i].Max));
+            }
+        }
+
+        public bool LineIntersectsObject(double[] p1, double[] p2)
+        {
+            double[] c;
+            double r;
+            double[] v = new double[3];
+
+            for (int i = 0; i < 3; i++)
+                v[i] = p2[i] - p1[i];
+
+            GetCenterAndRadius(out c, out r);
+            if (DistanceFromLineToPoint(ref v[0], ref v[1], ref v[2], ref p1[0], ref p1[1], ref p1[2], ref c[0], ref c[1], ref c[2]) > r)
+                return false;
+
+            double[] v1 = new double[3];
+            double[] v2 = new double[3];
+            double[] v3 = new double[3];
+            double[] v4 = new double[3];
+            double[] ip = new double[3];
+
+            v1[0] = parallel[0].Min; v1[1] = parallel[1].Min; v1[2] = parallel[2].Min;
+            v2[0] = parallel[0].Min; v2[1] = parallel[1].Max; v2[2] = parallel[2].Min;
+            v3[0] = parallel[0].Max; v3[1] = parallel[1].Max; v3[2] = parallel[2].Min;
+            v4[0] = parallel[0].Max; v4[1] = parallel[1].Min; v4[2] = parallel[2].Min;
+
+            if (ray_intersects_polygon(v1, v2, v3, v4, p1, p2, ip))
+                return true;
+
+            v1[0] = parallel[0].Min; v1[1] = parallel[1].Min; v1[2] = parallel[2].Max;
+            v2[0] = parallel[0].Max; v2[1] = parallel[1].Min; v2[2] = parallel[2].Max;
+            v3[0] = parallel[0].Max; v3[1] = parallel[1].Max; v3[2] = parallel[2].Max;
+            v4[0] = parallel[0].Min; v4[1] = parallel[1].Max; v4[2] = parallel[2].Max;
+
+            if (ray_intersects_polygon(v1, v2, v3, v4, p1, p2, ip))
+                return true;
+
+            v1[0] = parallel[0].Min; v1[1] = parallel[1].Min; v1[2] = parallel[2].Min;
+            v2[0] = parallel[0].Min; v2[1] = parallel[1].Min; v2[2] = parallel[2].Max;
+            v3[0] = parallel[0].Min; v3[1] = parallel[1].Max; v3[2] = parallel[2].Max;
+            v4[0] = parallel[0].Min; v4[1] = parallel[1].Max; v4[2] = parallel[2].Min;
+
+            if (ray_intersects_polygon(v1, v2, v3, v4, p1, p2, ip))
+                return true;
+
+            v1[0] = parallel[0].Max; v1[1] = parallel[1].Min; v1[2] = parallel[2].Min;
+            v2[0] = parallel[0].Max; v2[1] = parallel[1].Max; v2[2] = parallel[2].Min;
+            v3[0] = parallel[0].Max; v3[1] = parallel[1].Max; v3[2] = parallel[2].Max;
+            v4[0] = parallel[0].Max; v4[1] = parallel[1].Min; v4[2] = parallel[2].Max;
+
+            if (ray_intersects_polygon(v1, v2, v3, v4, p1, p2, ip))
+                return true;
+
+            v1[0] = parallel[0].Min; v1[1] = parallel[1].Min; v1[2] = parallel[2].Min;
+            v2[0] = parallel[0].Max; v2[1] = parallel[1].Min; v2[2] = parallel[2].Min;
+            v3[0] = parallel[0].Max; v3[1] = parallel[1].Min; v3[2] = parallel[2].Max;
+            v4[0] = parallel[0].Min; v4[1] = parallel[1].Min; v4[2] = parallel[2].Max;
+
+            if (ray_intersects_polygon(v1, v2, v3, v4, p1, p2, ip))
+                return true;
+
+            v1[0] = parallel[0].Min; v1[1] = parallel[1].Max; v1[2] = parallel[2].Min;
+            v2[0] = parallel[0].Min; v2[1] = parallel[1].Max; v2[2] = parallel[2].Max;
+            v3[0] = parallel[0].Max; v3[1] = parallel[1].Max; v3[2] = parallel[2].Max;
+            v4[0] = parallel[0].Max; v4[1] = parallel[1].Max; v4[2] = parallel[2].Min;
+
+            if (ray_intersects_polygon(v1, v2, v3, v4, p1, p2, ip))
+                return true;
+
+            return false;
+        }
+        public void Draw()
+        {
+            if (Vis == false)
+                return;
+
+            GLContex.glEnable(GLContex.GL_POLYGON_OFFSET_FILL);
+            GLContex.glPolygonOffset(1,2);
+
+            if (Selected)
+                GLContex.glColor3f(1.0f, 0.0f, 0.0f);
+            else
+            GLContex.glColor3f(BackgroundColor.R / 255.0f, BackgroundColor.G / 255.0f, BackgroundColor.B / 255.0f);
+           
+            GLContex.glBegin(GLContex.GL_TRIANGLES);
+
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Min);
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Min);
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Min);
+
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Min);
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Min);
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Min);
+
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Max);
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Max);
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Max);
+
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Max);
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Max);
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Max);
+
+
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Min);
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Min);
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Max);
+
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Max);
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Max);
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Min);
+
+
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Min);
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Min);
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Max);
+
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Max);
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Max);
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Min);
+
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Min);
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Min);
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Max);
+
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Max);
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Max);
+            GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Min);
+
+
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Min);
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Min);
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Max);
+
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Max);
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Max);
+            GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Min);
+
+            GLContex.glEnd();
+            
+      
+
+            GLContex.glDisable(GLContex.GL_POLYGON_OFFSET_FILL);
+
+            if (Observing.ObservingSettings.drawObjectsBounds == true)
+            {
+                GLContex.glColor3f(0, 0, 0);
+                GLContex.glLineWidth(1);
+                GLContex.glBegin(GLContex.GL_LINES);
+
+                GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Min);
+                GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Min);
+
+                GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Min);
+                GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Min);
+
+                GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Min);
+                GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Min);
+
+                GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Min);
+                GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Min);
+
+                GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Max);
+                GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Max);
+
+                GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Max);
+                GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Max);
+
+                GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Max);
+                GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Max);
+
+                GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Max);
+                GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Max);
+
+                GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Max);
+                GLContex.glVertex3d(parallel[0].Min, parallel[1].Min, parallel[2].Min);
+
+                GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Max);
+                GLContex.glVertex3d(parallel[0].Max, parallel[1].Min, parallel[2].Min);
+
+                GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Max);
+                GLContex.glVertex3d(parallel[0].Max, parallel[1].Max, parallel[2].Min);
+
+                GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Max);
+                GLContex.glVertex3d(parallel[0].Min, parallel[1].Max, parallel[2].Min);
+
+                GLContex.glEnd();
+
+            }
+
+        }
+
+        
+        public void Draw(DrawWindow.CObject3DDraw2D.EPlaneType axisType, double [] drawBox)
+        {
+            if (Vis == false)
+                return;
+
+            if (LittleTools.Intersect3D(parallel[0].Min, parallel[0].Max, parallel[1].Min, parallel[1].Max, parallel[2].Min, parallel[2].Max,
+                                        drawBox[0], drawBox[1], drawBox[2], drawBox[3], drawBox[4], drawBox[5]) == false) 
+                return;
+
+            double[] p = new double[12];
+            double c1, c2, c3, c4, c5, c6;
+            c1 = Math.Max(drawBox[0], parallel[0].Min);
+            c2 = Math.Min(drawBox[1], parallel[0].Max);
+            c3 = Math.Max(drawBox[2], parallel[1].Min);
+            c4 = Math.Min(drawBox[3], parallel[1].Max);
+            c5 = Math.Max(drawBox[4], parallel[2].Min);
+            c6 = Math.Min(drawBox[5], parallel[2].Max);
+
+            if (axisType == DrawWindow.CObject3DDraw2D.EPlaneType.XYZ)
+            {
+                GLContex.glEnable(GLContex.GL_POLYGON_OFFSET_FILL);
+                GLContex.glPolygonOffset(1, 2);
+                
+				if (Selected)
+                    GLContex.glColor3f(1.0f, 0.0f, 0.0f);
+                else
+                	if (PostProcessing.PostProcessingSystemSettings.usePaletteDrawing == true && PostProcessing.PostProcessingSystemSettings.drawWithPaletteObjects == true)
+                    	GLContex.glColor3f(paletteColor.R / 255.0f, paletteColor.G / 255.0f, paletteColor.B / 255.0f);
+                	else
+                    	GLContex.glColor3f(BackgroundColor.R / 255.0f, BackgroundColor.G / 255.0f, BackgroundColor.B / 255.0f);
+                LittleTools.DrawParallelepipedTriangles(c1, c2, c3, c4, c5, c6);
+                GLContex.glDisable(GLContex.GL_POLYGON_OFFSET_FILL);
+
+                if (Observing.ObservingSettings.drawObjectsBounds == true)
+                {
+                    GLContex.glColor3f(0, 0, 0);
+                    GLContex.glLineWidth(1);
+                    LittleTools.DrawParallelepipedFrame(c1, c2, c3, c4, c5, c6);
+                }
+            }
+
+            switch (axisType)
+            {
+                case DrawWindow.CObject3DDraw2D.EPlaneType.XY:
+                    p[ 0] = c1;
+                    p[ 1] = c3;
+                    p[ 2] = c6;
+                         
+                    p[ 3] = c2;
+                    p[ 4] = c3;
+                    p[ 5] = c6;
+                         
+                    p[ 6] = c1;
+                    p[ 7] = c4;
+                    p[ 8] = c6;
+
+                    p[ 9] = c2;
+                    p[10] = c4;
+                    p[11] = c6;
+                    
+                    break;
+                case DrawWindow.CObject3DDraw2D.EPlaneType.XZ:
+                    p[ 0] = c1;
+                    p[ 1] = c3;
+                    p[ 2] = c5;
+                         
+                    p[ 3] = c2;
+                    p[ 4] = c3;
+                    p[ 5] = c5;
+                         
+                    p[ 6] = c1;
+                    p[ 7] = c3;
+                    p[ 8] = c6;
+
+                    p[ 9] = c2;
+                    p[10] = c3;
+                    p[11] = c6;
+                    break;
+                case DrawWindow.CObject3DDraw2D.EPlaneType.YZ:
+                    p[ 0] = c2;
+                    p[ 1] = c3;
+                    p[ 2] = c5;
+                         
+                    p[ 3] = c2;
+                    p[ 4] = c4;
+                    p[ 5] = c5;
+                         
+                    p[ 6] = c2;
+                    p[ 7] = c3;
+                    p[ 8] = c6;
+
+                    p[ 9] = c2;
+                    p[10] = c4;
+                    p[11] = c6;
+                    break;
+            }
+
+
+            GLContex.glEnable(GLContex.GL_POLYGON_OFFSET_FILL);
+            GLContex.glPolygonOffset(1.0f, 2.0f);
+			if (Selected)
+                GLContex.glColor3f(1.0f, 0.0f, 0.0f);
+            else
+            	if (PostProcessing.PostProcessingSystemSettings.usePaletteDrawing == true && PostProcessing.PostProcessingSystemSettings.drawWithPaletteObjects == true)
+             		GLContex.glColor3f(paletteColor.R / 255.0f, paletteColor.G / 255.0f, paletteColor.B / 255.0f);
+            	else
+                GLContex.glColor3f(BackgroundColor.R / 255.0f, BackgroundColor.G / 255.0f, BackgroundColor.B / 255.0f);
+
+            GLContex.glBegin(GLContex.GL_TRIANGLES);
+
+            GLContex.glVertex3d(p[6], p[ 7], p[ 8]);
+            GLContex.glVertex3d(p[9], p[10], p[11]);
+            GLContex.glVertex3d(p[3], p[ 4], p[ 5]);
+
+            GLContex.glVertex3d(p[3], p[ 4], p[5]);
+            GLContex.glVertex3d(p[0], p[ 1], p[2]);
+            GLContex.glVertex3d(p[6], p[ 7], p[8]);
+            GLContex.glEnd();
+
+
+            GLContex.glDisable(GLContex.GL_POLYGON_OFFSET_FILL);
+
+            if (Observing.ObservingSettings.drawObjectsBounds == true)
+            {
+                GLContex.glColor3f(0, 0, 0);
+                GLContex.glLineWidth(1);
+
+                GLContex.glBegin(GLContex.GL_LINES);
+
+                GLContex.glVertex3d(p[0], p[1], p[2]);
+                GLContex.glVertex3d(p[3], p[4], p[5]);
+                GLContex.glVertex3d(p[6], p[7], p[8]);
+                GLContex.glVertex3d(p[9], p[10], p[11]);
+                GLContex.glVertex3d(p[0], p[1], p[2]);
+                GLContex.glVertex3d(p[6], p[7], p[8]);
+                GLContex.glVertex3d(p[3], p[4], p[5]);
+                GLContex.glVertex3d(p[9], p[10], p[11]);
+                GLContex.glEnd();
+                GLContex.glLineWidth(1);
+            }
+        }
+        public void Draw(double[] coodesParall)
+        {
+            if (Vis == false)
+                return;
+
+            GLContex.glEnable(GLContex.GL_POLYGON_OFFSET_FILL);
+            GLContex.glPolygonOffset(1, 2);
+
+            if (Selected)
+                GLContex.glColor3f(1.0f, 0.0f, 0.0f);
+            else
+            GLContex.glColor3f(BackgroundColor.R / 255.0f, BackgroundColor.G / 255.0f, BackgroundColor.B / 255.0f);
+
+            GLContex.glBegin(GLContex.GL_TRIANGLES);
+
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[4]);
+
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[4]);
+
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[5]);
+
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[5]);
+
+
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[5]);
+
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[4]);
+
+
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[5]);
+
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[4]);
+
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[5]);
+
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[4]);
+
+
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[5]);
+
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[4]);
+
+            GLContex.glEnd();
+
+
+
+            GLContex.glDisable(GLContex.GL_POLYGON_OFFSET_FILL);
+
+            GLContex.glColor3f(0, 0, 0);
+            GLContex.glBegin(GLContex.GL_LINES);
+
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[4]);
+
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[4]);
+
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[4]);
+
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[4]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[4]);
+
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[5]);
+
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[5]);
+
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[5]);
+
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[5]);
+
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[2], coodesParall[4]);
+
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[2], coodesParall[4]);
+
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[1], coodesParall[3], coodesParall[4]);
+
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[5]);
+            GLContex.glVertex3d(coodesParall[0], coodesParall[3], coodesParall[4]);
+
+            GLContex.glEnd();
+
+
+
+        }
+        public bool Vis
+        {
+            get { return _Vis; }
+            set { _Vis = value; OnPropertyChanged("Vis"); }
+        }
+        public System.Windows.Media.Color BackgroundColor
+        {
+            get { return _BackgroundColor; }
+            set
+            {
+                _BackgroundColor = value;
+                OnPropertyChanged("BackgroundColor");
+            }
+        }
+		public bool Selected
+        {
+            get { return _Selected; }
+            set { _Selected = value; OnPropertyChanged("Selected"); }
+        }
+        public System.Windows.Media.Color PaletteColor
+        {
+            get { return paletteColor; }
+            set
+            {
+                paletteColor = value;
+                OnPropertyChanged("PaletteColor");
+            }
+        }
+        private void OnPropertyChanged(String property)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(property));
+            }
+        }
+        public CGeoObject(int _N, ObservableCollection<CParallelep> _parallel, System.Windows.Media.Color newColor, double _H, double _Ro, double _RoV, int _Dep, double _Alpha, double _T0, double _Beta, double _C, bool _Rel, bool _Vis)
+        {
+            parallel = new ObservableCollection<CParallelep>(_parallel);
+            paletteColor = System.Windows.Media.Color.FromRgb(0, 0, 0);
+            Name =_Name;
+            BackgroundColor = newColor;
+            paletteColor = System.Windows.Media.Color.FromRgb(0, 0, 0);
+            RoH =_Ro;
+            RoV = _RoV;
+            Dep =_Dep;
+            Alpha =_Alpha;
+            T0 = _T0;
+            Beta = _Beta;
+            C = _C;
+            Vis = _Vis;
+        }
+
+        public CGeoObject()
+        {
+            BackgroundColor = System.Windows.Media.Color.FromRgb(255, 0, 0);
+            paletteColor = System.Windows.Media.Color.FromRgb(0, 0, 0);
+            parallel = new ObservableCollection<CParallelep>() { new CParallelep(), new CParallelep(), new CParallelep() };
+            Name = "New Object";
+            RoH = 10;
+            RoV = 10;
+            Num = 0;
+            Dep = 0;
+            Alpha = 0;
+            T0 = 0.1;
+            Beta = 100;
+            C = 0.5;
+            Vis = true;
+        }
+       public void recalcNumber(int newNum)
+       {
+           if (Num > newNum)
+               Num--;
+       }
+        public CGeoObject(int number)
+        {
+            BackgroundColor = System.Windows.Media.Color.FromRgb(255, 0, 0);
+            parallel = new ObservableCollection<CParallelep>() { new CParallelep(), new CParallelep(), new CParallelep() };
+            Name = "New Object";
+            RoH = 10;
+            RoV = 10;
+            Num = number;
+            Dep = 0;
+            Alpha = 0;
+            T0 = 0.1;
+            Beta = 100;
+            C = 0.5;
+            Vis = true;
+        }
+
+        public int Write(ref StreamWriter outputFile)
+        {
+            try
+            {
+                outputFile.WriteLine(_Name);
+                outputFile.WriteLine(_Num.ToString());
+                outputFile.WriteLine(_RoH.ToString());
+                outputFile.WriteLine(_RoV.ToString());
+                outputFile.WriteLine(_Dep.ToString());
+                outputFile.WriteLine(_Alpha.ToString());
+                outputFile.WriteLine(_T0.ToString());
+                outputFile.WriteLine(_Beta.ToString());
+                outputFile.WriteLine(_C.ToString());
+                outputFile.WriteLine(_Vis.ToString());
+                outputFile.WriteLine(_BackgroundColor.ToString());
+
+                outputFile.WriteLine(parallel.Count.ToString());
+                for (int i = 0; i < parallel.Count; i++)
+                    if (parallel[i].Write(ref outputFile) != 0)
+                        return 1;
+                    return 0;
+            }
+            catch (Exception ex)
+            {
+                return 1;
+            }
+        }
+        public int Read(ref StreamReader inputFile, double fileVersion)
+        {
+            try
+            {
+                int n;
+                String buffer;
+                CParallelep newParallel;
+
+                if (fileVersion >= 1.0)
+                {
+                    buffer = inputFile.ReadLine(); Name = buffer;
+                    buffer = inputFile.ReadLine(); Num = int.Parse(buffer);
+                    buffer = inputFile.ReadLine(); RoH = double.Parse(buffer);
+                    buffer = inputFile.ReadLine(); RoV = double.Parse(buffer);
+                    buffer = inputFile.ReadLine(); Dep = int.Parse(buffer);
+                    buffer = inputFile.ReadLine(); Alpha = double.Parse(buffer);
+                    buffer = inputFile.ReadLine(); T0 = double.Parse(buffer);
+                    buffer = inputFile.ReadLine(); Beta = double.Parse(buffer);
+                    buffer = inputFile.ReadLine(); C = double.Parse(buffer);
+                    buffer = inputFile.ReadLine(); Vis = bool.Parse(buffer);
+                    buffer = inputFile.ReadLine(); BackgroundColor = (Color)ColorConverter.ConvertFromString(buffer);
+
+                    buffer = inputFile.ReadLine(); n = int.Parse(buffer);
+                    parallel.Clear();
+                    for (int i = 0; i < n; i++)
+                    {
+                        newParallel = new CParallelep();
+                        if (newParallel.Read(ref inputFile, fileVersion) != 0)
+                            return 1;
+                        parallel.Add(newParallel);
+                    }
+                }
+
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                return 1;
+            }
+        }
+    }
+}

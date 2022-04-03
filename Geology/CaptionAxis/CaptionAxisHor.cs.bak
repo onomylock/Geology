@@ -1,0 +1,176 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using GLContex = Geology.OpenGL.OpenGL;
+
+namespace Geology.DrawWindow
+{
+    class CaptionAxisHor : CaptionAxis
+    {
+
+        public int GetHeightText { get { return useFont.GetHeightTemplStr; } }
+        public int GetWidthText { get { return useFont.GetWidthTemplStr; } }
+        public CaptionAxisHor(FontGeology _font, IOrthoControl _orth)
+            : base(_font, _orth)
+        {
+        }
+        
+        public override void GetNewViewport(int ClientWidth, int ClientHeight, out int[] newVect)
+        {
+            newVect = new int[] { 0, GetHeightText, ClientWidth, ClientHeight - GetHeightText };
+        }
+
+        protected override double GetLinGridStep(int ClientWidth, int ClientHeight, int indent = 0)
+        {
+            double[] ardMul = { 1, 2, 5, 10 };
+            uint unMulSize = 3;
+            double[] orthV;
+            orth.GetOrtho(out orthV);
+          
+            double dH = orthV[1] - orthV[0];
+            double hh = ClientWidth - indent;
+
+
+            double nfFontSize = GetWidthText * (dH) / hh;
+            double dTiles = (double)Math.Floor(dH / nfFontSize);
+
+            double dStep = dH / dTiles;
+            double dMul = Math.Pow((double)10, Math.Floor(Math.Log10(dStep)));
+
+            uint i = 0;
+            for (i = 1; i < unMulSize; ++i)
+                if (dMul * ardMul[i] > dStep)
+                    break;
+
+            dStep = ardMul[i] * dMul;
+
+            return (double)dStep;
+        }
+       protected override void GenerateLinGrid(double fStep)
+        {
+            double[] orthV;
+            orth.GetOrtho(out orthV);
+       
+            double fend = orthV[1];
+            double fbeg = orthV[0];
+           
+            rlfGrid = new List<double> { };
+            try
+            {
+                rlfGrid.Clear();
+                double fCur = Math.Floor(fbeg / fStep) * fStep;
+                while (fCur <= fend)
+                {
+                    if (Math.Abs(fCur) < fStep / 4)
+                        rlfGrid.Add(0);
+                    else
+                        rlfGrid.Add(fCur);
+                    fCur += fStep;
+                }
+            }
+
+            catch (Exception e)
+            {
+                rlfGrid.Clear();
+
+                MessageBox.Show(
+                    "Произошла ошибка во время построения линейной сетки.",
+                    "Невозможно построить линейную сетку");
+            }
+        }
+        public override void DrawScaleLbls(int ClientWidth, int ClientHeight,int indent = 0)
+       {
+           GLContex.glLineWidth(1);
+           double[] orthV;
+           orth.GetOrtho(out orthV);
+           double upHor = ((orthV[1] - orthV[0]) / (ClientWidth - indent)) * (ClientWidth) + (-orthV[1] + orthV[0]);
+           double upVert = ((orthV[3] - orthV[2]) / (ClientHeight - GetHeightText)) * (ClientHeight) + (-orthV[3] + orthV[2]);
+           
+           
+           GLContex.glMatrixMode(GLContex.GL_PROJECTION);
+           GLContex.glPushMatrix();
+           GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
+           GLContex.glPushMatrix();
+           GLContex.glMatrixMode(GLContex.GL_PROJECTION);
+           GLContex.glLoadIdentity();
+
+           GLContex.glViewport(0, 0, ClientWidth, ClientHeight);
+           GLContex.glOrtho(orthV[0] - upHor, orthV[1], 0, ClientHeight, -1, 1);
+
+
+           GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
+           GLContex.glLoadIdentity();
+
+           GLContex.glColor3f(0, 0, 0);
+
+           double minh = orthV[0] - upHor;
+           double minv = orthV[2] - upVert;
+           double hKoef = (orthV[1] - minh) / (ClientWidth);
+           double vKoef = (orthV[3] - minv) / (ClientHeight);
+           double maxDrawLetter = orthV[1] - useFont.GetWidthCaption * (orthV[1] - orthV[0]) / ClientWidth;
+           int sizestring = GetWidthText;
+           double predPrint = rlfGrid[0] - 100*sizestring;
+            foreach (var it in rlfGrid)
+            {
+                double fVal = it;
+                string msVal = string.Format("{0:"+useFont.GetTemplStr+"}", fVal);
+
+                if (fVal - (sizestring) / 2 * hKoef > upHor / 2 + minh && predPrint < fVal - (sizestring + 18) / 2 * hKoef && fVal + (sizestring + 3) / 2 * hKoef < maxDrawLetter)
+                { 
+                    useFont.PrintText(fVal - sizestring / 2 * hKoef,0/* minv + vKoef*/, 0, msVal);
+                    predPrint = fVal + sizestring / 2 * hKoef;
+
+                }
+            }
+            GLContex.glBegin(GLContex.GL_LINES);
+            GLContex.glVertex3d(orthV[1], GetHeightText, 0.99);
+            GLContex.glVertex3d(orthV[0], GetHeightText, 0.99);
+            GLContex.glEnd();
+            GLContex.glMatrixMode(GLContex.GL_PROJECTION);
+            GLContex.glLoadIdentity();
+
+            GLContex.glOrtho(0, ClientWidth,0, ClientHeight, -1, 1);
+            GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
+            GLContex.glLoadIdentity();
+            useFont.PrintText(ClientWidth - useFont.GetWidthCaption, 0, 0, orth.HorAxisName);
+
+           GLContex.glLoadIdentity();
+           GLContex.glPopMatrix();
+           GLContex.glMatrixMode(GLContex.GL_PROJECTION);
+           GLContex.glPopMatrix();
+           GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
+       }
+        public override void DrawGrid(int ClientHeight)
+       {
+           GLContex.glLineWidth(1);
+           GLContex.glColor3f(0.7f, 0.7f, 0.7f);
+           GLContex.glBegin(GLContex.GL_LINES);
+           double[] orthV;
+           orth.GetOrtho(out orthV);
+           double zBuf = orth.GetMaxZBuf - (orth.GetMaxZBuf - orth.GetMinZBuf) / 20.0;
+           double zBuf2 = orth.GetMaxZBuf - (orth.GetMaxZBuf - orth.GetMinZBuf) / 21.0;
+            foreach (var it in rlfGrid)
+            {
+                GLContex.glVertex3d(it, orthV[2], zBuf);
+                GLContex.glVertex3d(it, orthV[3], zBuf);
+            }
+          
+           GLContex.glEnd();
+
+           GLContex.glColor3f(0f, 0f, 0f);
+           GLContex.glBegin(GLContex.GL_LINES);
+           double dy=(orthV[3]-orthV[2])*4/ClientHeight;
+           
+            foreach (var it in rlfGrid)
+            {
+                GLContex.glVertex3d(it, orthV[2], zBuf2);
+                GLContex.glVertex3d(it, orthV[2] + dy, zBuf2);
+            }
+          
+           GLContex.glEnd();
+       }
+     
+    }
+}
