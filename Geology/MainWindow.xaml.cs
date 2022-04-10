@@ -93,7 +93,7 @@ namespace Geology
             geoModel.GlobalBoundingBox[4] = -10000;
             geoModel.GlobalBoundingBox[5] = 10000;
 
-            
+
 
             XYOpenGlWindow.ChangeOrtho(geoModel.GlobalBoundingBox);
             XZOpenGlWindow.ChangeOrtho(geoModel.GlobalBoundingBox);

@@ -128,19 +128,22 @@
                                     <RowDefinition x:Uid="RowDefinition_25" Height="*"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition x:Uid="ColumnDefinition_90" Width="606*"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_90" Width="104*"/>
+                                    <ColumnDefinition Width="24*"/>
+                                    <ColumnDefinition Width="80*"/>
+                                    <ColumnDefinition Width="400*"/>
                                     <ColumnDefinition x:Uid="ColumnDefinition_91" Width="4"/>
-                                    <ColumnDefinition x:Uid="ColumnDefinition_92" Width="606*"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_92" Width="607*"/>
                                     <ColumnDefinition x:Uid="ColumnDefinition_93" Width="4"/>
-                                    <ColumnDefinition x:Uid="ColumnDefinition_94" Width="605*"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_94" Width="606*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <WindowsFormsHost x:Uid="WindowsFormsHost_4" Grid.Column="0" Margin="0">
+                                <!--<WindowsFormsHost x:Uid="WindowsFormsHost_4" Grid.Column="0" Margin="0" Grid.ColumnSpan="4">
                                     <openglwinnew:ViewWindow x:Uid="OpenGlWin" x:Name="OpenGlWin"   />
-                                </WindowsFormsHost>
-                                <GridSplitter x:Uid="GridSplitter_5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="1" Grid.RowSpan="3"/>
-                                <GridSplitter x:Uid="GridSplitter_6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="3" Grid.RowSpan="3"/>
-                                <GridSplitter x:Uid="GridSplitter_7" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="0" Grid.Row="1"/>
+                                </WindowsFormsHost>-->
+                                <GridSplitter x:Uid="GridSplitter_5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="4" Grid.RowSpan="3"/>
+                                <GridSplitter x:Uid="GridSplitter_6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="6" Grid.RowSpan="3"/>
+                                <GridSplitter x:Uid="GridSplitter_7" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="4"/>
                             </Grid>
 
                             <!--<Button x:Uid="Button_Cl" x:Name="Button_Cl" 

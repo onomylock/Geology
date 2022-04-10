@@ -57,8 +57,7 @@ namespace Geology.DrawWindow
 
         public EPlaneType axisType;
 
-        public CObject3DDraw2D()
-            : base(true)
+        public CObject3DDraw2D() : base(true)
         {
             axisType = EPlaneType.XY;
             zRange = 1e+7;

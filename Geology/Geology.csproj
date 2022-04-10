@@ -125,7 +125,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DrawNewWindow\View\ViewWindow.cs">
+    <Compile Include="DrawNewWindow\View\VCInterface.cs" />
+    <Compile Include="DrawNewWindow\View\ViewControllerWindow3D.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DrawWindow\GlobalDrawingSettings.cs" />
