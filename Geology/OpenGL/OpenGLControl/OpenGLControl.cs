@@ -11,9 +11,9 @@ namespace Geology.OpenGL.OpenGLControl
 {
     public partial class OpenGLControl : UserControl
     {
-       protected int oglcontext = 0;
-       protected IntPtr hdc;
-       public double[] BoundingBox;
+        protected int oglcontext = 0;
+        protected IntPtr hdc;
+        public double[] BoundingBox;
         public int OglContex { get { return oglcontext; } }
         public IntPtr Hdc { get { return hdc; } }
         protected override void OnPaintBackground(PaintEventArgs pevent) { }

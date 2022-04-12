@@ -125,8 +125,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DrawNewWindow\View\VCInterface.cs" />
-    <Compile Include="DrawNewWindow\View\ViewControllerWindow3D.cs">
+    <Compile Include="DrawNewWindow\Controller\IController.cs" />
+    <Compile Include="DrawNewWindow\Model\IModel.cs" />
+    <Compile Include="DrawNewWindow\Model\Model.cs" />
+    <Compile Include="DrawNewWindow\View\DrawView3D.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DrawNewWindow\View\IOpenGL.cs" />
+    <Compile Include="DrawNewWindow\View\IView.cs" />
+    <Compile Include="DrawNewWindow\Controller\ViewControllerWindow3D.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DrawWindow\GlobalDrawingSettings.cs" />
@@ -212,6 +219,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="DrawNewWindow\Controller\ViewControllerWindow3D.resx">
+      <DependentUpon>ViewControllerWindow3D.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DrawWindow\View2D.resx">
       <DependentUpon>View2D.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -234,8 +244,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DrawNewWindow\Controller\" />
-    <Folder Include="DrawNewWindow\Model\" />
     <Folder Include="Render\" />
   </ItemGroup>
   <ItemGroup>
