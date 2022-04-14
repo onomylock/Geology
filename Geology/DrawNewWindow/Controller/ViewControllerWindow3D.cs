@@ -16,14 +16,17 @@ using Geology.DrawNewWindow.View;
 
 namespace Geology.DrawNewWindow.Controller
 {
-	public class ViewControllerWindow3D : UserControl, IController
+	public class ViewControllerWindow3D : OpenGLControl, IController
     {
+        private int XPrevious = 0, YPrevious = 0;
         private DrawView3D drawView3D;
         private bool selecting = false;
         private ContextMenuStrip mnu;
         private MainWindow window;
         private CPerspective project;
         private TypeTransformation typeTransform;
+        private bool mouseDown = false;
+        private GeoModel model;
 
         public ViewControllerWindow3D() : base()
 		{
@@ -40,27 +43,24 @@ namespace Geology.DrawNewWindow.Controller
 			ToolStripMenuItem mnuStartView = new ToolStripMenuItem("Start view");
 			ToolStripMenuItem mnuSelect = new ToolStripMenuItem("Select");
 
+            model = new GeoModel();
+
+            this.Disposed += CView3D_Disposed;
+
 			mnuAlongWindow.CheckOnClick = true;
 			mnuAlongWindow.Checked = true;
 			typeTransform = TypeTransformation.alongWindow;
 			mnuAlongWindow.Click += mnuAlongWindow_Click;
-
 			mnuSaveBitmap.Click += mnuSaveBitmap_Click;
-
 			mnuAroundX.CheckOnClick = true;
 			mnuAroundX.Click += mnuAroundX_Click;
-
 			mnuAroundY.CheckOnClick = true;
 			mnuAroundY.Click += mnuAroundY_Click;
-
 			mnuAroundZ.CheckOnClick = true;
 			mnuAroundZ.Click += mnuAroundZ_Click;
-
 			mnuNone.CheckOnClick = true;
 			mnuNone.Click += mnuNone_Click;
-
 			//mnuStartView.Click += mnuStartView_Click;
-
 			mnuSelect.CheckOnClick = true;
 			mnuSelect.Click += mnuSelect_Click;
 
@@ -71,6 +71,13 @@ namespace Geology.DrawNewWindow.Controller
         public void SetMainRef(Geology.MainWindow _window)
         {
             window = _window;
+        }
+
+        private void CView3D_Disposed(object sender, EventArgs e)
+        {
+            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+            caption.ClearFont();
+            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
         }
 
         private void uncheckMenuItem(ToolStripItem itemClick)
@@ -132,6 +139,14 @@ namespace Geology.DrawNewWindow.Controller
             }
         }
 
+        //void mnuStartView_Click(object sender, EventArgs e)
+        //{
+        //    project.ClearView();
+        //    UpdateBoundingBox();
+        //    Resize_Window();
+        //    Invalidate();
+        //}
+
         private void mnuAlongWindow_Click(object sender, EventArgs e)
         {
             uncheckMenuItem(sender as System.Windows.Forms.ToolStripMenuItem);
@@ -186,7 +201,7 @@ namespace Geology.DrawNewWindow.Controller
 
         }
 
-        protected override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
+        protected override void OnMouseMove(MouseEventArgs e)
         {
             //if (!Focused) Focus();
 
@@ -231,7 +246,7 @@ namespace Geology.DrawNewWindow.Controller
                 ref p[0], ref p[1], ref p[2]);
         }
 
-        protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
+        protected override void OnMouseDown(MouseEventArgs e)
         {
             if (!Focused) Focus();
 
@@ -244,7 +259,7 @@ namespace Geology.DrawNewWindow.Controller
                 _GetSceneCoord(e.X, Height - e.Y, 1, p2);
                 bool selected = false;
                 Utilities.Vector3 ip;
-                foreach (var p in objects)
+                foreach (var p in model.Objects)
                     if (p.LineIntersectsObject(p1, p2, out ip))
                     {
                         p.Selected = true;
@@ -262,13 +277,14 @@ namespace Geology.DrawNewWindow.Controller
                 XPrevious = e.X; YPrevious = e.Y;
             }
         }
-        protected override void OnMouseUp(System.Windows.Forms.MouseEventArgs e)
+       
+        protected override void OnMouseUp(MouseEventArgs e)
         {
             if (!Focused) Focus();
 
             if (selecting && e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                foreach (var p in objects)
+                foreach (var p in model.Objects)
                     if (p.Selected)
                     {
                         p.Selected = false;
@@ -278,7 +294,6 @@ namespace Geology.DrawNewWindow.Controller
             }
             mouseDown = false;
         }
-
     }
 }
-}
+

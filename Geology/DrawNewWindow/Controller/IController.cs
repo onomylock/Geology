@@ -10,6 +10,6 @@ namespace Geology.DrawNewWindow.Controller
 	public interface IController
 	{
 		void ShowView(Geology.MainWindow _window);
-		//void Update();
+		void Update();
 	}
 }
