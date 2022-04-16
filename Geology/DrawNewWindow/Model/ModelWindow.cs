@@ -868,7 +868,7 @@ namespace Geology.DrawNewWindow.Model
 
         }
     }
-    public class Model : IModel, INotifyPropertyChanged, IViewportObjectsDrawable, IViewportMouseMoveReaction, IViewportObjectsSelectable, IViewportObjectsClickable
+    public class ModelWindow : IModel, INotifyPropertyChanged, IViewportObjectsDrawable, IViewportMouseMoveReaction, IViewportObjectsSelectable, IViewportObjectsClickable
     {
         private class HighlightedObjectInfo
         {
@@ -1233,12 +1233,12 @@ namespace Geology.DrawNewWindow.Model
             get { return drawObjectsBounds; }
             set { drawObjectsBounds = value; OnPropertyChanged("DrawObjectsBounds"); }
         }
-        public Model()
+        public ModelWindow()
         {
             objects.CollectionChanged += this.OnCollectionChanged;
             layers.CollectionChanged += this.OnLayersCollectionChanged;
         }
-        public Model(Model geoModel)
+        public ModelWindow(ModelWindow geoModel)
         {
 
             X0 = geoModel.X0;
@@ -1777,7 +1777,7 @@ namespace Geology.DrawNewWindow.Model
             OnCollectionChanged(sender, e);
         }
 
-        internal void GetBoundingBox(double[] boundingBox)
+        public void GetBoundingBox(double[] boundingBox)
         {
             boundingBox[0] = boundingBox[2] = boundingBox[4] = -1;
             boundingBox[1] = boundingBox[3] = boundingBox[5] = 1;

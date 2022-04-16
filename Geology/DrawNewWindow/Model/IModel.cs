@@ -25,6 +25,7 @@ namespace Geology.DrawNewWindow.Model
 		ObservableCollection<SaturationVolumeStack> Stacks { get; set; }
 		PolarizationDecayCurvesCollection PolarizationDecayCurvesCollection { get; set; }
 		CGeoObject SelectedObject { get; set; }
+		bool DrawObjectsBounds { get; set; }
 		DataGrid DataGridObjects { get; set; }
 		double[] GlobalBoundingBox { get; set; }
 		event PropertyChangedEventHandler PropertyChanged;

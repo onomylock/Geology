@@ -648,11 +648,47 @@ namespace Geology.Objects
                 return Color;
             }
         }
+        
+        public void Draw3D(bool drawBounds, Color col)
+		{
+            if (isHex)
+            {
+                DrawHex(drawBounds, col);
+                return;
+            }
+
+            if (!Visible)
+                return;
+
+            double[] p = new double[12];
+            double c1, c2, c3, c4, c5, c6;
+            c1 = parallel[0].Min;
+            c2 = parallel[0].Max;
+            c3 = parallel[1].Min;
+            c4 = parallel[1].Max;
+            c5 = parallel[2].Min;
+            c6 = parallel[2].Max;
+
+            GLContex.glEnable(GLContex.GL_POLYGON_OFFSET_FILL);
+            GLContex.glPolygonOffset(1, 2);
+
+            GLContex.glColor3f(col.R / 255.0f, col.G / 255.0f, col.B / 255.0f);
+            LittleTools.DrawParallelepipedTriangles(c1, c2, c3, c4, c5, c6);
+            GLContex.glDisable(GLContex.GL_POLYGON_OFFSET_FILL);
+
+            if (drawBounds)
+            {
+                GLContex.glColor3f(0, 0, 0);
+                GLContex.glLineWidth(1);
+                LittleTools.DrawParallelepipedFrame(c1, c2, c3, c4, c5, c6);
+            }
+        }
+        
         public void Draw(DrawWindow.CObject3DDraw2D.EPlaneType axisType, bool drawBounds, Color col)
         {
             if (isHex)
             {
-                DrawHex(axisType, drawBounds, col);
+                DrawHex(drawBounds, col);
                 return;
             }
 
@@ -780,7 +816,7 @@ namespace Geology.Objects
                 GLContex.glLineWidth(1);
             }
         }
-        public void DrawHex(DrawWindow.CObject3DDraw2D.EPlaneType axisType, bool drawBounds, Color col)
+        public void DrawHex(bool drawBounds, Color col)
         {
             if (!Visible)
                 return;

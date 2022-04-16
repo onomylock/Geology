@@ -723,6 +723,7 @@ namespace Geology.DrawWindow
                 XPrevious = e.X; YPrevious = e.Y;
             }
         }
+        
         protected override void OnMouseUp(System.Windows.Forms.MouseEventArgs e)
         {
             if (!Focused) Focus();

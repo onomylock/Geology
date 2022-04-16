@@ -62,11 +62,11 @@ namespace Geology.OpenGL.OpenGLControl
         {
           
         }
-        private void OpenGLControl_Resize(object sender, EventArgs e)
-        {
-            Resize_Window();
-        }
-        public void Resize_Window()
+		private void OpenGLControl_Resize(object sender, EventArgs e)
+		{
+			Resize_Window();
+		}
+		public void Resize_Window()
         {
             Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
             UpdateViewMatrix();
