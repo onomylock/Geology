@@ -139,7 +139,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <WindowsFormsHost x:Uid="WindowsFormsHost_4" Grid.Column="0" Margin="0" Grid.ColumnSpan="4">
-                                    <openglwinnew:ControllerWindow x:Uid="ViewWindow3D" x:Name="ViewWindow3D" />
+                                    <openglwinnew:ControllerWindow x:Uid="Controller" x:Name="Controller" />
                                 </WindowsFormsHost>
                                 <GridSplitter x:Uid="GridSplitter_5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="4" Grid.RowSpan="3"/>
                                 <GridSplitter x:Uid="GridSplitter_6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="6" Grid.RowSpan="3"/>

@@ -868,7 +868,7 @@ namespace Geology.DrawNewWindow.Model
 
         }
     }
-    public class ModelWindow : IModel, INotifyPropertyChanged, IViewportObjectsDrawable, IViewportMouseMoveReaction, IViewportObjectsSelectable, IViewportObjectsClickable
+    public class ModelWindow : IModelWindow, INotifyPropertyChanged, IViewportObjectsDrawable, IViewportMouseMoveReaction, IViewportObjectsSelectable, IViewportObjectsClickable
     {
         private class HighlightedObjectInfo
         {

@@ -21,6 +21,9 @@ namespace Geology.DrawNewWindow.View
         // ToolStripMenuItem mnuSelect { get; set; }
         void UpdateViewMatrix();
         void Draw();
+        FontGeology caption { get; set; }
+        FontGeology fontReceivers { get; set; }
+        FontGeology paletteFont { get; set; }
         ////void InitializeComponent();
         //System.Drawing.Imaging.ImageCodecInfo GetEncoder(System.Drawing.Imaging.ImageFormat format);
     }

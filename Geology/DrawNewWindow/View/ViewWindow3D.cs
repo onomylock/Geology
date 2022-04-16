@@ -12,24 +12,48 @@ using GLContex = Geology.OpenGL.OpenGL;
 using Geology.OpenGL;
 using Geology.Objects.GeoModel;
 using Geology.Objects;
-using Geology.DrawNewWindow.Controller;
+using Geology.DrawNewWindow.Model;
 using Geology.DrawWindow;
 
 namespace Geology.DrawNewWindow.View
 {
     public class ViewWindow3D : IViewWindow
     {
-        ControllerWindow Controller = new ControllerWindow();
-     
-        public ViewWindow3D()
+        public FontGeology caption { get; set; }
+        public FontGeology fontReceivers { get; set; }
+        public FontGeology paletteFont { get; set; }
+
+        private readonly IntPtr hdc;
+        private readonly int oglcontext;
+        private readonly CPerspective project;
+        private readonly IModelWindow model;
+        private readonly PageType page;
+        private readonly int Width, Height;
+        private readonly double[] BoundingBox;
+
+        public ViewWindow3D(IntPtr _hdc, int _oglcontext, CPerspective _project, IModelWindow _model, 
+            PageType _page, int _Width, int _Height, double[] _BoundingBox)
         {
-            
+            hdc = _hdc;
+            oglcontext = _oglcontext;
+            project = _project;
+            model = _model;
+            page = _page;
+            Width = _Width;
+            Height = _Height;
+            BoundingBox = _BoundingBox;
+
+            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+            caption = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            fontReceivers = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            paletteFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
         }
 
 		public void Draw()
         {
             double scale = 1.0;
-            if (Controller.page == PageType.ViewModel)
+            if (page == PageType.ViewModel)
                 GLContex.glEnable(GLContex.GL_LIGHT_MODEL_TWO_SIDE);
             GLContex.glEnable(GLContex.GL_NORMALIZE);
             /*
@@ -64,7 +88,7 @@ namespace Geology.DrawNewWindow.View
 
             if (lightSettings.Enabled)
             {
-                CCamera myCam = Controller.project.GetCamera;
+                CCamera myCam = project.GetCamera;
                 double xVector = myCam.m_vPosition.X - myCam.m_vView.X;
                 double yVector = myCam.m_vPosition.Y - myCam.m_vView.Y;
                 double zVector = myCam.m_vPosition.Z - myCam.m_vView.Z;
@@ -100,8 +124,8 @@ namespace Geology.DrawNewWindow.View
             // Следующая строка позволяет закрашивать полигоны цветом при включенном освещении:
             GLContex.glEnable(GLContex.GL_COLOR_MATERIAL);
 
-            foreach (var p in Controller.model.Objects)
-                p.Draw3D(Controller.model.DrawObjectsBounds, p.DrawColor);
+            foreach (var p in model.Objects)
+                p.Draw3D(model.DrawObjectsBounds, p.DrawColor);
 
             GLContex.glDisable(GLContex.GL_LIGHT0);
             GLContex.glDisable(GLContex.GL_LIGHT1);
@@ -134,7 +158,7 @@ namespace Geology.DrawNewWindow.View
 
 
                 double[] mat;
-                Controller.project.GetMatrixOrth(out mat);
+                project.GetMatrixOrth(out mat);
                 double[] multmat = new double[]{
                     mat[0], mat[3], mat[6], 0,
                     mat[1], mat[4], mat[7], 0,
@@ -238,15 +262,15 @@ namespace Geology.DrawNewWindow.View
 
                 GLContex.glEnd();
                 GLContex.glColor3f(1, 0, 0);
-                Controller.caption.PrintText(12, 0, 0, "X");
+                caption.PrintText(12, 0, 0, "X");
                 GLContex.glColor3f(0, 1, 0);
-                Controller.caption.PrintText(0, 12, 0, "Y");
+                caption.PrintText(0, 12, 0, "Y");
                 GLContex.glColor3f(0, 0, 1);
-                Controller.caption.PrintText(0, 0, 12, "Z");
+                caption.PrintText(0, 0, 12, "Z");
 
                 GLContex.glMatrixMode(GLContex.GL_PROJECTION);
                 GLContex.glPopMatrix();
-                GLContex.glViewport(0, 0, Controller.Width, Controller.Height);
+                GLContex.glViewport(0, 0, Width, Height);
                 GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
                 GLContex.glPopMatrix();
             }
@@ -259,13 +283,13 @@ namespace Geology.DrawNewWindow.View
                 GLContex.glMatrixMode(GLContex.GL_PROJECTION);
                 GLContex.glLoadIdentity();
                 double dMax, startAngle, dView;
-                GLContex.glViewport(0, 0, Controller.Width, Controller.Height);
-                Controller.project.PrepareDraw(out dMax, out startAngle, out dView, Controller.BoundingBox);
+                GLContex.glViewport(0, 0, Width, Height);
+                project.PrepareDraw(out dMax, out startAngle, out dView, BoundingBox);
 
-                GLContex.gluPerspective(startAngle, Controller.Width / (double)Controller.Height, dView, (dMax) * 30);
+                GLContex.gluPerspective(startAngle, Width / (double)Height, dView, (dMax) * 30);
                 GLContex.glMatrixMode(GLContex.GL_MODELVIEW);     // To operate on model-view matrix
                 GLContex.glLoadIdentity();
-                CCamera tmpCam = Controller.project.GetCamera;
+                CCamera tmpCam = project.GetCamera;
                 GLContex.gluLookAt(tmpCam.m_vPosition.X, tmpCam.m_vPosition.Y, tmpCam.m_vPosition.Z /* mesh3D.BoundingBox[0] - 0.1*/,
                     tmpCam.m_vView.X, tmpCam.m_vView.Y, tmpCam.m_vView.Z,
                     tmpCam.m_vUpVector.X, tmpCam.m_vUpVector.Y, tmpCam.m_vUpVector.Z);
@@ -274,36 +298,6 @@ namespace Geology.DrawNewWindow.View
             {
 
             }
-        }
-
-        //public void UpdateViewMatrix()
-        //{
-        //	try
-        //	{
-        //		GLContex.glMatrixMode(GLContex.GL_PROJECTION);
-        //		GLContex.glLoadIdentity();
-        //		double dMax, startAngle, dView;
-        //		GLContex.glViewport(0, 0, Width, Height);
-        //		project.PrepareDraw(out dMax, out startAngle, out dView, BoundingBox);
-
-        //		GLContex.gluPerspective(startAngle, Width / (double)Height, dView, (dMax) * 30);
-        //		GLContex.glMatrixMode(GLContex.GL_MODELVIEW);     // To operate on model-view matrix
-        //		GLContex.glLoadIdentity();
-        //		CCamera tmpCam = project.GetCamera;
-        //		GLContex.gluLookAt(tmpCam.m_vPosition.X, tmpCam.m_vPosition.Y, tmpCam.m_vPosition.Z /* mesh3D.BoundingBox[0] - 0.1*/,
-        //			tmpCam.m_vView.X, tmpCam.m_vView.Y, tmpCam.m_vView.Z,
-        //			tmpCam.m_vUpVector.X, tmpCam.m_vUpVector.Y, tmpCam.m_vUpVector.Z);
-        //	}
-        //	catch (Exception ex)
-        //	{
-
-        //	}
-        //}
-
-        //public void Draw()
-        //{
-
-        //}
-
+        }   
     }
 }

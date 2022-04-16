@@ -18,7 +18,7 @@ using Geology.Objects.SaturationModel;
 
 namespace Geology.DrawNewWindow.Model
 {
-	public interface IModel
+	public interface IModelWindow
 	{
 		ObservableCollection<CGeoLayer> Layers { get; set; }
 		ObservableCollection<CGeoObject> Objects { get; set; }
