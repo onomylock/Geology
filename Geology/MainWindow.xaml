@@ -90,17 +90,23 @@
                                 </Grid.ColumnDefinitions>
                                 <WindowsFormsHost x:Uid="WindowsFormsHost_1" Grid.Column="0" Margin="0,0,3.667,0.333" Grid.ColumnSpan="3">
                                     <openglwin:CObject3DDraw2D x:Uid="XZOpenGlWindow" x:Name="XZOpenGlWindow"   />
-                                    --><!--<openglwin:CObject3DDraw2D x:Name="XYOpenGlWindow"  />--><!--
+                                    -->
+                    <!--<openglwin:CObject3DDraw2D x:Name="XYOpenGlWindow"  />-->
+                    <!--
                                 </WindowsFormsHost>
                                 <WindowsFormsHost x:Uid="WindowsFormsHost_2" Grid.Column="0" Margin="0,3.667,3.667,-0.333" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="2">
                                     <openglwin:CObject3DDraw2D  x:Uid="YZOpenGlWindow" x:Name="YZOpenGlWindow"/>
                                 </WindowsFormsHost>
                                 <WindowsFormsHost x:Uid="topMiddleWindow" Grid.Column="3" x:Name="topMiddleWindow" Grid.RowSpan="3" Margin="0.333,0,0.334,-0.333">
-                                    --><!--<openglwin:CObject3DDraw2D x:Name="XZOpenGlWindow"   />--><!--
+                                    -->
+                    <!--<openglwin:CObject3DDraw2D x:Name="XZOpenGlWindow"   />-->
+                    <!--
                                     <openglwin:CObject3DDraw2D x:Uid="XYOpenGlWindow" x:Name="XYOpenGlWindow"  />
                                 </WindowsFormsHost>
                                 <WindowsFormsHost x:Uid="WindowsFormsHost_3" Grid.Column="4" Margin="3.666,0,0.334,-0.333" Grid.RowSpan="3" Grid.ColumnSpan="2" >
-                                    --><!--<openglwin:CView3D x:Name="View3DWindow" />--><!--
+                                    -->
+                    <!--<openglwin:CView3D x:Name="View3DWindow" />-->
+                    <!--
 
                                     <openglwin:CView3D x:Uid="View3DWindow" x:Name="View3DWindow" />
                                 </WindowsFormsHost>
@@ -138,9 +144,14 @@
                                     <ColumnDefinition x:Uid="ColumnDefinition_94" Width="606*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <WindowsFormsHost x:Uid="WindowsFormsHost_4" Grid.Column="0" Margin="0" Grid.ColumnSpan="4">
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_3" Grid.Column="0" Margin="0" Grid.ColumnSpan="4">
                                     <openglwinnew:ControllerWindow x:Uid="Controller" x:Name="Controller" />
                                 </WindowsFormsHost>
+
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_4" Grid.Column="4" Margin="3.666,0,0.334,-0.333" Grid.RowSpan="3" Grid.ColumnSpan="2" >
+                                    <openglwin:CView3D x:Uid="View3DWindow" x:Name="View3DWindow" />
+                                </WindowsFormsHost>
+
                                 <GridSplitter x:Uid="GridSplitter_5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="4" Grid.RowSpan="3"/>
                                 <GridSplitter x:Uid="GridSplitter_6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="6" Grid.RowSpan="3"/>
                                 <GridSplitter x:Uid="GridSplitter_7" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="4"/>
