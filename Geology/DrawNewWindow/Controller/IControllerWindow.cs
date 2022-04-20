@@ -13,14 +13,8 @@ namespace Geology.DrawNewWindow.Controller
 {
 	public interface IControllerWindow
 	{
-		void ShowView();
-		void Update();
-		IModelWindow model { get; set; }
-		IViewWindow ViewWindow { get; set; }
-		CPerspective project { get; set; }
-		PageType page { get; set; }
-		FontGeology caption { get; set; }
-		FontGeology fontReceivers { get; set; }
-		FontGeology paletteFont { get; set; }
+		void SetBoundingBox();
+		IViewWindow View { get; set; }
+		PageType Page { get; set; }
 	}
 }

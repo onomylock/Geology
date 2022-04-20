@@ -97,7 +97,7 @@ namespace Geology
 			geoModel.GlobalBoundingBox[4] = -10000;
 			geoModel.GlobalBoundingBox[5] = 10000;
 
-
+			Controller.SetBoundingBox();
 			View3DWindow.SetObjects(geoModel.Layers, geoModel.Objects, geoModel);
 			View3DWindow.SetMainRef(this);
 			View3DWindow.ChangeBoundingBox(geoModel.GlobalBoundingBox);

@@ -456,7 +456,6 @@ namespace Geology.DrawWindow
             foreach (var item in drawableObjects[page])
                 item.Draw(axisType, BoundingBox, WidthLocal, HeightLocal, fontReceivers, paletteFont);
 
-
             DrawSelection();
         }
     }

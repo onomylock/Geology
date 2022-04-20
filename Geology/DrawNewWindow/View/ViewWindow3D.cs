@@ -23,13 +23,18 @@ namespace Geology.DrawNewWindow.View
         public FontGeology fontReceivers { get; set; }
         public FontGeology paletteFont { get; set; }
 
-        private readonly IntPtr hdc;
-        private readonly int oglcontext;
-        private readonly CPerspective project;
-        private readonly IModelWindow model;
-        private readonly PageType page;
-        private readonly int Width, Height;
-        private readonly double[] BoundingBox;
+        protected readonly IntPtr hdc;
+        protected readonly int oglcontext;
+        protected readonly CPerspective project;
+        protected readonly IModelWindow model;
+        protected readonly PageType page;
+        protected readonly int Width, Height;
+        protected readonly double[] BoundingBox;
+
+        public ViewWindow3D()
+		{
+
+		}
 
         public ViewWindow3D(IntPtr _hdc, int _oglcontext, CPerspective _project, IModelWindow _model, 
             PageType _page, int _Width, int _Height, double[] _BoundingBox)
@@ -50,7 +55,7 @@ namespace Geology.DrawNewWindow.View
             Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
         }
 
-		public void Draw()
+		public virtual void Draw()
         {
             double scale = 1.0;
             if (page == PageType.ViewModel)
@@ -276,7 +281,7 @@ namespace Geology.DrawNewWindow.View
             }
         }
 
-        public void UpdateViewMatrix()
+        public virtual void UpdateViewMatrix()
         {
             try
             {
