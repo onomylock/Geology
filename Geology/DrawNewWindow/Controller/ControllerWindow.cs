@@ -29,17 +29,14 @@ namespace Geology.DrawNewWindow.Controller
         public IViewWindow View{ get { return view; } set { view = value; } }
         public PageType Page{ get { return page; } set { page = value; } }
 
-
-
-
 		public IModelWindow model = new ModelWindow();
         public CPerspective project { get; set; }
-        //public FontGeology caption { get; set; }
-        //public FontGeology fontReceivers { get; set; }
-        //public FontGeology paletteFont { get; set; }
-        //public IViewWindow ViewWindow { get; set; }
+		public FontGeology caption { get; set; }
+		public FontGeology fontReceivers { get; set; }
+		public FontGeology paletteFont { get; set; }
+		//public IViewWindow ViewWindow { get; set; }
 
-        private int XPrevious = 0, YPrevious = 0;
+		private int XPrevious = 0, YPrevious = 0;
         private bool selecting = false;
         private MainWindow window;
         private TypeTransformation typeTransform;
@@ -73,7 +70,14 @@ namespace Geology.DrawNewWindow.Controller
             model.GlobalBoundingBox[5] = 10000;
             project = new CPerspective();
 
-            view = new ViewWindow3D(hdc, oglcontext, project, model, page, Width, Height, BoundingBox);
+            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+            caption = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            fontReceivers = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            paletteFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+
+            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+
+            view = new ViewWindow3D(project, model, page, Width, Height, BoundingBox, caption);
 
             mnu = new ContextMenuStrip();
 			mnuAlongWindow = new ToolStripMenuItem("Along Window");
@@ -85,13 +89,8 @@ namespace Geology.DrawNewWindow.Controller
 			mnuStartView = new ToolStripMenuItem("Start view");
 			mnuSelect = new ToolStripMenuItem("Select");
 
-			//Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-            //caption = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            //fontReceivers = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            //paletteFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-
-            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-            this.Disposed += CView3D_Disposed;
+			
+			this.Disposed += CView3D_Disposed;
 
             mnuAlongWindow.CheckOnClick = true;
             mnuAlongWindow.Checked = true;
@@ -121,15 +120,15 @@ namespace Geology.DrawNewWindow.Controller
             window = _window;
         }
 
-        public void SetBoundingBox()
+        public void SetBoundingBox(double[] newBoundingBox)
 		{
-            Array.Copy(model.GlobalBoundingBox, BoundingBox, model.GlobalBoundingBox.Length);
+            Array.Copy(newBoundingBox, BoundingBox, newBoundingBox.Length);
 		}
 
         private void CView3D_Disposed(object sender, EventArgs e)
         {
             Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-            view.caption.ClearFont();
+            caption.ClearFont();
             Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
         }
 

@@ -19,12 +19,12 @@ namespace Geology.DrawNewWindow.View
 {
     public class ViewWindow3D : IViewWindow
     {
-        public FontGeology caption { get; set; }
-        public FontGeology fontReceivers { get; set; }
-        public FontGeology paletteFont { get; set; }
+        private readonly FontGeology caption;
+        //public FontGeology fontReceivers { get; set; }
+        //public FontGeology paletteFont { get; set; }
 
-        protected readonly IntPtr hdc;
-        protected readonly int oglcontext;
+        //protected readonly IntPtr hdc;
+        //protected readonly int oglcontext;
         protected readonly CPerspective project;
         protected readonly IModelWindow model;
         protected readonly PageType page;
@@ -36,23 +36,24 @@ namespace Geology.DrawNewWindow.View
 
 		}
 
-        public ViewWindow3D(IntPtr _hdc, int _oglcontext, CPerspective _project, IModelWindow _model, 
-            PageType _page, int _Width, int _Height, double[] _BoundingBox)
+        public ViewWindow3D(CPerspective project, IModelWindow model, 
+            PageType page, int Width, int Height, double[] BoundingBox, FontGeology caption)
         {
-            hdc = _hdc;
-            oglcontext = _oglcontext;
-            project = _project;
-            model = _model;
-            page = _page;
-            Width = _Width;
-            Height = _Height;
-            BoundingBox = _BoundingBox;
-
-            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-            caption = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            fontReceivers = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            paletteFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+            this.BoundingBox = BoundingBox;
+            this.caption = caption;
+            //this.oglcontext = oglcontext;
+            this.project = project;
+            this.Height = Height;
+            this.model = model;
+            this.Width = Width;
+            this.page = page;
+            //this.hdc = hdc;
+          
+            //Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+            //caption = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            //fontReceivers = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            //paletteFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
         }
 
 		public virtual void Draw()

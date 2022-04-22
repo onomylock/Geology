@@ -144,11 +144,15 @@
                                     <ColumnDefinition x:Uid="ColumnDefinition_94" Width="606*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <WindowsFormsHost x:Uid="WindowsFormsHost_3" Grid.Column="0" Margin="0" Grid.ColumnSpan="4">
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_3" Grid.Column="0" Grid.Row="0" Margin="0" Grid.ColumnSpan="4">
                                     <openglwinnew:ControllerWindow x:Uid="Controller" x:Name="Controller" />
                                 </WindowsFormsHost>
 
-                                <WindowsFormsHost x:Uid="WindowsFormsHost_4" Grid.Column="4" Margin="3.666,0,0.334,-0.333" Grid.RowSpan="3" Grid.ColumnSpan="2" >
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_5" Grid.Column="5" Margin="0" Grid.Row="0">
+                                    <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2D" x:Name="Controller2D" />
+                                </WindowsFormsHost>
+
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_4" Grid.Column="5" Margin="3.666,0,0.334,-0.333" Grid.Row="4">
                                     <openglwin:CView3D x:Uid="View3DWindow" x:Name="View3DWindow" />
                                 </WindowsFormsHost>
 

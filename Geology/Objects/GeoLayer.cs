@@ -20,6 +20,7 @@ using System.Text;
 using System.Windows.Media;
 using GLContex = Geology.OpenGL.OpenGL;
 using Geology.Utilities;
+using Geology.DrawWindow;
 using System.IO;
 
 namespace Geology.Objects
@@ -188,12 +189,135 @@ namespace Geology.Objects
         {
             splineTop = spl;
         }
-        public void Draw(DrawWindow.CObject3DDraw2D.EPlaneType axisType, double horizon, double zRange, double[] drawBox, bool drawBounds)
+        //public void Draw(DrawWindow.CObject3DDraw2D.EPlaneType axisType, double horizon, double zRange, double[] drawBox, bool drawBounds)
+        //{
+        //    double[] p = new double[12];
+        //    double z0, z1;
+        //    //zRange = 1e+4;
+        //    if (axisType == DrawWindow.CObject3DDraw2D.EPlaneType.XYZ)
+        //        return;
+
+        //    if (LittleTools.Intersect1D(horizon - H, horizon, drawBox[4], drawBox[5]) == false)
+        //        return;
+
+        //    if (horizon > drawBox[5])
+        //        z1 = drawBox[5];
+        //    else
+        //        z1 = horizon;
+
+        //    if (horizon - H < drawBox[4])
+        //        z0 = drawBox[4];
+        //    else
+        //        z0 = horizon - H;
+
+        //    if (z1 - z0 <= 0.0)
+        //        return;
+
+        //    switch (axisType)
+        //    {
+        //        case DrawWindow.CObject3DDraw2D.EPlaneType.XY:
+        //            p[0] = drawBox[0];
+        //            p[1] = drawBox[2];
+        //            p[2] = z1 - 1;
+
+        //            p[3] = drawBox[1];
+        //            p[4] = drawBox[2];
+        //            p[5] = z1 - 1;
+
+        //            p[6] = drawBox[0];
+        //            p[7] = drawBox[3];
+        //            p[8] = z1 - 1;
+
+        //            p[9] = drawBox[1];
+        //            p[10] = drawBox[3];
+        //            p[11] = z1 - 1;
+        //            break;
+        //        case DrawWindow.CObject3DDraw2D.EPlaneType.XZ:
+        //            p[0] = drawBox[0];
+        //            p[1] = zRange;
+        //            p[2] = z0;
+
+        //            p[3] = drawBox[1];
+        //            p[4] = zRange;
+        //            p[5] = z0;
+
+        //            p[6] = drawBox[0];
+        //            p[7] = zRange;
+        //            p[8] = z1;
+
+        //            p[9] = drawBox[1];
+        //            p[10] = zRange;
+        //            p[11] = z1;
+
+        //            if (drawColored == false)
+        //                p[1] = p[4] = p[7] = p[10] = drawBox[3];
+
+        //            break;
+        //        case DrawWindow.CObject3DDraw2D.EPlaneType.YZ:
+        //            p[0] = -zRange;
+        //            p[1] = drawBox[2];
+        //            p[2] = z0;
+
+        //            p[3] = -zRange;
+        //            p[4] = drawBox[3];
+        //            p[5] = z0;
+
+        //            p[6] = -zRange;
+        //            p[7] = drawBox[2];
+        //            p[8] = z1;
+
+        //            p[9] = -zRange;
+        //            p[10] = drawBox[3];
+        //            p[11] = z1;
+
+        //            if (drawColored == false)
+        //                p[0] = p[3] = p[6] = p[9] = drawBox[1];
+        //            break;
+        //    }
+
+
+
+        //    if (Visible == true)
+        //    {
+        //        GLContex.glEnable(GLContex.GL_POLYGON_OFFSET_FILL);
+        //        GLContex.glPolygonOffset(1.0f, 2.0f);
+
+        //            GLContex.glColor3f(Color.R / 255.0f, Color.G / 255.0f, Color.B / 255.0f);
+
+        //        GLContex.glBegin(GLContex.GL_TRIANGLES);
+        //        GLContex.glVertex3d(p[6], p[7], p[8]);
+        //        GLContex.glVertex3d(p[9], p[10], p[11]);
+        //        GLContex.glVertex3d(p[3], p[4], p[5]);
+
+        //        GLContex.glVertex3d(p[3], p[4], p[5]);
+        //        GLContex.glVertex3d(p[0], p[1], p[2]);
+        //        GLContex.glVertex3d(p[6], p[7], p[8]);
+        //        GLContex.glEnd();
+
+        //        GLContex.glDisable(GLContex.GL_POLYGON_OFFSET_FILL);
+        //    }
+
+        //    if (drawBounds)
+        //    {
+        //        GLContex.glColor3f(0, 0, 0);
+        //        GLContex.glLineWidth(1);
+        //        GLContex.glBegin(GLContex.GL_LINES);
+        //        GLContex.glVertex3d(p[0], p[1], p[2]);
+        //        GLContex.glVertex3d(p[3], p[4], p[5]);
+        //        GLContex.glVertex3d(p[6], p[7], p[8]);
+        //        GLContex.glVertex3d(p[9], p[10], p[11]);
+        //        GLContex.glEnd();
+        //        GLContex.glLineWidth(1);
+        //    }
+
+        //    relief.Draw();
+        //}
+        public void Draw(EPlaneType axisType, double horizon, double zRange, double[] drawBox, bool drawBounds)
         {
             double[] p = new double[12];
             double z0, z1;
             //zRange = 1e+4;
-            if (axisType == DrawWindow.CObject3DDraw2D.EPlaneType.XYZ)
+            if (axisType == EPlaneType.XYZ)
                 return;
 
             if (LittleTools.Intersect1D(horizon - H, horizon, drawBox[4], drawBox[5]) == false)
@@ -214,7 +338,7 @@ namespace Geology.Objects
 
             switch (axisType)
             {
-                case DrawWindow.CObject3DDraw2D.EPlaneType.XY:
+                case EPlaneType.XY:
                     p[0] = drawBox[0];
                     p[1] = drawBox[2];
                     p[2] = z1 - 1;
@@ -231,7 +355,7 @@ namespace Geology.Objects
                     p[10] = drawBox[3];
                     p[11] = z1 - 1;
                     break;
-                case DrawWindow.CObject3DDraw2D.EPlaneType.XZ:
+                case EPlaneType.XZ:
                     p[0] = drawBox[0];
                     p[1] = zRange;
                     p[2] = z0;
@@ -252,7 +376,7 @@ namespace Geology.Objects
                         p[1] = p[4] = p[7] = p[10] = drawBox[3];
 
                     break;
-                case DrawWindow.CObject3DDraw2D.EPlaneType.YZ:
+                case EPlaneType.YZ:
                     p[0] = -zRange;
                     p[1] = drawBox[2];
                     p[2] = z0;
@@ -281,7 +405,7 @@ namespace Geology.Objects
                 GLContex.glEnable(GLContex.GL_POLYGON_OFFSET_FILL);
                 GLContex.glPolygonOffset(1.0f, 2.0f);
 
-                    GLContex.glColor3f(Color.R / 255.0f, Color.G / 255.0f, Color.B / 255.0f);
+                GLContex.glColor3f(Color.R / 255.0f, Color.G / 255.0f, Color.B / 255.0f);
 
                 GLContex.glBegin(GLContex.GL_TRIANGLES);
                 GLContex.glVertex3d(p[6], p[7], p[8]);
@@ -311,6 +435,7 @@ namespace Geology.Objects
 
             relief.Draw();
         }
+
         public void DrawPolygon(double[] Ortho)
         {
 

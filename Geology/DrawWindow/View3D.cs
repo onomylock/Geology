@@ -425,7 +425,7 @@ namespace Geology.DrawWindow
             GLContex.glEnable(GLContex.GL_COLOR_MATERIAL);
 
                 foreach (var p in objects)
-                    p.Draw(CObject3DDraw2D.EPlaneType.XYZ, model.DrawObjectsBounds, p.DrawColor);
+                    p.Draw(EPlaneType.XYZ, model.DrawObjectsBounds, p.DrawColor);
 
             GLContex.glDisable(GLContex.GL_LIGHT0);
             GLContex.glDisable(GLContex.GL_LIGHT1);

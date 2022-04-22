@@ -80,14 +80,6 @@ namespace Geology
 #endif
             InitializeComponent();
 
-			Controller.SetBoundingBox();
-			Controller.SetMainRef(this);
-			//XYOpenGlWindow.setRotateAndNameAxes(Geology.DrawWindow.CObject3DDraw2D.EPlaneType.XY); //XY
-			//XZOpenGlWindow.setRotateAndNameAxes(Geology.DrawWindow.CObject3DDraw2D.EPlaneType.XZ); //XZ
-			//YZOpenGlWindow.setRotateAndNameAxes(Geology.DrawWindow.CObject3DDraw2D.EPlaneType.YZ); //YZ
-			//XZOpenGl.setRotateAndNameAxes(Geology.DrawWindow.CObject3DDraw2D.EPlaneType.YZ); //YZ
-
-
 			GeoModel geoModel = new GeoModel();
 			geoModel.Objects.Add(new CGeoObject());
 			geoModel.GlobalBoundingBox[0] = -10000;
@@ -97,7 +89,17 @@ namespace Geology
 			geoModel.GlobalBoundingBox[4] = -10000;
 			geoModel.GlobalBoundingBox[5] = 10000;
 
-			Controller.SetBoundingBox();
+			Controller.SetBoundingBox(geoModel.GlobalBoundingBox);
+			Controller.SetMainRef(this);
+			//XYOpenGlWindow.setRotateAndNameAxes(Geology.DrawWindow.CObject3DDraw2D.EPlaneType.XY); //XY
+			//XZOpenGlWindow.setRotateAndNameAxes(Geology.DrawWindow.CObject3DDraw2D.EPlaneType.XZ); //XZ
+			//YZOpenGlWindow.setRotateAndNameAxes(Geology.DrawWindow.CObject3DDraw2D.EPlaneType.YZ); //YZ
+			//XZOpenGl.setRotateAndNameAxes(Geology.DrawWindow.CObject3DDraw2D.EPlaneType.YZ); //YZ
+
+			Controller2D.SetBoundingBox(geoModel.GlobalBoundingBox);
+			Controller2D.SetMainRef(this);
+
+			//Controller.SetBoundingBox();
 			View3DWindow.SetObjects(geoModel.Layers, geoModel.Objects, geoModel);
 			View3DWindow.SetMainRef(this);
 			View3DWindow.ChangeBoundingBox(geoModel.GlobalBoundingBox);

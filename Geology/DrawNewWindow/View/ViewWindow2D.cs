@@ -14,33 +14,70 @@ using Geology.Objects.GeoModel;
 using Geology.Objects;
 using Geology.DrawNewWindow.Model;
 using Geology.DrawWindow;
+using Geology.Utilities;
 using Geology.DrawNewWindow.Controller;
 
 
 namespace Geology.DrawNewWindow.View
 {
-	class ViewWindow2D : ViewWindow3D
+	class ViewWindow2D : IViewWindow
 	{
-		public PlaneType axisType;
+		//public FontGeology caption { get; set; }
+		//public FontGeology wellFont { get; set; }
+		
+
 		public double scaleV;
 		public int WidthLocal, HeightLocal;
 
-		private CaptionAxisHorAndVert captionHorAndVert;
-		private COrthoControlProport Ortho;
+		protected readonly EPlaneType axisType;
+		//protected readonly IntPtr hdc;
+		//protected readonly int oglcontext;
+		protected readonly PageType page;
+		private readonly Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects;
+		private readonly CaptionAxisHorAndVert captionHorAndVert;
+		private readonly COrthoControlProport Ortho;
 		private bool selectionStarted = false;
 		private bool selectionFinished = true;
+		private readonly double zRange = 1e+7;
+		private double selectionX0 = 0, selectionX1 = 0;
+		private double selectionY0 = 0, selectionY1 = 0;
+		protected readonly int Width, Height;
+		protected readonly double[] BoundingBox;
+		private readonly FontGeology fontReceivers;
+		private readonly FontGeology paletteFont;
 
-		public ViewWindow2D(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho) : base()
+		public ViewWindow2D(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho, Dictionary<PageType, 
+			List<IViewportObjectsDrawable>> drawableObjects, EPlaneType axisType, double zRange, PageType page, 
+			int Width, int Height, double[] BoundingBox, FontGeology fontReceivers, FontGeology paletteFont) : base()
 		{
 			this.captionHorAndVert = captionHorAndVert;
+			this.drawableObjects = drawableObjects;
+			this.fontReceivers = fontReceivers;
+			this.paletteFont = paletteFont;
+			this.BoundingBox = BoundingBox;
+			this.axisType = axisType;
+			this.Height = Height;
+			this.zRange = zRange;
 			this.Ortho = Ortho;
+			this.Width = Width;
+			this.page = page;
+			//Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+
+			//captionHorAndVert = new CaptionAxisHorAndVert(hdc, oglcontext, "Arial", 16, Ortho, Width, Height);
+			//wellFontName = "Arial";
+			//wellFontSize = 14;
+			////wellFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 14);
+			//paletteFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+			//fontReceivers = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+
+			//Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 		}
 
-		public override void Draw()
+		public void Draw()
 		{
 			GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
 			GLContex.glLoadIdentity();
-			if (axisType == PlaneType.XZ || axisType == PlaneType.YZ)
+			if (axisType == EPlaneType.XZ || axisType == EPlaneType.YZ)
 				scaleV = GlobalDrawingSettings.ScaleZ;
 			else
 				scaleV = 1.0;
@@ -49,7 +86,7 @@ namespace Geology.DrawNewWindow.View
 			DrawObjetcs();
 		}
 
-		public override void UpdateViewMatrix()
+		public void UpdateViewMatrix()
 		{
 			try
 			{
@@ -84,19 +121,19 @@ namespace Geology.DrawNewWindow.View
 				GLContex.glBegin(GLContex.GL_LINE_LOOP);
 				switch (axisType)
 				{
-					case PlaneType.XY:
+					case EPlaneType.XY:
 						GLContex.glVertex3d(selectionX0, selectionY0, zRange);
 						GLContex.glVertex3d(selectionX1, selectionY0, zRange);
 						GLContex.glVertex3d(selectionX1, selectionY1, zRange);
 						GLContex.glVertex3d(selectionX0, selectionY1, zRange);
 						break;
-					case PlaneType.XZ:
+					case EPlaneType.XZ:
 						GLContex.glVertex3d(selectionX0, zRange, selectionY0);
 						GLContex.glVertex3d(selectionX1, zRange, selectionY0);
 						GLContex.glVertex3d(selectionX1, zRange, selectionY1);
 						GLContex.glVertex3d(selectionX0, zRange, selectionY1);
 						break;
-					case PlaneType.YZ:
+					case EPlaneType.YZ:
 						GLContex.glVertex3d(zRange, selectionX0, selectionY0);
 						GLContex.glVertex3d(zRange, selectionX1, selectionY0);
 						GLContex.glVertex3d(zRange, selectionX1, selectionY1);
@@ -111,10 +148,10 @@ namespace Geology.DrawNewWindow.View
 		{
 			switch (axisType)
 			{
-				case PlaneType.XZ:
+				case EPlaneType.XZ:
 					GLContex.gluLookAt(0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
 					break;
-				case PlaneType.YZ:
+				case EPlaneType.YZ:
 					GLContex.gluLookAt(1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
 					break;
 			}

@@ -26,6 +26,7 @@ using System.Windows.Media;
 using GLContex = Geology.OpenGL.OpenGL;
 using Geology.Utilities;
 using System.IO;
+using Geology.DrawWindow;
 using static Geology.DrawWindow.CObject3DDraw2D;
 
 namespace Geology.Objects
@@ -684,7 +685,7 @@ namespace Geology.Objects
             }
         }
         
-        public void Draw(DrawWindow.CObject3DDraw2D.EPlaneType axisType, bool drawBounds, Color col)
+        public void Draw(EPlaneType axisType, bool drawBounds, Color col)
         {
             if (isHex)
             {
@@ -704,7 +705,7 @@ namespace Geology.Objects
             c5 = parallel[2].Min;
             c6 = parallel[2].Max;
 
-            if (axisType == DrawWindow.CObject3DDraw2D.EPlaneType.XYZ)
+            if (axisType == EPlaneType.XYZ)
             {
                 GLContex.glEnable(GLContex.GL_POLYGON_OFFSET_FILL);
                 GLContex.glPolygonOffset(1, 2);
@@ -723,7 +724,7 @@ namespace Geology.Objects
 
             switch (axisType)
             {
-                case DrawWindow.CObject3DDraw2D.EPlaneType.XY:
+                case EPlaneType.XY:
                     p[0] = c1;
                     p[1] = c3;
                     p[2] = c6;
@@ -741,7 +742,7 @@ namespace Geology.Objects
                     p[11] = c6;
 
                     break;
-                case DrawWindow.CObject3DDraw2D.EPlaneType.XZ:
+                case EPlaneType.XZ:
                     p[0] = c1;
                     p[1] = c3;
                     p[2] = c5;
@@ -758,7 +759,7 @@ namespace Geology.Objects
                     p[10] = c3;
                     p[11] = c6;
                     break;
-                case DrawWindow.CObject3DDraw2D.EPlaneType.YZ:
+                case EPlaneType.YZ:
                     p[0] = c2;
                     p[1] = c3;
                     p[2] = c5;

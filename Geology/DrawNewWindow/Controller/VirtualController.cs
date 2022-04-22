@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using Geology.DrawNewWindow.Model;
 using Geology.DrawNewWindow.View;
-using Geology.Projection;
 using Geology.DrawWindow;
 
 namespace Geology.DrawNewWindow.Controller
 {
-	public interface IControllerWindow
+	public abstract class VirtualController
 	{
-		void SetBoundingBox(double[] newBoundingBox);
-		IViewWindow View { get; set; }
-		PageType Page { get; set; }
+		public abstract IViewWindow View { get; set; }
+		public abstract PageType Page{ get; set;}
+		public abstract void SetBoundingBox();
 	}
 }

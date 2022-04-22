@@ -1,84 +1,83 @@
-﻿using Geology.Objects.GeoModel;
-using Geology.Controls;
-/*
- Файл содержит классы:
- * 
- * CObject3DDraw2D, потомок CView2D - используется для отображения
- * трехмерных объектов в проекциях
- * 
- */
+﻿using Geology.DrawNewWindow.View;
+using Geology.DrawWindow;
 using System;
+using Geology.OpenGL.OpenGLControl;
+using GLContex = Geology.OpenGL.OpenGL;
+using Geology.OpenGL;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
-using GLContex = Geology.OpenGL.OpenGL;
-using System.Windows.Input;
+using System.Threading.Tasks;
 using Geology.Utilities;
+using System.Windows.Forms;
+using System.Windows.Input;
 
-namespace Geology.DrawWindow
+
+namespace Geology.DrawNewWindow.Controller
 {
-    public enum EPlaneType
-    { XY = 0, XZ, YZ, XYZ }
-    public class CObject3DDraw2D : CView2D
-    {
-        protected override void OnMouseLeave(EventArgs e)
-        {
-            //if (Focused) Parent.Focus();
-        }
+	//public enum PlaneType
+	//{ XY = 0, XZ, YZ }
 
-        protected override void OnMouseEnter(EventArgs e)
-        {
-            //if (!Focused) Focus();
-        }
-
-        private double zRange;
-        public double scaleV;
-        public bool alwaysDrawObserving = false;
-        bool toAdd = false;
-        bool operationStackMultipleChecked = false;
-        public Dictionary<PageType, List<IViewportObjectsSelectable> > selectableObjects = new Dictionary<PageType, List<IViewportObjectsSelectable> >();
-        public Dictionary<PageType, List<IViewportObjectsDrawable> > drawableObjects = new Dictionary<PageType, List<IViewportObjectsDrawable>>();
-        public Dictionary<PageType, List<IViewportObjectsClickable> > clickableObjects = new Dictionary<PageType, List<IViewportObjectsClickable>>();
-        public Dictionary<PageType, List<IViewportObjectsContextmenuClickable> > contextMenuClickableObjects = new Dictionary<PageType, List<IViewportObjectsContextmenuClickable>>();
-        public Dictionary<PageType, List<IViewportMouseMoveReaction>> mouseMoveReactionObjects = new Dictionary<PageType, List<IViewportMouseMoveReaction>>();
-        
-
-        
-        double prevX = 0, prevY = 0;
-        double curX = 0, curY = 0;
-        bool mouseMoved = false;
-        bool LMBDown = false;
-        bool RMBDown = false;
-        double selectionX0 = 0, selectionX1 = 0;
-        double selectionY0 = 0, selectionY1 = 0;
-        bool selectionStarted = false;
-        bool selectionFinished = true;
-
+	class ControllerWindow3DDraw2D : ControllerWindow2D, IControllerWindow
+	{
+		public IViewWindow View { get { return view; } set { view = value; } }
+		public PageType Page { get { return page; } set { page = value; } }
         public EPlaneType axisType;
 
-        public CObject3DDraw2D() : base(true)
+        public Dictionary<PageType, List<IViewportObjectsSelectable>> selectableObjects = new Dictionary<PageType, List<IViewportObjectsSelectable>>();
+		public Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects = new Dictionary<PageType, List<IViewportObjectsDrawable>>();
+		public Dictionary<PageType, List<IViewportObjectsClickable>> clickableObjects = new Dictionary<PageType, List<IViewportObjectsClickable>>();
+		public Dictionary<PageType, List<IViewportObjectsContextmenuClickable>> contextMenuClickableObjects = new Dictionary<PageType, List<IViewportObjectsContextmenuClickable>>();
+		public Dictionary<PageType, List<IViewportMouseMoveReaction>> mouseMoveReactionObjects = new Dictionary<PageType, List<IViewportMouseMoveReaction>>();
+
+		private IViewWindow view;
+		private PageType page = PageType.Model;
+        
+        private double zRange;
+        private double selectionX0 = 0, selectionX1 = 0;
+        private double selectionY0 = 0, selectionY1 = 0;
+        private double prevX = 0, prevY = 0;
+        private double curX = 0, curY = 0;
+        private bool selectionStarted = false;
+        private bool selectionFinished = true;
+        private bool toAdd = false;
+        private bool mouseMoved = false;
+        private bool LMBDown = false;
+        private bool RMBDown = false;
+        
+        public ControllerWindow3DDraw2D() : base(true)
+		{
+			axisType = EPlaneType.XY;
+			zRange = 1e+7;
+			ChangeOrtho(new double[] { -10000, 10000, -10000, 10000, -10000, 10000 });
+
+			foreach (var item in (PageType[])Enum.GetValues(typeof(PageType)))
+			{
+				selectableObjects.Add(item, new List<IViewportObjectsSelectable>());
+				drawableObjects.Add(item, new List<IViewportObjectsDrawable>());
+				clickableObjects.Add(item, new List<IViewportObjectsClickable>());
+				contextMenuClickableObjects.Add(item, new List<IViewportObjectsContextmenuClickable>());
+				mouseMoveReactionObjects.Add(item, new List<IViewportMouseMoveReaction>());
+			}
+
+			this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
+
+            view = new ViewWindow2D(captionHorAndVert, Ortho, drawableObjects, axisType, zRange, page, Width, Height, BoundingBox, fontReceivers, paletteFont);
+		}
+
+        public void SetMainRef(MainWindow _window)
         {
-            axisType = EPlaneType.XY;
-            zRange = 1e+7;
-            ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });
-
-            foreach (var item in (PageType[])Enum.GetValues(typeof(PageType)))
-            {
-                selectableObjects.Add(item, new List<IViewportObjectsSelectable>());
-                drawableObjects.Add(item, new List<IViewportObjectsDrawable>());
-                clickableObjects.Add(item, new List<IViewportObjectsClickable>());
-                contextMenuClickableObjects.Add(item, new List<IViewportObjectsContextmenuClickable>());
-                mouseMoveReactionObjects.Add(item, new List<IViewportMouseMoveReaction>());
-            }
-
-            this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
+            window = _window;
         }
 
         private void ContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            Invalidate();
+		{
+			Invalidate();
+		}
+
+		public void SetBoundingBox(double[] newBoundingBox)
+		{
+            Array.Copy(newBoundingBox, BoundingBox, newBoundingBox.Length);
         }
 
         private void StartSelection(double x, double y)
@@ -114,8 +113,8 @@ namespace Geology.DrawWindow
             if (selectionY1 < selectionY0) Utilities.LittleTools.Swap(ref selectionY0, ref selectionY1);
 
             if (selectableObjects.ContainsKey(page))
-            foreach (var obj in selectableObjects[page])
-                obj.FinishSelection(selectionX0, selectionY0, selectionX1, selectionY1, toAdd, axisType);
+                foreach (var obj in selectableObjects[page])
+                    obj.FinishSelection(selectionX0, selectionY0, selectionX1, selectionY1, toAdd, axisType);
 
             foreach (var obj in selectableObjects[PageType.None])
                 obj.FinishSelection(selectionX0, selectionY0, selectionX1, selectionY1, toAdd, axisType);
@@ -241,7 +240,7 @@ namespace Geology.DrawWindow
                 return;
             }
 
-            if (selectionStarted && ! selectionFinished)
+            if (selectionStarted && !selectionFinished)
             {
                 FinishSelection(x, y);
                 Invalidate();
@@ -254,7 +253,7 @@ namespace Geology.DrawWindow
                 GetRays(x, y, out r1, out r2);
 
                 double mPerPixel = MetersPerPixel();
-                bool ctrlPressed = Keyboard.IsKeyDown(Key.LeftCtrl) ||Keyboard.IsKeyDown(Key.RightCtrl);
+                bool ctrlPressed = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
                 bool shiftPressed = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
                 foreach (var item in clickableObjects[page])
                     item.Click(x, y, r1, r2, mPerPixel, axisType, ctrlPressed, shiftPressed);
@@ -395,69 +394,8 @@ namespace Geology.DrawWindow
                 case EPlaneType.YZ: Ortho.HorAxisName = "Y"; Ortho.VertAxisName = "Z"; break;
             }
         }
-        protected override void Draw()
-        {
-            GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
-            GLContex.glLoadIdentity();
-            if (axisType == EPlaneType.XZ || axisType == EPlaneType.YZ)
-                scaleV = GlobalDrawingSettings.ScaleZ;
-            else
-                scaleV = 1.0;
-            captionHorAndVert.GenerateGrid(WidthLocal, HeightLocal, scaleV);
-            captionHorAndVert.DrawScaleLbls(WidthLocal, HeightLocal, scaleV);
-            DrawObjetcs();
-        }
 
-        protected void DrawSelection()
-        {
-            if (selectionStarted && !selectionFinished)
-            {
-                GLContex.glLineWidth(3);
-                GLContex.glColor3f(0.5f, 0.5f, 0.5f);
-                GLContex.glBegin(GLContex.GL_LINE_LOOP);
-                switch (axisType)
-                {
-                    case EPlaneType.XY:
-                        GLContex.glVertex3d(selectionX0, selectionY0, zRange);
-                        GLContex.glVertex3d(selectionX1, selectionY0, zRange);
-                        GLContex.glVertex3d(selectionX1, selectionY1, zRange);
-                        GLContex.glVertex3d(selectionX0, selectionY1, zRange);
-                        break;
-                    case EPlaneType.XZ:
-                        GLContex.glVertex3d(selectionX0, zRange, selectionY0);
-                        GLContex.glVertex3d(selectionX1, zRange, selectionY0);
-                        GLContex.glVertex3d(selectionX1, zRange, selectionY1);
-                        GLContex.glVertex3d(selectionX0, zRange, selectionY1);
-                        break;
-                    case EPlaneType.YZ:
-                        GLContex.glVertex3d(zRange, selectionX0, selectionY0);
-                        GLContex.glVertex3d(zRange, selectionX1, selectionY0);
-                        GLContex.glVertex3d(zRange, selectionX1, selectionY1);
-                        GLContex.glVertex3d(zRange, selectionX0, selectionY1);
-                        break;
-                }
-                GLContex.glEnd();
-            }
-        }
-        protected override void DrawObjetcs()
-        {
-            switch (axisType)
-            {
-                case EPlaneType.XZ:
-                    GLContex.gluLookAt(0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
-                    break;
-                case EPlaneType.YZ:
-                    GLContex.gluLookAt(1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
-                    break;
-            }
-
-            foreach (var item in drawableObjects[PageType.None])
-                item.Draw(axisType, BoundingBox, WidthLocal, HeightLocal, fontReceivers, paletteFont);
-
-            foreach (var item in drawableObjects[page])
-                item.Draw(axisType, BoundingBox, WidthLocal, HeightLocal, fontReceivers, paletteFont);
-
-            DrawSelection();
-        }
-    }
+        protected override void Draw() => view?.Draw();
+		protected override void UpdateViewMatrix() => view?.UpdateViewMatrix();
+	}
 }
