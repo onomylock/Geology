@@ -251,7 +251,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DrawNewWindow\Utilities\" />
     <Folder Include="Render\" />
   </ItemGroup>
   <ItemGroup>

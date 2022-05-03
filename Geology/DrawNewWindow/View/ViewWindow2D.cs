@@ -24,10 +24,15 @@ namespace Geology.DrawNewWindow.View
 	{
 		//public FontGeology caption { get; set; }
 		//public FontGeology wellFont { get; set; }
-		
+
+		public int Width { get { return _Width; } set { _Width = value; } }
+		public int Height { get { return _Height; } set { _Height = value; } }
+
+		public int WidthLocal { get { return widthLocal; } set { widthLocal = value; } }
+		public int HeightLocal { get { return heightLocal; } set { heightLocal = value; } }
 
 		public double scaleV;
-		public int WidthLocal, HeightLocal;
+		private int widthLocal, heightLocal;
 
 		protected readonly EPlaneType axisType;
 		//protected readonly IntPtr hdc;
@@ -35,16 +40,18 @@ namespace Geology.DrawNewWindow.View
 		protected readonly PageType page;
 		private readonly Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects;
 		private readonly CaptionAxisHorAndVert captionHorAndVert;
-		private readonly COrthoControlProport Ortho;
+		private COrthoControlProport Ortho;
 		private bool selectionStarted = false;
 		private bool selectionFinished = true;
 		private readonly double zRange = 1e+7;
-		private double selectionX0 = 0, selectionX1 = 0;
-		private double selectionY0 = 0, selectionY1 = 0;
-		protected readonly int Width, Height;
+		private double selectionX0, selectionX1;
+		private double selectionY0, selectionY1;
+		protected int _Width, _Height;
 		protected readonly double[] BoundingBox;
 		private readonly FontGeology fontReceivers;
 		private readonly FontGeology paletteFont;
+
+		
 
 		public ViewWindow2D(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho, Dictionary<PageType, 
 			List<IViewportObjectsDrawable>> drawableObjects, EPlaneType axisType, double zRange, PageType page, 
@@ -81,8 +88,8 @@ namespace Geology.DrawNewWindow.View
 				scaleV = GlobalDrawingSettings.ScaleZ;
 			else
 				scaleV = 1.0;
-			captionHorAndVert.GenerateGrid(WidthLocal, HeightLocal, scaleV);
-			captionHorAndVert.DrawScaleLbls(WidthLocal, HeightLocal, scaleV);
+			captionHorAndVert.GenerateGrid(widthLocal, heightLocal, scaleV);
+			captionHorAndVert.DrawScaleLbls(widthLocal, heightLocal, scaleV);
 			DrawObjetcs();
 		}
 
@@ -91,11 +98,11 @@ namespace Geology.DrawNewWindow.View
 			try
 			{
 				captionHorAndVert.GetNewViewport(Width, Height, out int[] viewPoint);
-				WidthLocal = viewPoint[2];
-				HeightLocal = viewPoint[3];
+				widthLocal = viewPoint[2];
+				heightLocal = viewPoint[3];
 
 				double[] ortho;
-				Ortho.CoefHeightToWidth = HeightLocal / (double)WidthLocal;
+				Ortho.CoefHeightToWidth = heightLocal / (double)widthLocal;
 				Ortho.GetOrtho(out ortho);
 
 				GLContex.glMatrixMode(GLContex.GL_PROJECTION);
@@ -157,10 +164,10 @@ namespace Geology.DrawNewWindow.View
 			}
 
 			foreach (var item in drawableObjects[PageType.None])
-				item.Draw(axisType, BoundingBox, WidthLocal, HeightLocal, fontReceivers, paletteFont);
+				item.Draw(axisType, BoundingBox, widthLocal, heightLocal, fontReceivers, paletteFont);
 
 			foreach (var item in drawableObjects[page])
-				item.Draw(axisType, BoundingBox, WidthLocal, HeightLocal, fontReceivers, paletteFont);
+				item.Draw(axisType, BoundingBox, widthLocal, heightLocal, fontReceivers, paletteFont);
 
 
 			DrawSelection();

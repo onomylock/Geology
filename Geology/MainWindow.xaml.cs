@@ -43,7 +43,7 @@ using System.Collections;
 using Geology.DrawWindow;
 using Geology.DrawNewWindow.Controller;
 using Geology.DrawNewWindow.View;
-
+using Geology.DrawNewWindow.Model;
 
 namespace Geology
 {
@@ -80,56 +80,59 @@ namespace Geology
 #endif
             InitializeComponent();
 
-			GeoModel geoModel = new GeoModel();
-			geoModel.Objects.Add(new CGeoObject());
-			geoModel.GlobalBoundingBox[0] = -10000;
-			geoModel.GlobalBoundingBox[1] = 10000;
-			geoModel.GlobalBoundingBox[2] = -10000;
-			geoModel.GlobalBoundingBox[3] = 10000;
-			geoModel.GlobalBoundingBox[4] = -10000;
-			geoModel.GlobalBoundingBox[5] = 10000;
+			
 
-			Controller.SetBoundingBox(geoModel.GlobalBoundingBox);
+			GeoModel geoModel1 = new GeoModel();
+			geoModel1.Objects.Add(new CGeoObject());
+			geoModel1.GlobalBoundingBox[0] = -10000;
+			geoModel1.GlobalBoundingBox[1] = 10000;
+			geoModel1.GlobalBoundingBox[2] = -10000;
+			geoModel1.GlobalBoundingBox[3] = 10000;
+			geoModel1.GlobalBoundingBox[4] = -10000;
+			geoModel1.GlobalBoundingBox[5] = 10000;
+
+			ModelWindow model = new ModelWindow();
+			model.Objects.Add(new CGeoObject());
+			model.GlobalBoundingBox[0] = -10000;
+			model.GlobalBoundingBox[1] = 10000;
+			model.GlobalBoundingBox[2] = -10000;
+			model.GlobalBoundingBox[3] = 10000;
+			model.GlobalBoundingBox[4] = -10000;
+			model.GlobalBoundingBox[5] = 10000;
+			
+			Controller.SetBoundingBox(model.GlobalBoundingBox);
 			Controller.SetMainRef(this);
-			//XYOpenGlWindow.setRotateAndNameAxes(Geology.DrawWindow.CObject3DDraw2D.EPlaneType.XY); //XY
-			//XZOpenGlWindow.setRotateAndNameAxes(Geology.DrawWindow.CObject3DDraw2D.EPlaneType.XZ); //XZ
-			//YZOpenGlWindow.setRotateAndNameAxes(Geology.DrawWindow.CObject3DDraw2D.EPlaneType.YZ); //YZ
-			//XZOpenGl.setRotateAndNameAxes(Geology.DrawWindow.CObject3DDraw2D.EPlaneType.YZ); //YZ
+			
+			
+			
 
-			Controller2D.SetBoundingBox(geoModel.GlobalBoundingBox);
-			Controller2D.SetMainRef(this);
+			//Controller2D.SetMainRef(this);
+			Controller2D.setRotateAndNameAxes(EPlaneType.YZ);
+			//Controller2D.ChangeOrtho(model.GlobalBoundingBox);
+			//Controller2D.SetBoundingBox(model.GlobalBoundingBox);
+			//Controller2D.drawableObjects[PageType.Model].Add(model.Objects.First());
+			Controller2D.ChangeOrtho(geoModel1.GlobalBoundingBox);
+			Controller2D.SetBoundingBox(geoModel1.GlobalBoundingBox);
+			Controller2D.drawableObjects[PageType.Model].Add(geoModel1.Objects.First());
 
-			//Controller.SetBoundingBox();
-			View3DWindow.SetObjects(geoModel.Layers, geoModel.Objects, geoModel);
+
+
+			View3DWindow.SetObjects(model.Layers, model.Objects, geoModel1);
 			View3DWindow.SetMainRef(this);
-			View3DWindow.ChangeBoundingBox(geoModel.GlobalBoundingBox);
-
-			//var curve = BuildCurve();
-			//graphViewerControl.CurvesInfoList.Add(curve.Item2);
-			//graphViewerControl.TGraph.CurvesInfoList.Add(curve.Item2);
-			//graphViewerControl.TGraph.Curves.Add(curve.Item1);
-
-			//ControllerWindow Controller = new ControllerWindow();
+			View3DWindow.ChangeBoundingBox(geoModel1.GlobalBoundingBox);
 
 
 
-			//XYOpenGlWindow.ChangeOrtho(geoModel.GlobalBoundingBox);
-			//XZOpenGlWindow.ChangeOrtho(geoModel.GlobalBoundingBox);
-			//YZOpenGlWindow.ChangeOrtho(geoModel.GlobalBoundingBox);
-			////XZOpenGl.ChangeOrtho(geoModel.GlobalBoundingBox);
 
-			//XYOpenGlWindow.ChangeBoundingBox(geoModel.GlobalBoundingBox);
-			//XZOpenGlWindow.ChangeBoundingBox(geoModel.GlobalBoundingBox);
-			//YZOpenGlWindow.ChangeBoundingBox(geoModel.GlobalBoundingBox);
-			////XZOpenGl.ChangeBoundingBox(geoModel.GlobalBoundingBox);
 
-			//XYOpenGlWindow.drawableObjects[PageType.Model].Add(geoModel.Objects.First());
-			//XZOpenGlWindow.drawableObjects[PageType.Model].Add(geoModel.Objects.First());
-			//YZOpenGlWindow.drawableObjects[PageType.Model].Add(geoModel.Objects.First());
-			////XZOpenGl.drawableObjects[PageType.Model].Add(geoModel.Objects.First());
+			XZOpenGlWindow.setRotateAndNameAxes(EPlaneType.XZ); //XZ
+			XZOpenGlWindow.ChangeOrtho(geoModel1.GlobalBoundingBox);
+			XZOpenGlWindow.ChangeBoundingBox(geoModel1.GlobalBoundingBox);
+			XZOpenGlWindow.drawableObjects[PageType.Model].Add(geoModel1.Objects.First());
+			
 
 		}
-
+	
 		private void Button_Click(object sender, RoutedEventArgs e)
         {
 

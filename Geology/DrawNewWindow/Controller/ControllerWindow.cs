@@ -29,7 +29,22 @@ namespace Geology.DrawNewWindow.Controller
         public IViewWindow View{ get { return view; } set { view = value; } }
         public PageType Page{ get { return page; } set { page = value; } }
 
-		public IModelWindow model = new ModelWindow();
+		public IModelWindow Model 
+        { 
+            get { return model; } 
+            set 
+            {
+                if (model == null)
+                    model = new ModelWindow();
+                else
+                { 
+                    model = value;
+                    this.ResizeView();
+                    this.UpdateViewMatrix();
+                    this.Draw();
+                } 
+            } 
+        }
         public CPerspective project { get; set; }
 		public FontGeology caption { get; set; }
 		public FontGeology fontReceivers { get; set; }
@@ -43,6 +58,7 @@ namespace Geology.DrawNewWindow.Controller
         private bool mouseDown = false;
         private IViewWindow view;
         private PageType page = PageType.Model;
+        private IModelWindow model;
 
         private ContextMenuStrip mnu;
         private ToolStripMenuItem mnuAlongWindow;
@@ -57,17 +73,18 @@ namespace Geology.DrawNewWindow.Controller
         public ControllerWindow() : base()
         {
 
-            //Model = new ModelWindow();
+            Model = new ModelWindow();
+            model.Objects.Add(new CGeoObject());
             window = null;
 
             // Может собираться и внешне
-            model.Objects.Add(new CGeoObject());
-            model.GlobalBoundingBox[0] = -10000;
-            model.GlobalBoundingBox[1] = 10000;
-            model.GlobalBoundingBox[2] = -10000;
-            model.GlobalBoundingBox[3] = 10000;
-            model.GlobalBoundingBox[4] = -10000;
-            model.GlobalBoundingBox[5] = 10000;
+            //model.Objects.Add(new CGeoObject());
+            //model.GlobalBoundingBox[0] = -10000;
+            //model.GlobalBoundingBox[1] = 10000;
+            //model.GlobalBoundingBox[2] = -10000;
+            //model.GlobalBoundingBox[3] = 10000;
+            //model.GlobalBoundingBox[4] = -10000;
+            //model.GlobalBoundingBox[5] = 10000;
             project = new CPerspective();
 
             Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
@@ -91,6 +108,7 @@ namespace Geology.DrawNewWindow.Controller
 
 			
 			this.Disposed += CView3D_Disposed;
+            this.Resize += Controller_Resize;
 
             mnuAlongWindow.CheckOnClick = true;
             mnuAlongWindow.Checked = true;
@@ -108,12 +126,21 @@ namespace Geology.DrawNewWindow.Controller
             mnuStartView.Click += mnuStartView_Click;
             mnuSelect.CheckOnClick = true;
             mnuSelect.Click += mnuSelect_Click;
+            
 
             mnu.Items.AddRange(new ToolStripItem[] { mnuAlongWindow,/* mnuAlongX, mnuAlongY, mnuAlongZ,*/ 
                 mnuAroundX, mnuAroundY, mnuAroundZ, mnuNone, 
                 mnuSaveBitmap, mnuStartView, mnuSelect });
             ContextMenuStrip = mnu;
         }
+
+
+
+        public void ResizeView()
+		{
+            view.Width = Width;
+            view.Height = Height;
+		}
 
         public void SetMainRef(MainWindow _window)
         {
@@ -124,6 +151,13 @@ namespace Geology.DrawNewWindow.Controller
 		{
             Array.Copy(newBoundingBox, BoundingBox, newBoundingBox.Length);
 		}
+
+        private void Controller_Resize(object sender, EventArgs e)
+        {
+            this.ResizeView();
+            Resize_Window();
+            this.Draw();
+        }
 
         private void CView3D_Disposed(object sender, EventArgs e)
         {
@@ -196,7 +230,10 @@ namespace Geology.DrawNewWindow.Controller
 			project.ClearView();
 			Array.Copy(model.GlobalBoundingBox, BoundingBox, BoundingBox.Length);
             Resize_Window();
-			Invalidate();
+            //ResizeView();
+            //view.Height = Height;
+            //view.Width = Width;
+            Invalidate();
 		}
 
 		private void mnuAlongWindow_Click(object sender, EventArgs e)
@@ -274,6 +311,9 @@ namespace Geology.DrawNewWindow.Controller
 
                 XPrevious = e.X; YPrevious = e.Y;
                 Resize_Window();
+                //ResizeView();
+                //view.Height = Height;
+                //view.Width = Width;
                 Invalidate();
             }
             //if (window != null)
@@ -347,7 +387,19 @@ namespace Geology.DrawNewWindow.Controller
             mouseDown = false;
         }
 
-		protected override void Draw() => view?.Draw();
+        protected override void OnMouseWheel(System.Windows.Forms.MouseEventArgs e)
+        {
+            double scal = e.Delta < 0 ? 1.05 : 1 / 1.05;
+            project.Scale *= scal;
+
+            Resize_Window();
+            //ResizeView();
+            //view.Height = Height;
+            //view.Width = Width;
+            Invalidate();
+        }
+
+        protected override void Draw() => view?.Draw();
 		protected override void UpdateViewMatrix() => view?.UpdateViewMatrix();
 	}
 }

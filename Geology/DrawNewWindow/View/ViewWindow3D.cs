@@ -19,7 +19,13 @@ namespace Geology.DrawNewWindow.View
 {
     public class ViewWindow3D : IViewWindow
     {
-        private readonly FontGeology caption;
+        public int Width { get { return _Width; } set { _Width = value; } }
+        public int Height { get { return _Height; } set { _Height = value; } }
+
+		public int WidthLocal { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public int HeightLocal { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+		private readonly FontGeology caption;
         //public FontGeology fontReceivers { get; set; }
         //public FontGeology paletteFont { get; set; }
 
@@ -28,13 +34,10 @@ namespace Geology.DrawNewWindow.View
         protected readonly CPerspective project;
         protected readonly IModelWindow model;
         protected readonly PageType page;
-        protected readonly int Width, Height;
+        
+        private int _Height;
+        private int _Width;
         protected readonly double[] BoundingBox;
-
-        public ViewWindow3D()
-		{
-
-		}
 
         public ViewWindow3D(CPerspective project, IModelWindow model, 
             PageType page, int Width, int Height, double[] BoundingBox, FontGeology caption)
@@ -276,7 +279,7 @@ namespace Geology.DrawNewWindow.View
 
                 GLContex.glMatrixMode(GLContex.GL_PROJECTION);
                 GLContex.glPopMatrix();
-                GLContex.glViewport(0, 0, Width, Height);
+                GLContex.glViewport(0, 0, _Width, _Height);
                 GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
                 GLContex.glPopMatrix();
             }
@@ -289,10 +292,10 @@ namespace Geology.DrawNewWindow.View
                 GLContex.glMatrixMode(GLContex.GL_PROJECTION);
                 GLContex.glLoadIdentity();
                 double dMax, startAngle, dView;
-                GLContex.glViewport(0, 0, Width, Height);
+                GLContex.glViewport(0, 0, _Width, _Height);
                 project.PrepareDraw(out dMax, out startAngle, out dView, BoundingBox);
 
-                GLContex.gluPerspective(startAngle, Width / (double)Height, dView, (dMax) * 30);
+                GLContex.gluPerspective(startAngle, _Width / (double)_Height, dView, (dMax) * 30);
                 GLContex.glMatrixMode(GLContex.GL_MODELVIEW);     // To operate on model-view matrix
                 GLContex.glLoadIdentity();
                 CCamera tmpCam = project.GetCamera;
@@ -304,6 +307,16 @@ namespace Geology.DrawNewWindow.View
             {
 
             }
-        }   
-    }
+        }
+
+		public void UpdateViewMatrix(COrthoControlProport Ortho)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void UpdateViewMatrix(COrthoControlProport Ortho, out int WidthLocal, out int HeightLocal)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

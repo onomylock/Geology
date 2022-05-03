@@ -19,19 +19,16 @@ namespace Geology.DrawNewWindow.Controller
 	//{ XY = 0, XZ, YZ }
 
 	class ControllerWindow3DDraw2D : ControllerWindow2D, IControllerWindow
-	{
-		public IViewWindow View { get { return view; } set { view = value; } }
-		public PageType Page { get { return page; } set { page = value; } }
+	{	
         public EPlaneType axisType;
-
         public Dictionary<PageType, List<IViewportObjectsSelectable>> selectableObjects = new Dictionary<PageType, List<IViewportObjectsSelectable>>();
 		public Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects = new Dictionary<PageType, List<IViewportObjectsDrawable>>();
 		public Dictionary<PageType, List<IViewportObjectsClickable>> clickableObjects = new Dictionary<PageType, List<IViewportObjectsClickable>>();
 		public Dictionary<PageType, List<IViewportObjectsContextmenuClickable>> contextMenuClickableObjects = new Dictionary<PageType, List<IViewportObjectsContextmenuClickable>>();
 		public Dictionary<PageType, List<IViewportMouseMoveReaction>> mouseMoveReactionObjects = new Dictionary<PageType, List<IViewportMouseMoveReaction>>();
 
-		private IViewWindow view;
-		private PageType page = PageType.Model;
+		
+		//private PageType page = PageType.Model;
         
         private double zRange;
         private double selectionX0 = 0, selectionX1 = 0;
@@ -49,7 +46,7 @@ namespace Geology.DrawNewWindow.Controller
 		{
 			axisType = EPlaneType.XY;
 			zRange = 1e+7;
-			ChangeOrtho(new double[] { -10000, 10000, -10000, 10000, -10000, 10000 });
+			//ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });
 
 			foreach (var item in (PageType[])Enum.GetValues(typeof(PageType)))
 			{
@@ -63,24 +60,38 @@ namespace Geology.DrawNewWindow.Controller
 			this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
 
             view = new ViewWindow2D(captionHorAndVert, Ortho, drawableObjects, axisType, zRange, page, Width, Height, BoundingBox, fontReceivers, paletteFont);
+            this.Resize += Controller_Resize;	
+        }
+
+		public void ResizeView()
+		{
+			view.Width = Width;
+			view.Height = Height;
 		}
 
-        public void SetMainRef(MainWindow _window)
+		public void SetMainRef(MainWindow _window)
         {
             window = _window;
         }
-
-        private void ContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-		{
-			Invalidate();
-		}
 
 		public void SetBoundingBox(double[] newBoundingBox)
 		{
             Array.Copy(newBoundingBox, BoundingBox, newBoundingBox.Length);
         }
 
-        private void StartSelection(double x, double y)
+        private void ContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            Invalidate();
+        }
+
+		private void Controller_Resize(object sender, EventArgs e)
+		{
+			this.ResizeView();
+			Resize_Window();
+			this.Draw();
+		}
+
+		private void StartSelection(double x, double y)
         {
             selectionX1 = selectionX0 = x;
             selectionY1 = selectionY0 = y;
@@ -92,20 +103,23 @@ namespace Geology.DrawNewWindow.Controller
 
             Invalidate();
         }
+        
         private void ContinueSelection(double x, double y)
         {
             selectionX1 = x;
             selectionY1 = y;
+            //this.ControllerWindow3DDraw2D_MouseMove();
 
             Invalidate();
         }
+        
         private void FinishSelection(double x, double y)
         {
             selectionX1 = x;
             selectionY1 = y;
             selectionStarted = false;
             selectionFinished = true;
-
+            //this.ControllerWindow3DDraw2D_MouseMove();
             toAdd = Keyboard.IsKeyDown(Key.LeftCtrl) ||
                 Keyboard.IsKeyDown(Key.RightCtrl);
 
@@ -124,27 +138,28 @@ namespace Geology.DrawNewWindow.Controller
 
         private void ConvertScreenToWorldCoord(int screenX, int screenY, out double x, out double y)
         {
-            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, screenX, screenY, out x, out y, captionHorAndVert.myfontVert.GetHeightText("0"), captionHorAndVert.myfontHor.GetHeightText("0"));
+            Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, screenX, screenY, out x, out y, captionHorAndVert.myfontVert.GetHeightText("0"), captionHorAndVert.myfontHor.GetHeightText("0"));
             double c;
             int indent;
             double[] orthV;
             Ortho.GetOrtho(out orthV);
 
             indent = captionHorAndVert.myfontVert.GetHeightText("0");
-            c = (orthV[1] - orthV[0]) / (WidthLocal - indent);
+            c = (orthV[1] - orthV[0]) / (view.WidthLocal - indent);
             x = orthV[0] + (screenX - indent) * c;
 
-            screenY = HeightLocal + indent - screenY;
+            screenY = view.HeightLocal + indent - screenY;
             indent = captionHorAndVert.myfontHor.GetHeightText("0");
-            c = (orthV[3] - orthV[2]) / (HeightLocal - indent);
+            c = (orthV[3] - orthV[2]) / (view.HeightLocal - indent);
             y = orthV[2] + (screenY - indent) * c;
         }
+        
         private double MetersPerPixel()
         {
             double[] orthV;
             Ortho.GetOrtho(out orthV);
             int indent = captionHorAndVert.myfontVert.GetHeightText("0");
-            return (orthV[1] - orthV[0]) / (WidthLocal - indent);
+            return (orthV[1] - orthV[0]) / (view.WidthLocal - indent);
         }
 
         void SetContextMenu(double x, double y)
@@ -178,6 +193,30 @@ namespace Geology.DrawNewWindow.Controller
             this.ContextMenuStrip = mnu;
         }
 
+        protected void GetRays(double x, double y, out double[] r1, out double[] r2)
+        {
+            r1 = new double[3];
+            r2 = new double[3];
+            switch (axisType)
+            {
+                case EPlaneType.XY:
+                    r1[0] = x; r2[0] = x;
+                    r1[1] = y; r2[1] = y;
+                    r1[2] = BoundingBox[4]; r2[2] = BoundingBox[5];
+                    break;
+                case EPlaneType.XZ:
+                    r1[0] = x; r2[0] = x;
+                    r1[1] = BoundingBox[2]; r2[1] = BoundingBox[3];
+                    r1[2] = y; r2[2] = y;
+                    break;
+                case EPlaneType.YZ:
+                    r1[0] = BoundingBox[0]; r2[0] = BoundingBox[1];
+                    r1[1] = x; r2[1] = x;
+                    r1[2] = y; r2[2] = y;
+                    break;
+            }
+        }
+
         protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
         {
             double x, y;
@@ -203,31 +242,10 @@ namespace Geology.DrawNewWindow.Controller
                 return;
             }
 
+            
             base.OnMouseDown(e);
         }
-        protected void GetRays(double x, double y, out double[] r1, out double[] r2)
-        {
-            r1 = new double[3];
-            r2 = new double[3];
-            switch (axisType)
-            {
-                case EPlaneType.XY:
-                    r1[0] = x; r2[0] = x;
-                    r1[1] = y; r2[1] = y;
-                    r1[2] = BoundingBox[4]; r2[2] = BoundingBox[5];
-                    break;
-                case EPlaneType.XZ:
-                    r1[0] = x; r2[0] = x;
-                    r1[1] = BoundingBox[2]; r2[1] = BoundingBox[3];
-                    r1[2] = y; r2[2] = y;
-                    break;
-                case EPlaneType.YZ:
-                    r1[0] = BoundingBox[0]; r2[0] = BoundingBox[1];
-                    r1[1] = x; r2[1] = x;
-                    r1[2] = y; r2[2] = y;
-                    break;
-            }
-        }
+
         protected override void OnMouseUp(System.Windows.Forms.MouseEventArgs e)
         {
             double x, y;
@@ -265,6 +283,7 @@ namespace Geology.DrawNewWindow.Controller
             base.OnMouseUp(e);
             Invalidate();
         }
+       
         protected override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
         {
             double x, y;
@@ -384,6 +403,7 @@ namespace Geology.DrawNewWindow.Controller
             Ortho.SetZBuffer(newOrtho[4], newOrtho[5]);
             Resize_Window();
         }
+        
         public void setRotateAndNameAxes(EPlaneType numAxis)
         {
             axisType = numAxis;
@@ -396,6 +416,11 @@ namespace Geology.DrawNewWindow.Controller
         }
 
         protected override void Draw() => view?.Draw();
-		protected override void UpdateViewMatrix() => view?.UpdateViewMatrix();
+        protected override void UpdateViewMatrix()
+        {
+            view?.UpdateViewMatrix();
+            //view.WidthLocal = view.WidthLocal;
+            //view.HeightLocal = view.HeightLocal;
+        }
 	}
 }

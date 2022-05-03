@@ -7,23 +7,26 @@ using Geology.OpenGL.OpenGLControl;
 using Geology.DrawWindow;
 using Geology.OpenGL;
 using System.Windows.Forms;
+using Geology.DrawNewWindow.View;
 
 namespace Geology.DrawNewWindow.Controller
 {
 	public class ControllerWindow2D : OpenGLControl
 	{
-        public int WidthLocal, HeightLocal;
+        public PageType Page { get { return page; } set { page = value; } }
         public COrthoControlProport Ortho;
         public FontGeology wellFont { get; set; }
         public FontGeology fontReceivers { get; set; }
         public FontGeology paletteFont { get; set; }
-
-
+        public IViewWindow View { get { return view; } set { view = value; } }
+        
+        protected IViewWindow view;
         protected CaptionAxisHorAndVert captionHorAndVert;
         protected Geology.MainWindow window;
         protected int XPrevious = 0, YPrevious = 0;
         protected bool mouseDown = false;
         protected System.Windows.Forms.ContextMenuStrip mnu; // base context menu 
+        protected PageType page = PageType.Model;
 
         public ControllerWindow2D(bool EqualScale) : base()
 		{
@@ -36,6 +39,7 @@ namespace Geology.DrawNewWindow.Controller
             Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
             
             this.Disposed += OpenGLControl_Disposed;
+            //this.Resize += Controller_Resize;
 
             window = null;
 
@@ -134,7 +138,7 @@ namespace Geology.DrawNewWindow.Controller
         protected void ScreenToWorldCoord(int eX, int eY, out double resX, out double resY)
         {
             //Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, eX, eY, out resX, out resY, captionHorAndVert.GetIndentVert);
-            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, eX, eY, out resX, out resY, captionHorAndVert.myfontVert.GetHeightText("0"), captionHorAndVert.myfontHor.GetHeightText("0") +
+            Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, eX, eY, out resX, out resY, captionHorAndVert.myfontVert.GetHeightText("0"), captionHorAndVert.myfontHor.GetHeightText("0") +
                 (captionHorAndVert.DoubleAxis ? captionHorAndVert.myfontHor.GetHeightText("0") + 3 : 0));
         }
 
@@ -143,17 +147,21 @@ namespace Geology.DrawNewWindow.Controller
             if (mouseDown)
             {
                 double prevX, prevY, curX, curY;
-                Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, XPrevious, YPrevious, out prevX, out prevY, captionHorAndVert.GetIndentVert);
-                Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+                Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, XPrevious, YPrevious, out prevX, out prevY, captionHorAndVert.GetIndentVert);
+                Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
                 if (Ortho.DoubleAxis)
                 {
                     double x2, x2Prev;
-                    Ortho.ConvertScreenToWorldCoordAddition(WidthLocal, XPrevious, out x2Prev, captionHorAndVert.GetIndentVert);
-                    Ortho.ConvertScreenToWorldCoordAddition(WidthLocal, e.X, out x2, captionHorAndVert.GetIndentVert);
+                    Ortho.ConvertScreenToWorldCoordAddition(view.WidthLocal, XPrevious, out x2Prev, captionHorAndVert.GetIndentVert);
+                    Ortho.ConvertScreenToWorldCoordAddition(view.WidthLocal, e.X, out x2, captionHorAndVert.GetIndentVert);
                     Ortho.Translate(-curX + prevX, -curY + prevY, -x2 + x2Prev);
                 }
                 else
+                {
+                    if (-curX + prevX != 0 || -curY + prevY != 0)
+                        curX = curX;
                     Ortho.Translate(-curX + prevX, -curY + prevY);
+                }
                 XPrevious = e.X; YPrevious = e.Y;
                 Resize_Window();
                 Invalidate();
@@ -178,11 +186,11 @@ namespace Geology.DrawNewWindow.Controller
         protected override void OnMouseWheel(MouseEventArgs e)
         {
             double resX, resY;
-            Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, e.X, e.Y, out resX, out resY, captionHorAndVert.GetIndentHor, captionHorAndVert.GetIndentVert);
+            Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, e.X, e.Y, out resX, out resY, captionHorAndVert.GetIndentHor, captionHorAndVert.GetIndentVert);
             if (Ortho.DoubleAxis)
             {
                 double x2;
-                Ortho.ConvertScreenToWorldCoordAddition(WidthLocal, e.X, out x2, captionHorAndVert.GetIndentVert);
+                Ortho.ConvertScreenToWorldCoordAddition(view.WidthLocal, e.X, out x2, captionHorAndVert.GetIndentVert);
                 Ortho.Scale(resX, resY, x2, e.Delta);
             }
             else
