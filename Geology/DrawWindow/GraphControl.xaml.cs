@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Runtime.InteropServices;
 using System.Collections.Specialized;
 using Geology.Utilities;
+using Geology.DrawNewWindow.Controller;
 
 namespace Geology.Controls
 {
@@ -525,7 +526,8 @@ namespace Geology.Controls
         }
         protected void CurvesZoom_Click(object sender, RoutedEventArgs e)
         {
-            TGraph.mState = DrawWindow.CView2DGraph.MouseState.msZoom;
+            //TGraph.mState = DrawWindow.CView2DGraph.MouseState.msZoom;
+            TGraph.mState = ControllerCurve.MouseState.msZoom;
         }
         protected void CurvesZoomBack_Click(object sender, RoutedEventArgs e)
         {

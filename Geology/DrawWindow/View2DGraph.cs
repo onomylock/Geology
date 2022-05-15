@@ -133,7 +133,6 @@ String lpszFile // File
             ToolStripMenuItem mnuDiv = new ToolStripMenuItem("Divide");
 
             mnuAdd.Click += mnuAdd_Click;
-            mnuSub.Click += mnuSub_Click;
             mnuMul.Click += mnuMul_Click;
             mnuDiv.Click += mnuDiv_Click;
 

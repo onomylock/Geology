@@ -113,15 +113,18 @@
                                 <GridSplitter x:Uid="GridSplitter_4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,481,3.667,0.333" Grid.RowSpan="2"/>
                             </Grid>
 
-                        </DockPanel>
-                    </TabItem>-->
-                    <!--<TabItem x:Uid="TabItem_2" Header="Graphs" x:Name="TabItemGraphs">
-                        <TabControl x:Uid="TabControl_2">
+                        </DockPanel>-->
+                    <!--</TabItem>-->
+                    <TabItem x:Uid="TabItem_2" Header="Graphs" x:Name="TabItemGraphs">
+                        <TabControl x:Uid="TabControl_8">
                             <TabItem x:Uid="TabItem_3" Header="InPoint" x:Name="TabItemGraphsInPoint">
                                 <controls:GraphControl  x:Uid="graphViewerControl" x:Name="graphViewerControl"  Margin="0"/>
                             </TabItem>
+                            <!--<TabItem x:Uid="TabItem_7" Header="newInPoint" x:Name="newTabItemGraphsInPoint">
+                                --><!--<controls:GraphControl  x:Uid="graphViewerControl" x:Name="graphViewerControl"  Margin="0"/>--><!--
+                            </TabItem>-->
                         </TabControl>
-                    </TabItem>-->
+                    </TabItem>
                     <TabItem x:Uid="TabItem_4" Header="NewWindow" x:Name="newGraphViewerControl" >
                         <DockPanel  x:Uid="DockPanelNewWindow" x:Name="DockPanelNewWindow"  Grid.Row="2">
                         <Grid x:Uid="Grid_newWindow" x:Name="BottomNewGrid">

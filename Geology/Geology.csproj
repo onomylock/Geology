@@ -125,6 +125,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DrawNewWindow\Controller\ControllerCurve.cs" />
     <Compile Include="DrawNewWindow\Controller\ControllerWindow3DDraw2D.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -132,7 +133,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DrawNewWindow\Controller\IControllerWindow.cs" />
-    <Compile Include="DrawNewWindow\Controller\VirtualController.cs" />
     <Compile Include="DrawNewWindow\Model\IModelWindow.cs" />
     <Compile Include="DrawNewWindow\Model\ModelWindow.cs" />
     <Compile Include="DrawNewWindow\View\ViewWindow2D.cs" />
@@ -143,6 +143,7 @@
     <Compile Include="DrawNewWindow\Controller\ControllerWindow.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="DrawNewWindow\View\ViewWindowCurve.cs" />
     <Compile Include="DrawWindow\GlobalDrawingSettings.cs" />
     <Compile Include="DrawWindow\GraphControl.xaml.cs">
       <DependentUpon>GraphControl.xaml</DependentUpon>
