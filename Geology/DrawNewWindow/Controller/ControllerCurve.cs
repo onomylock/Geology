@@ -13,9 +13,23 @@ using Geology.Objects;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Geology.DrawNewWindow.View;
+using Geology.DrawWindow;
 
 namespace Geology.DrawNewWindow.Controller
 {
+	public class ViewWithCurve : IViewWindowAndCurveInfo
+	{
+		private readonly IViewWindow view;
+
+		public ViewWithCurve(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho,
+		ObservableCollection<Objects.CCurveInfo> CurvesInfoList, Rect mRect, bool mZoomStarted, ObservableCollection<Objects.CCurve> Curves, double Arg)
+		{
+			view = new ViewWindowCurve(captionHorAndVert, Ortho, CurvesInfoList, mRect, mZoomStarted, Curves, Arg);
+		}
+		//private readonly ObservableCollection<Objects.CCurveInfo> curveInfos;
+		public Tuple<IViewWindow, ICurveInfoChaged> View => new Tuple<IViewWindow, ICurveInfoChaged>(view, view);
+	}
+
 	public class Rect
 	{
 		public double x1;
@@ -72,8 +86,10 @@ String lpszFile // File
 		);
 
 		
-		public enum MouseState { msNormal, msZoom }
 
+
+		public enum MouseState { msNormal, msZoom }
+		//public IViewWindowAndCurveInfo viewWindowAndCurveInfo;
 		public ObservableCollection<Objects.CCurve> Curves;
 		public ObservableCollection<Objects.CCurve> CurvesCopy;
 		public ObservableCollection<Objects.CCurveInfo> CurvesInfoList;
@@ -105,6 +121,7 @@ String lpszFile // File
 		{
 			Curves = new ObservableCollection<Objects.CCurve>();
 			CurvesCopy = new ObservableCollection<Objects.CCurve>();
+			//CurvesInfoList = new ObservableCollection<Objects.CCurveInfo>();
 			CurvesInfoList = null;
 			OrthoHistory = new Stack<Rect>();
 

@@ -129,8 +129,15 @@ namespace Geology
 			XZOpenGlWindow.ChangeOrtho(geoModel1.GlobalBoundingBox);
 			XZOpenGlWindow.ChangeBoundingBox(geoModel1.GlobalBoundingBox);
 			XZOpenGlWindow.drawableObjects[PageType.Model].Add(geoModel1.Objects.First());
-			
 
+			var curve = BuildCurve();
+			//graphViewerControl.CurvesInfoList.Add(curve.Item2);
+			
+			graphViewerControl.TGraph.Curves.Add(curve.Item1);
+			graphViewerControl.CurvesInfoList.Add(curve.Item2);
+			graphViewerControl.TGraph.CurvesInfoList = graphViewerControl.CurvesInfoList;
+			int i = 0;
+			i = 1;
 		}
 	
 		private void Button_Click(object sender, RoutedEventArgs e)

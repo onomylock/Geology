@@ -4,10 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Collections.ObjectModel;
 using Geology.DrawWindow;
 
 namespace Geology.DrawNewWindow.View
 {
+    public interface IViewWindowAndCurveInfo
+    {
+        Tuple<IViewWindow, ICurveInfoChaged> View {get;}
+	}
+
+    public interface ICurveInfoChaged
+	{
+        ObservableCollection<Objects.CCurveInfo> CurvesInfoList { get; set; }
+    }
 
     public interface IViewWindow
     {

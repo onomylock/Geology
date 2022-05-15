@@ -115,56 +115,59 @@
 
                         </DockPanel>-->
                     <!--</TabItem>-->
+
+                    <TabItem x:Uid="TabItem_4" Header="NewWindow" x:Name="newGraphViewerControl" >
+                        <DockPanel  x:Uid="DockPanelNewWindow" x:Name="DockPanelNewWindow"  Grid.Row="2">
+                            <Grid x:Uid="Grid_newWindow" x:Name="BottomNewGrid">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition x:Uid="RowDefinition_23" Height="*"/>
+                                    <RowDefinition x:Uid="RowDefinition_24" Height="4"/>
+                                    <RowDefinition x:Uid="RowDefinition_25" Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_90" Width="104*"/>
+                                    <ColumnDefinition Width="24*"/>
+                                    <ColumnDefinition Width="80*"/>
+                                    <ColumnDefinition Width="400*"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_91" Width="4"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_92" Width="607*"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_93" Width="4"/>
+                                    <ColumnDefinition x:Uid="ColumnDefinition_94" Width="606*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_1" Grid.Column="7" Margin="0,0,3.667,0.333" Grid.Row="0">
+                                    <openglwin:CObject3DDraw2D x:Uid="XZOpenGlWindow" x:Name="XZOpenGlWindow"   />
+                                </WindowsFormsHost>
+
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_3" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" Margin="3.666,0,0.334,-0.333">
+                                    <openglwinnew:ControllerWindow x:Uid="Controller" x:Name="Controller" />
+                                </WindowsFormsHost>
+
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_5" Grid.Column="5" Grid.Row="0" Margin="3.666,0,0.334,-0.333">
+                                    <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2D" x:Name="Controller2D" />
+                                </WindowsFormsHost>
+
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_4" Grid.Column="0" Grid.ColumnSpan="4" Margin="3.666,0,0.334,-0.333" Grid.Row="5">
+                                    <openglwin:CView3D x:Uid="View3DWindow" x:Name="View3DWindow" />
+                                </WindowsFormsHost>
+
+                                <GridSplitter x:Uid="GridSplitter_5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="4" Grid.RowSpan="3"/>
+                                <GridSplitter x:Uid="GridSplitter_6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="6" Grid.RowSpan="3"/>
+                                <GridSplitter x:Uid="GridSplitter_7" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="4"/>
+                            </Grid>
+                        </DockPanel>
+                    </TabItem>
                     <TabItem x:Uid="TabItem_2" Header="Graphs" x:Name="TabItemGraphs">
                         <TabControl x:Uid="TabControl_8">
                             <TabItem x:Uid="TabItem_3" Header="InPoint" x:Name="TabItemGraphsInPoint">
                                 <controls:GraphControl  x:Uid="graphViewerControl" x:Name="graphViewerControl"  Margin="0"/>
                             </TabItem>
                             <!--<TabItem x:Uid="TabItem_7" Header="newInPoint" x:Name="newTabItemGraphsInPoint">
-                                --><!--<controls:GraphControl  x:Uid="graphViewerControl" x:Name="graphViewerControl"  Margin="0"/>--><!--
+                                -->
+                            <!--<controls:GraphControl  x:Uid="graphViewerControl" x:Name="graphViewerControl"  Margin="0"/>-->
+                            <!--
                             </TabItem>-->
                         </TabControl>
-                    </TabItem>
-                    <TabItem x:Uid="TabItem_4" Header="NewWindow" x:Name="newGraphViewerControl" >
-                        <DockPanel  x:Uid="DockPanelNewWindow" x:Name="DockPanelNewWindow"  Grid.Row="2">
-                        <Grid x:Uid="Grid_newWindow" x:Name="BottomNewGrid">
-                            <Grid.RowDefinitions>
-                                <RowDefinition x:Uid="RowDefinition_23" Height="*"/>
-                                <RowDefinition x:Uid="RowDefinition_24" Height="4"/>
-                                <RowDefinition x:Uid="RowDefinition_25" Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition x:Uid="ColumnDefinition_90" Width="104*"/>
-                                <ColumnDefinition Width="24*"/>
-                                <ColumnDefinition Width="80*"/>
-                                <ColumnDefinition Width="400*"/>
-                                <ColumnDefinition x:Uid="ColumnDefinition_91" Width="4"/>
-                                <ColumnDefinition x:Uid="ColumnDefinition_92" Width="607*"/>
-                                <ColumnDefinition x:Uid="ColumnDefinition_93" Width="4"/>
-                                <ColumnDefinition x:Uid="ColumnDefinition_94" Width="606*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <WindowsFormsHost x:Uid="WindowsFormsHost_1" Grid.Column="7" Margin="0,0,3.667,0.333" Grid.Row="0">
-                                <openglwin:CObject3DDraw2D x:Uid="XZOpenGlWindow" x:Name="XZOpenGlWindow"   />
-                            </WindowsFormsHost>
-
-                            <WindowsFormsHost x:Uid="WindowsFormsHost_3" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" Margin="3.666,0,0.334,-0.333">
-                                <openglwinnew:ControllerWindow x:Uid="Controller" x:Name="Controller" />
-                            </WindowsFormsHost>
-
-                            <WindowsFormsHost x:Uid="WindowsFormsHost_5" Grid.Column="5" Grid.Row="0" Margin="3.666,0,0.334,-0.333">
-                                <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2D" x:Name="Controller2D" />
-                            </WindowsFormsHost>
-
-                            <WindowsFormsHost x:Uid="WindowsFormsHost_4" Grid.Column="0" Grid.ColumnSpan="4" Margin="3.666,0,0.334,-0.333" Grid.Row="5">
-                                <openglwin:CView3D x:Uid="View3DWindow" x:Name="View3DWindow" />
-                            </WindowsFormsHost>
-
-                            <GridSplitter x:Uid="GridSplitter_5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="4" Grid.RowSpan="3"/>
-                            <GridSplitter x:Uid="GridSplitter_6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="6" Grid.RowSpan="3"/>
-                            <GridSplitter x:Uid="GridSplitter_7" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="4"/>
-                        </Grid>
-                    </DockPanel>
                     </TabItem>
                 </TabControl>
             </Grid>
