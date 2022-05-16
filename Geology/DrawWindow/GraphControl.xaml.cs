@@ -45,32 +45,32 @@ namespace Geology.Controls
                                         // path.
 
 
-        public ObservableCollection<Objects.CCurveInfo> CurvesInfoList;
+        //public ObservableCollection<Objects.CCurveInfo> CurvesInfoList;
         private void chkSelectAllCurves_Checked(object sender, RoutedEventArgs e)
         {
-            CurvesInfoList.ToList().ForEach(x => x.Visible = true);
+            TGraph.CurvesInfoList.ToList().ForEach(x => x.Visible = true);
             TGraph.Invalidate();
         }
         protected void chkSelectAllCurves_UnChecked(object sender, RoutedEventArgs e)
         {
-            CurvesInfoList.ToList().ForEach(x => x.Visible = false);
+            TGraph.CurvesInfoList.ToList().ForEach(x => x.Visible = false);
             TGraph.Invalidate();
         }
         public GraphControl()
         {
-            CurvesInfoList = new ObservableCollection<Objects.CCurveInfo>();
+            //CurvesInfoList = new ObservableCollection<Objects.CCurveInfo>();
 
             InitializeComponent();
 
-            CurvesList.ItemsSource = CurvesInfoList;
-            TGraph.CurvesInfoList = CurvesInfoList;
+            CurvesList.ItemsSource = TGraph.CurvesInfoList;
+            //TGraph.CurvesInfoList = CurvesInfoList;
             TGraph.labelArg = LabelArgument;
             buttonDownX.IsEnabled = false;
             buttonUpX.IsEnabled = false;
             buttonDownY.IsEnabled = false;
             buttonUpY.IsEnabled = false;
 
-            CurvesInfoList.CollectionChanged += OnCurvesInfoListCollectionChanged;
+            TGraph.CurvesInfoList.CollectionChanged += OnCurvesInfoListCollectionChanged;
         }
         private void SetCurvesOldColors()
         {
@@ -121,14 +121,14 @@ namespace Geology.Controls
             {
                 System.Windows.Forms.ColorDialog cd = new System.Windows.Forms.ColorDialog();
                 cd.Color = System.Drawing.Color.FromArgb(
-                    CurvesInfoList[CurvesList.SelectedIndex].Color.A,
-                    CurvesInfoList[CurvesList.SelectedIndex].Color.R,
-                    CurvesInfoList[CurvesList.SelectedIndex].Color.G,
-                    CurvesInfoList[CurvesList.SelectedIndex].Color.B);
+                    TGraph.CurvesInfoList[CurvesList.SelectedIndex].Color.A,
+                    TGraph.CurvesInfoList[CurvesList.SelectedIndex].Color.R,
+                    TGraph.CurvesInfoList[CurvesList.SelectedIndex].Color.G,
+                    TGraph.CurvesInfoList[CurvesList.SelectedIndex].Color.B);
 
                 if (cd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    CurvesInfoList[CurvesList.SelectedIndex].Color = System.Windows.Media.Color.FromRgb(cd.Color.R, cd.Color.G, cd.Color.B);
+                    TGraph.CurvesInfoList[CurvesList.SelectedIndex].Color = System.Windows.Media.Color.FromRgb(cd.Color.R, cd.Color.G, cd.Color.B);
                     TGraph.Invalidate();
                 }
             }
@@ -155,7 +155,7 @@ namespace Geology.Controls
                
                     foreach (var item in CurvesList.SelectedItems)
                     {
-                        int i = CurvesInfoList.IndexOf((CCurveInfo)item);
+                        int i = TGraph.CurvesInfoList.IndexOf((CCurveInfo)item);
                         TGraph.Curves[i]= new Objects.CCurve(TGraph.CurvesCopy[i]);
                         TGraph.CurvesInfoList[i].Visible = true;
                     }
@@ -197,7 +197,7 @@ namespace Geology.Controls
                 if (CurvesList.SelectedItems.Count < 1 && CurvesList.SelectedItem != null)
                 {
                     var removedObject = (CCurveInfo)CurvesList.SelectedItem;
-                    TGraph.DeleteCurve(CurvesInfoList.IndexOf(removedObject));
+                    TGraph.DeleteCurve(TGraph.CurvesInfoList.IndexOf(removedObject));
                     NotifyItemRemoved(removedObject.Id);
                 }
                 else
@@ -207,7 +207,7 @@ namespace Geology.Controls
                     foreach (var item in CurvesList.SelectedItems)
                     {
                         var removedObject = (CCurveInfo)item;
-                        indexes.Add(CurvesInfoList.IndexOf(removedObject));
+                        indexes.Add(TGraph.CurvesInfoList.IndexOf(removedObject));
                         removedCurves.Add(removedObject);
                     }
                     for (int i = indexes.Count - 1; i >= 0; i-- )
@@ -257,7 +257,7 @@ namespace Geology.Controls
                 if (CurvesList.SelectedItems == null)
                     return;
                 foreach (var item in CurvesList.SelectedItems)
-                    TGraph.AbsCurve(CurvesInfoList.IndexOf((CCurveInfo)item));
+                    TGraph.AbsCurve(TGraph.CurvesInfoList.IndexOf((CCurveInfo)item));
             }
             catch (Exception ex)
             {
@@ -272,7 +272,7 @@ namespace Geology.Controls
                 if (CurvesList.SelectedItems == null)
                     return;
                 foreach (var item in CurvesList.SelectedItems)
-                    TGraph.SignCurve(CurvesInfoList.IndexOf((CCurveInfo)item));
+                    TGraph.SignCurve(TGraph.CurvesInfoList.IndexOf((CCurveInfo)item));
             }
             catch (Exception ex)
             {
@@ -286,7 +286,7 @@ namespace Geology.Controls
                 if (CurvesList.SelectedItems == null)
                     return;
                 foreach (var item in CurvesList.SelectedItems)
-                    TGraph.SquareCurve(CurvesInfoList.IndexOf((CCurveInfo)item));
+                    TGraph.SquareCurve(TGraph.CurvesInfoList.IndexOf((CCurveInfo)item));
             }
             catch (Exception ex)
             {
@@ -300,7 +300,7 @@ namespace Geology.Controls
                 if (CurvesList.SelectedItems == null)
                     return;
                 foreach (var item in CurvesList.SelectedItems)
-                    TGraph.RootCurve(CurvesInfoList.IndexOf((CCurveInfo)item));
+                    TGraph.RootCurve(TGraph.CurvesInfoList.IndexOf((CCurveInfo)item));
             }
             catch (Exception ex)
             {
@@ -314,7 +314,7 @@ namespace Geology.Controls
                 if (CurvesList.SelectedItems == null)
                     return;
                 foreach (var item in CurvesList.SelectedItems)
-                    TGraph.CubeRootCurve(CurvesInfoList.IndexOf((CCurveInfo)item));
+                    TGraph.CubeRootCurve(TGraph.CurvesInfoList.IndexOf((CCurveInfo)item));
             }
             catch (Exception ex)
             {
@@ -329,7 +329,7 @@ namespace Geology.Controls
                 if (CurvesList.SelectedItems == null)
                     return;
                 foreach (var item in CurvesList.SelectedItems)
-                    TGraph.BuildSpline(CurvesInfoList.IndexOf((CCurveInfo)item));
+                    TGraph.BuildSpline(TGraph.CurvesInfoList.IndexOf((CCurveInfo)item));
             }
             catch (Exception ex)
             {
@@ -382,7 +382,7 @@ namespace Geology.Controls
                 if (CurvesList.SelectedItems == null)
                     return;
                 foreach (var item in CurvesList.SelectedItems)
-                    TGraph.SmoothCurve(CurvesInfoList.IndexOf((CCurveInfo)item));
+                    TGraph.SmoothCurve(TGraph.CurvesInfoList.IndexOf((CCurveInfo)item));
             }
             catch (Exception ex)
             {
@@ -397,7 +397,7 @@ namespace Geology.Controls
                 if (CurvesList.SelectedItems == null)
                     return;
                 foreach (var item in CurvesList.SelectedItems)
-                    TGraph.Average(CurvesInfoList.IndexOf((CCurveInfo)item));
+                    TGraph.Average(TGraph.CurvesInfoList.IndexOf((CCurveInfo)item));
             }
             catch (Exception ex)
             {
@@ -413,7 +413,7 @@ namespace Geology.Controls
                 if (CurvesList.SelectedItems == null)
                     return;
                 foreach (var item in CurvesList.SelectedItems)
-                    TGraph.CutLeftCurve(CurvesInfoList.IndexOf((CCurveInfo)item));
+                    TGraph.CutLeftCurve(TGraph.CurvesInfoList.IndexOf((CCurveInfo)item));
             }
             catch (Exception ex)
             {
@@ -428,7 +428,7 @@ namespace Geology.Controls
                 if (CurvesList.SelectedItems == null)
                     return;
                 foreach (var item in CurvesList.SelectedItems)
-                    TGraph.CutRightCurve(CurvesInfoList.IndexOf((CCurveInfo)item));
+                    TGraph.CutRightCurve(TGraph.CurvesInfoList.IndexOf((CCurveInfo)item));
             }
             catch (Exception ex)
             {
@@ -499,7 +499,7 @@ namespace Geology.Controls
                     {
                         if (cName.Contains('\\'))
                             cName = cName.Substring(cName.LastIndexOf('\\') + 1);
-                        CurvesInfoList.Add(new CCurveInfo(cName));
+                        TGraph.CurvesInfoList.Add(new CCurveInfo(cName));
                         if (TGraph.Curves.Count == 1)
                             TGraph.ViewAll(true, true);
                         else
@@ -572,10 +572,10 @@ namespace Geology.Controls
         {
             System.Windows.Forms.ColorDialog cd = new System.Windows.Forms.ColorDialog();
             cd.Color = System.Drawing.Color.FromArgb(
-                CurvesInfoList[CurvesList.SelectedIndex].Color.A,
-                CurvesInfoList[CurvesList.SelectedIndex].Color.R,
-                CurvesInfoList[CurvesList.SelectedIndex].Color.G,
-                CurvesInfoList[CurvesList.SelectedIndex].Color.B);
+                TGraph.CurvesInfoList[CurvesList.SelectedIndex].Color.A,
+                TGraph.CurvesInfoList[CurvesList.SelectedIndex].Color.R,
+                TGraph.CurvesInfoList[CurvesList.SelectedIndex].Color.G,
+                TGraph.CurvesInfoList[CurvesList.SelectedIndex].Color.B);
 
             if (cd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {

@@ -17,18 +17,18 @@ using Geology.DrawWindow;
 
 namespace Geology.DrawNewWindow.Controller
 {
-	public class ViewWithCurve : IViewWindowAndCurveInfo
-	{
-		private readonly IViewWindow view;
+	//public class ViewWithCurve : IViewWindowAndCurveInfo
+	//{
+	//	private readonly IViewWindow view;
 
-		public ViewWithCurve(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho,
-		ObservableCollection<Objects.CCurveInfo> CurvesInfoList, Rect mRect, bool mZoomStarted, ObservableCollection<Objects.CCurve> Curves, double Arg)
-		{
-			view = new ViewWindowCurve(captionHorAndVert, Ortho, CurvesInfoList, mRect, mZoomStarted, Curves, Arg);
-		}
-		//private readonly ObservableCollection<Objects.CCurveInfo> curveInfos;
-		public Tuple<IViewWindow, ICurveInfoChaged> View => new Tuple<IViewWindow, ICurveInfoChaged>(view, view);
-	}
+	//	public ViewWithCurve(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho,
+	//	ObservableCollection<Objects.CCurveInfo> CurvesInfoList, Rect mRect, bool mZoomStarted, ObservableCollection<Objects.CCurve> Curves, double Arg)
+	//	{
+	//		view = new ViewWindowCurve(captionHorAndVert, Ortho, CurvesInfoList, mRect, mZoomStarted, Curves, Arg);
+	//	}
+	//	//private readonly ObservableCollection<Objects.CCurveInfo> curveInfos;
+	//	public Tuple<IViewWindow, ICurveInfoChaged> View => new Tuple<IViewWindow, ICurveInfoChaged>(view, view);
+	//}
 
 	public class Rect
 	{
@@ -121,8 +121,8 @@ String lpszFile // File
 		{
 			Curves = new ObservableCollection<Objects.CCurve>();
 			CurvesCopy = new ObservableCollection<Objects.CCurve>();
-			//CurvesInfoList = new ObservableCollection<Objects.CCurveInfo>();
-			CurvesInfoList = null;
+			CurvesInfoList = new ObservableCollection<Objects.CCurveInfo>();
+			//CurvesInfoList = null;
 			OrthoHistory = new Stack<Rect>();
 
 			mRect = new Rect();

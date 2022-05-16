@@ -13,7 +13,7 @@ using Geology.DrawNewWindow.Controller;
 
 namespace Geology.DrawNewWindow.View
 {
-	public class ViewWindowCurve : IViewWindow, ICurveInfoChaged
+	public class ViewWindowCurve : IViewWindow
 	{
 		public int Width { get { return _Width; } set { _Width = value; } }
 		public int Height { get { return _Height; } set { _Height = value; } }
@@ -21,7 +21,7 @@ namespace Geology.DrawNewWindow.View
 		public int WidthLocal { get { return widthLocal; } set { widthLocal = value; } }
 		public int HeightLocal { get { return heightLocal; } set { heightLocal = value; } }
 
-		public ObservableCollection<CCurveInfo> CurvesInfoList { get { return curvesInfoList; } set { curvesInfoList = value; } }
+		//public ObservableCollection<CCurveInfo> CurvesInfoList { get { return curvesInfoList; } set { curvesInfoList = value; } }
 
 		private int widthLocal, heightLocal;
 		private int _Width, _Height;
@@ -29,7 +29,7 @@ namespace Geology.DrawNewWindow.View
 		private COrthoControlProport Ortho;
 		private bool mZoomStarted;
 		private ObservableCollection<Objects.CCurve> Curves;
-		private ObservableCollection<Objects.CCurveInfo> curvesInfoList;
+		private ObservableCollection<Objects.CCurveInfo> CurvesInfoList;
 		private Rect mRect;
 		private double Arg;
 

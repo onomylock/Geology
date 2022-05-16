@@ -134,8 +134,8 @@ namespace Geology
 			//graphViewerControl.CurvesInfoList.Add(curve.Item2);
 			
 			graphViewerControl.TGraph.Curves.Add(curve.Item1);
-			graphViewerControl.CurvesInfoList.Add(curve.Item2);
-			graphViewerControl.TGraph.CurvesInfoList = graphViewerControl.CurvesInfoList;
+			graphViewerControl.TGraph.CurvesInfoList.Add(curve.Item2);
+			//graphViewerControl.TGraph.CurvesInfoList = graphViewerControl.TGraph.CurvesInfoList;
 			int i = 0;
 			i = 1;
 		}
