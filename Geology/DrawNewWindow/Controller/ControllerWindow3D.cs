@@ -18,7 +18,7 @@ using Geology.DrawWindow;
 
 namespace Geology.DrawNewWindow.Controller
 {
-    public class ControllerWindow : OpenGLControl, IControllerWindow
+    public class ControllerWindow3D : OpenGLControl, IControllerWindow
     {
         //public IModelWindow Model
         //{
@@ -70,7 +70,7 @@ namespace Geology.DrawNewWindow.Controller
         private ToolStripMenuItem mnuStartView;
         private ToolStripMenuItem mnuSelect;
 
-        public ControllerWindow() : base()
+        public ControllerWindow3D() : base()
         {
 
             Model = new ModelWindow();

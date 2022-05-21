@@ -53,7 +53,7 @@ namespace Geology.DrawNewWindow.Controller
 		}
 	}
 
-	class ControllerCurve : ControllerWindow2D
+	class ControllerCurve : ControllerWindow2D, IControllerWindow
 	{
 		bool png = true;
 		protected override void OnMouseLeave(EventArgs e)

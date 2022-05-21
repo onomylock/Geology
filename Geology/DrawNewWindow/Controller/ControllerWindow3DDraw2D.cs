@@ -74,11 +74,6 @@ namespace Geology.DrawNewWindow.Controller
             window = _window;
         }
 
-		public void SetBoundingBox(double[] newBoundingBox)
-		{
-            Array.Copy(newBoundingBox, BoundingBox, newBoundingBox.Length);
-        }
-
         private void ContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             Invalidate();

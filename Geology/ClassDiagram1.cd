@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Geology.DrawNewWindow.Controller.ControllerWindow3D" Collapsed="true">
+    <Position X="6.25" Y="2" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>QAIAAAIACEgQEhDAEAEgACISANjRAYQINQiAAKgLAgA=</HashCode>
+      <FileName>DrawNewWindow\Controller\ControllerWindow3D.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Geology.DrawNewWindow.Controller.ControllerWindow2D" Collapsed="true">
+    <Position X="3" Y="2" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAIAAAAQEACAlAAAAGJQABERAQAIIQCgAiAGQAg=</HashCode>
+      <FileName>DrawNewWindow\Controller\ControllerWindow2D.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Geology.DrawNewWindow.Controller.ControllerWindow3DDraw2D" Collapsed="true">
+    <Position X="1.5" Y="3.75" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ICSGKAAAACAAUgBAAAAAAQAAANAAMASIdBggAAXDQiA=</HashCode>
+      <FileName>DrawNewWindow\Controller\ControllerWindow3DDraw2D.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Geology.DrawNewWindow.Controller.ControllerCurve" Collapsed="true">
+    <Position X="4.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>4CiSgJCciQSAVjBgSQJwCEQAFHIAisEzsAHIAABGIgw=</HashCode>
+      <FileName>DrawNewWindow\Controller\ControllerCurve.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Geology.DrawNewWindow.View.ViewWindow2D" Collapsed="true">
+    <Position X="8.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQACAAABCAAAgBAEAAAAWACACEAMADAEACAAYDEAhA=</HashCode>
+      <FileName>DrawNewWindow\View\ViewWindow2D.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Geology.DrawNewWindow.View.ViewWindow3D" Collapsed="true">
+    <Position X="12" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAAgBAEAABAEAAACkAAAAAAAAAAIgIAhA=</HashCode>
+      <FileName>DrawNewWindow\View\ViewWindow3D.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Geology.DrawNewWindow.View.ViewWindowCurve" Collapsed="true">
+    <Position X="10.25" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQBAAAAiBAAAAAAWAAAAEAAIBAgAAAAIAEAhQ=</HashCode>
+      <FileName>DrawNewWindow\View\ViewWindowCurve.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Geology.OpenGL.OpenGLControl.OpenGLControl" Collapsed="true">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAEAAAAACgAggAIAACAQMACACAAAAAAAAAAAAAABgg=</HashCode>
+      <FileName>OpenGL\OpenGLControl\OpenGLControl.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

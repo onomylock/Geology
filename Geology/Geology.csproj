@@ -140,7 +140,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DrawNewWindow\View\IViewWindow.cs" />
-    <Compile Include="DrawNewWindow\Controller\ControllerWindow.cs">
+    <Compile Include="DrawNewWindow\Controller\ControllerWindow3D.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DrawNewWindow\View\ViewWindowCurve.cs" />
@@ -227,8 +227,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="DrawNewWindow\Controller\ControllerWindow.resx">
-      <DependentUpon>ControllerWindow.cs</DependentUpon>
+    <EmbeddedResource Include="DrawNewWindow\Controller\ControllerWindow3D.resx">
+      <DependentUpon>ControllerWindow3D.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DrawWindow\View2D.resx">
       <DependentUpon>View2D.cs</DependentUpon>
@@ -242,6 +242,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -11,7 +11,7 @@ using Geology.DrawNewWindow.View;
 
 namespace Geology.DrawNewWindow.Controller
 {
-	public class ControllerWindow2D : OpenGLControl
+	public class ControllerWindow2D : OpenGLControl, IControllerWindow
 	{
         public PageType Page { get { return page; } set { page = value; } }
         public COrthoControlProport Ortho;
@@ -58,6 +58,11 @@ namespace Geology.DrawNewWindow.Controller
             mnuStartView.Click += mnuStartView_Click;
             mnu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuShowGrid, mnuStartView, mnuLabelSettings, mnuSaveBitmap });
             this.ContextMenuStrip = mnu;
+        }
+
+        public void SetBoundingBox(double[] newBoundingBox)
+        {
+            Array.Copy(newBoundingBox, BoundingBox, newBoundingBox.Length);
         }
 
         public void SetLabelFormat(int FontSize, string NameFontStyle)
