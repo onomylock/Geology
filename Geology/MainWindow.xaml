@@ -157,9 +157,7 @@
                                     <openglwinnew:ControllerWindow3D x:Uid="Controller3D" x:Name="Controller3D" />
                                 </WindowsFormsHost>
                                 
-                                <!--<WindowsFormsHost x:Uid="WindowsFormsHost_4" Grid.Column="0" Grid.ColumnSpan="4" Margin="3.666,0,0.334,-0.333" Grid.Row="5">
-                                    <openglwin:CView3D x:Uid="View3DWindow" x:Name="View3DWindow" />
-                                </WindowsFormsHost>-->
+                       
 
                                 <GridSplitter x:Uid="GridSplitter_5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="4" Grid.RowSpan="3"/>
                                 <GridSplitter x:Uid="GridSplitter_6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="AliceBlue" Grid.Column="6" Grid.RowSpan="3"/>
@@ -177,6 +175,13 @@
                             <!--<controls:GraphControl  x:Uid="graphViewerControl" x:Name="graphViewerControl"  Margin="0"/>-->
                             <!--
                             </TabItem>-->
+                        </TabControl>
+                    </TabItem>
+                    <TabItem x:Uid="TabItem_3" Header="Tests" x:Name="Test">
+                        <TabControl x:Uid="TabControl_9">
+                            <WindowsFormsHost x:Uid="WindowsFormsHost_7">
+                                <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2DMesh" x:Name="Controller2DMesh" />
+                            </WindowsFormsHost>
                         </TabControl>
                     </TabItem>
                 </TabControl>

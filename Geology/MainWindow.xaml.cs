@@ -44,6 +44,7 @@ using Geology.DrawWindow;
 using Geology.DrawNewWindow.Controller;
 using Geology.DrawNewWindow.View;
 using Geology.DrawNewWindow.Model;
+using Geology.DrawNewWindow.Mesh;
 
 namespace Geology
 {
@@ -80,39 +81,55 @@ namespace Geology
 #endif
             InitializeComponent();
 
-			
+			Mesh mesh = new Mesh();
+			ModelWindow geoModel1 = new ModelWindow();
+			int index = 0;
+			foreach(Element ver in mesh.Elements)
+			{
+				geoModel1.Objects.Add(new CGeoObject());
+				geoModel1.Objects[index].Color = (Color)ColorConverter.ConvertFromString("Blue");
+				geoModel1.Objects[index].X0 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[0]].R;
+				geoModel1.Objects[index].X1 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[1]].R;
+				geoModel1.Objects[index].Y0 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[0]].Z;
+				geoModel1.Objects[index].Y1 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[2]].Z;
+				index++;
+			}
 
-			GeoModel geoModel1 = new GeoModel();
-			geoModel1.Objects.Add(new CGeoObject());
 			geoModel1.GlobalBoundingBox[0] = -10000;
 			geoModel1.GlobalBoundingBox[1] = 10000;
 			geoModel1.GlobalBoundingBox[2] = -10000;
 			geoModel1.GlobalBoundingBox[3] = 10000;
 			geoModel1.GlobalBoundingBox[4] = -10000;
 			geoModel1.GlobalBoundingBox[5] = 10000;
-			
-			Controller3D.SetBoundingBox(geoModel1.GlobalBoundingBox);
-			Controller3D.SetMainRef(this);
-			
-			Controller2DYZ.setRotateAndNameAxes(EPlaneType.YZ);
-			Controller2DXY.setRotateAndNameAxes(EPlaneType.XY);
-			Controller2DXZ.setRotateAndNameAxes(EPlaneType.XZ);
 
-			Controller2DYZ.ChangeOrtho(geoModel1.GlobalBoundingBox);
-			Controller2DYZ.SetBoundingBox(geoModel1.GlobalBoundingBox);
-			Controller2DYZ.drawableObjects[PageType.Model].Add(geoModel1.Objects.First());
+			Controller2DMesh.setRotateAndNameAxes(EPlaneType.XY);
+			Controller2DMesh.ChangeOrtho(geoModel1.GlobalBoundingBox);
+			Controller2DMesh.SetBoundingBox(geoModel1.GlobalBoundingBox);
+			foreach(var DrawObj in geoModel1.Objects)
+			{
+				Controller2DMesh.drawableObjects[PageType.Model].Add(DrawObj);
+			}
 
-			Controller2DXY.ChangeOrtho(geoModel1.GlobalBoundingBox);
-			Controller2DXY.SetBoundingBox(geoModel1.GlobalBoundingBox);
-			Controller2DXY.drawableObjects[PageType.Model].Add(geoModel1.Objects.First());
 
-			Controller2DXZ.ChangeOrtho(geoModel1.GlobalBoundingBox);
-			Controller2DXZ.SetBoundingBox(geoModel1.GlobalBoundingBox);
-			Controller2DXZ.drawableObjects[PageType.Model].Add(geoModel1.Objects.First());
+			//Controller3D.SetBoundingBox(geoModel1.GlobalBoundingBox);
+			//Controller3D.SetMainRef(this);
 
-			var curve = BuildCurve();
-			graphViewerControl.TGraph.Curves.Add(curve.Item1);
-			graphViewerControl.TGraph.CurvesInfoList.Add(curve.Item2);
+			//Controller2DYZ.setRotateAndNameAxes(EPlaneType.YZ);
+			//Controller2DXY.setRotateAndNameAxes(EPlaneType.XY);
+			//Controller2DXZ.setRotateAndNameAxes(EPlaneType.XZ);
+
+			//Controller2DYZ.ChangeOrtho(geoModel1.GlobalBoundingBox);
+			//Controller2DYZ.SetBoundingBox(geoModel1.GlobalBoundingBox);
+			//Controller2DYZ.drawableObjects[PageType.Model].Add(geoModel1.Objects.First());
+
+
+			//Controller2DXY.ChangeOrtho(geoModel1.GlobalBoundingBox);
+			//Controller2DXY.SetBoundingBox(geoModel1.GlobalBoundingBox);
+			//Controller2DXY.drawableObjects[PageType.Model].Add(geoModel1.Objects.First());
+
+			//Controller2DXZ.ChangeOrtho(geoModel1.GlobalBoundingBox);
+			//Controller2DXZ.SetBoundingBox(geoModel1.GlobalBoundingBox);
+			//Controller2DXZ.drawableObjects[PageType.Model].Add(geoModel1.Objects.First());
 		}
 	
 		private void Button_Click(object sender, RoutedEventArgs e)
