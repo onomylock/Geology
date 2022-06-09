@@ -24,8 +24,13 @@ namespace Geology.DrawNewWindow.View
 
 		public int WidthLocal { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 		public int HeightLocal { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        
+        public int OglContex { get { return oglcontext; } set { oglcontext = value; } }
+        public IntPtr Hdc { get { return hdc; } set { hdc = value; } }
 
-		private readonly FontGeology caption;
+        protected IntPtr hdc;
+        protected int oglcontext;
+        private readonly FontGeology caption;
         //public FontGeology fontReceivers { get; set; }
         //public FontGeology paletteFont { get; set; }
 
@@ -40,23 +45,23 @@ namespace Geology.DrawNewWindow.View
         protected readonly double[] BoundingBox;
 
         public ViewWindow3D(CPerspective project, IModelWindow model, 
-            PageType page, int Width, int Height, double[] BoundingBox, FontGeology caption)
+            PageType page, int Width, int Height, double[] BoundingBox, FontGeology caption, IntPtr Handle)
         {
             this.BoundingBox = BoundingBox;
             this.caption = caption;
-            //this.oglcontext = oglcontext;
             this.project = project;
             this.Height = Height;
             this.model = model;
             this.Width = Width;
             this.page = page;
-            //this.hdc = hdc;
-          
-            //Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-            //caption = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            //fontReceivers = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            //paletteFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+
+            oglcontext = GLContex.InitOpenGL((int)Handle);
+            hdc = Win32.GetDC(Handle);
+            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+            GLContex.glClearColor(1, 1, 1, 1);
+
+            GLContex.glEnable(GLContex.GL_DEPTH_TEST);
+            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
         }
 
 		public virtual void Draw()
@@ -65,32 +70,6 @@ namespace Geology.DrawNewWindow.View
             if (page == PageType.ViewModel)
                 GLContex.glEnable(GLContex.GL_LIGHT_MODEL_TWO_SIDE);
             GLContex.glEnable(GLContex.GL_NORMALIZE);
-            /*
-		    float[] light_ambient = { 0.0f, 0.0f, 0.0f, 1.0f };
-		    float[] light_diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
-		    float[] light_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
-		    CCamera myCam = project.GetCamera;
-		    double xVector = myCam.m_vPosition.X - myCam.m_vView.X;
-		    double yVector = myCam.m_vPosition.Y - myCam.m_vView.Y;
-		    double zVector = myCam.m_vPosition.Z - myCam.m_vView.Z;
-		    xVector = myCam.m_vPosition.X + xVector * 3;
-		    yVector = myCam.m_vPosition.Y + yVector * 3;
-		    zVector = myCam.m_vPosition.Z + zVector * 3;
-		    float[] position = { (float)xVector, (float)yVector, (float)zVector };
-
-		    GLContex.glLightfv(GLContex.GL_LIGHT0, GLContex.GL_AMBIENT, light_ambient);
-		    GLContex.glLightfv(GLContex.GL_LIGHT0, GLContex.GL_DIFFUSE, light_diffuse);
-		    GLContex.glLightfv(GLContex.GL_LIGHT0, GLContex.GL_SPECULAR, light_specular);
-		    GLContex.glLightfv(GLContex.GL_LIGHT0, GLContex.GL_POSITION, position);
-		    float[] color = { 0.5f, 0.5f, 0.5f, 0.5f }; // красный цвет
-		    float[] shininess = { 100 };
-		    GLContex.glMaterialfv(GLContex.GL_FRONT, GLContex.GL_DIFFUSE, color); // цвет чайника
-		    GLContex.glMaterialfv(GLContex.GL_FRONT, GLContex.GL_SPECULAR, color); // отраженный свет
-		    GLContex.glMaterialfv(GLContex.GL_FRONT, GLContex.GL_SHININESS, shininess); // степень отраженного света
-		    GLContex.glLightModelf(GLContex.GL_LIGHT_MODEL_TWO_SIDE, GLContex.GL_TRUE);
-		    */
-            //GLContex.glEnable(GLContex.GL_LIGHT0);
-            //GLContex.glEnable(GLContex.GL_LIGHTING);
 
 
             var lightSettings = DrawWindow.GlobalDrawingSettings.LightSettings;
@@ -315,6 +294,26 @@ namespace Geology.DrawNewWindow.View
 		}
 
 		public void UpdateViewMatrix(COrthoControlProport Ortho, out int WidthLocal, out int HeightLocal)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Paint(object sender, PaintEventArgs e)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void ResizeWindow()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Release()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Prepare()
 		{
 			throw new NotImplementedException();
 		}

@@ -136,6 +136,7 @@
     <Compile Include="DrawNewWindow\Mesh\Mesh.cs" />
     <Compile Include="DrawNewWindow\Model\IModelWindow.cs" />
     <Compile Include="DrawNewWindow\Model\ModelWindow.cs" />
+    <Compile Include="DrawNewWindow\View\View.cs" />
     <Compile Include="DrawNewWindow\View\ViewWindow2D.cs" />
     <Compile Include="DrawNewWindow\View\ViewWindow3D.cs">
       <SubType>UserControl</SubType>

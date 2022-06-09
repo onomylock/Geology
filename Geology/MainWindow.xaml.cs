@@ -107,7 +107,7 @@ namespace Geology
 			Controller2DMesh.SetBoundingBox(geoModel1.GlobalBoundingBox);
 			foreach(var DrawObj in geoModel1.Objects)
 			{
-				Controller2DMesh.drawableObjects[PageType.Model].Add(DrawObj);
+				Controller2DMesh.Model.drawableObjects[PageType.Model].Add(DrawObj);
 			}
 
 

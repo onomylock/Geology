@@ -31,12 +31,15 @@ namespace Geology.DrawNewWindow.View
 		public int WidthLocal { get { return widthLocal; } set { widthLocal = value; } }
 		public int HeightLocal { get { return heightLocal; } set { heightLocal = value; } }
 
+		public int OglContex { get { return oglcontext; } set { oglcontext = value; } }
+		public IntPtr Hdc { get { return hdc; } set { hdc = value; } }
+
 		public double scaleV;
 		private int widthLocal, heightLocal;
 
 		protected readonly EPlaneType axisType;
-		//protected readonly IntPtr hdc;
-		//protected readonly int oglcontext;
+		protected IntPtr hdc;
+		protected int oglcontext;
 		protected readonly PageType page;
 		private readonly Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects;
 		private readonly CaptionAxisHorAndVert captionHorAndVert;
@@ -55,7 +58,7 @@ namespace Geology.DrawNewWindow.View
 
 		public ViewWindow2D(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho, Dictionary<PageType, 
 			List<IViewportObjectsDrawable>> drawableObjects, EPlaneType axisType, double zRange, PageType page, 
-			int Width, int Height, double[] BoundingBox, FontGeology fontReceivers, FontGeology paletteFont) : base()
+			int Width, int Height, double[] BoundingBox, FontGeology fontReceivers, FontGeology paletteFont, IntPtr Handle) : base()
 		{
 			this.captionHorAndVert = captionHorAndVert;
 			this.drawableObjects = drawableObjects;
@@ -68,16 +71,14 @@ namespace Geology.DrawNewWindow.View
 			this.Ortho = Ortho;
 			this.Width = Width;
 			this.page = page;
-			//Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
 
-			//captionHorAndVert = new CaptionAxisHorAndVert(hdc, oglcontext, "Arial", 16, Ortho, Width, Height);
-			//wellFontName = "Arial";
-			//wellFontSize = 14;
-			////wellFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 14);
-			//paletteFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-			//fontReceivers = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+			oglcontext = GLContex.InitOpenGL((int)Handle);
+			hdc = Win32.GetDC(Handle);
+			Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+			GLContex.glClearColor(1, 1, 1, 1);
 
-			//Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+			GLContex.glEnable(GLContex.GL_DEPTH_TEST);
+			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 		}
 
 		public void Draw()
@@ -171,6 +172,36 @@ namespace Geology.DrawNewWindow.View
 
 
 			DrawSelection();
+		}
+
+		public void Paint(object sender, PaintEventArgs e)
+		{
+			Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+			GLContex.glClearColor(1, 1, 1, 1);
+			GLContex.glClear(GLContex.GL_COLOR_BUFFER_BIT | GLContex.GL_DEPTH_BUFFER_BIT);
+
+			Draw();
+
+			Win32.SwapBuffers(hdc);
+			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+		}
+
+		public void ResizeWindow()
+		{
+			Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+			UpdateViewMatrix();
+			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+		}
+
+		public void Release()
+		{
+			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+		}
+
+		public void Prepare()
+		{
+			Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+			UpdateViewMatrix();
 		}
 	}
 }

@@ -8,18 +8,24 @@ using Geology.DrawWindow;
 using Geology.OpenGL;
 using System.Windows.Forms;
 using Geology.DrawNewWindow.View;
+using Geology.DrawNewWindow.Model;
 
 namespace Geology.DrawNewWindow.Controller
 {
-	public class ControllerWindow2D : OpenGLControl, IControllerWindow
-	{
+    public class ControllerWindow2D : IControllerWindow
+    {
+        public double[] BoundingBox { get; set; }
         public PageType Page { get { return page; } set { page = value; } }
-        public COrthoControlProport Ortho;
+        public COrthoControlProport Ortho { get; set; }
         public FontGeology wellFont { get; set; }
         public FontGeology fontReceivers { get; set; }
         public FontGeology paletteFont { get; set; }
         public IViewWindow View { get { return view; } set { view = value; } }
+        public CaptionAxisHorAndVert CaptionHorAndVert { get { return captionHorAndVert; } set { captionHorAndVert = value; } }
+        public IModelWindow Model { get; set; }
         
+
+
         protected IViewWindow view;
         protected CaptionAxisHorAndVert captionHorAndVert;
         protected Geology.MainWindow window;
@@ -28,7 +34,7 @@ namespace Geology.DrawNewWindow.Controller
         protected System.Windows.Forms.ContextMenuStrip mnu; // base context menu 
         protected PageType page = PageType.Model;
 
-        public ControllerWindow2D(bool EqualScale) : base()
+        public ControllerWindow2D(bool EqualScale)
 		{
             Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
             Ortho = new COrthoControlProport("X", "Y", Height / (double)Width, BoundingBox, EqualScale);
@@ -57,12 +63,7 @@ namespace Geology.DrawNewWindow.Controller
 
             mnuStartView.Click += mnuStartView_Click;
             mnu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuShowGrid, mnuStartView, mnuLabelSettings, mnuSaveBitmap });
-            this.ContextMenuStrip = mnu;
-        }
-
-        public void SetBoundingBox(double[] newBoundingBox)
-        {
-            Array.Copy(newBoundingBox, BoundingBox, newBoundingBox.Length);
+            //this.ContextMenuStrip = mnu;
         }
 
         public void SetLabelFormat(int FontSize, string NameFontStyle)
@@ -256,7 +257,7 @@ namespace Geology.DrawNewWindow.Controller
             }
         }
 
-        private void OpenGLControl_Disposed(object sender, EventArgs e)
+        public void DisposedController(object sender, EventArgs e)
         {
             // здесь происходит очистка шрифта, необходимая функция, чтобы не утекала память
             Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);

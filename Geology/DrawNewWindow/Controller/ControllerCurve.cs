@@ -17,19 +17,6 @@ using Geology.DrawWindow;
 
 namespace Geology.DrawNewWindow.Controller
 {
-	//public class ViewWithCurve : IViewWindowAndCurveInfo
-	//{
-	//	private readonly IViewWindow view;
-
-	//	public ViewWithCurve(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho,
-	//	ObservableCollection<Objects.CCurveInfo> CurvesInfoList, Rect mRect, bool mZoomStarted, ObservableCollection<Objects.CCurve> Curves, double Arg)
-	//	{
-	//		view = new ViewWindowCurve(captionHorAndVert, Ortho, CurvesInfoList, mRect, mZoomStarted, Curves, Arg);
-	//	}
-	//	//private readonly ObservableCollection<Objects.CCurveInfo> curveInfos;
-	//	public Tuple<IViewWindow, ICurveInfoChaged> View => new Tuple<IViewWindow, ICurveInfoChaged>(view, view);
-	//}
-
 	public class Rect
 	{
 		public double x1;
@@ -53,7 +40,7 @@ namespace Geology.DrawNewWindow.Controller
 		}
 	}
 
-	class ControllerCurve : ControllerWindow2D, IControllerWindow
+	class ControllerCurve : ControllerWindow2D
 	{
 		bool png = true;
 		protected override void OnMouseLeave(EventArgs e)

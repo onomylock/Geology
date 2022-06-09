@@ -18,8 +18,19 @@ using Geology.Objects.SaturationModel;
 
 namespace Geology.DrawNewWindow.Model
 {
+
 	public interface IModelWindow
 	{
+		//Dictionary<PageType, List<IViewportObjectsSelectable>> selectableObjects { get; set; }
+		//Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects { get; set; }
+		//Dictionary<PageType, List<IViewportObjectsClickable>> clickableObjects { get; set; }
+		//Dictionary<PageType, List<IViewportObjectsContextmenuClickable>> contextMenuClickableObjects { get; set; }
+		//Dictionary<PageType, List<IViewportMouseMoveReaction>> mouseMoveReactionObjects { get; set; }
+
+		IViewportObjectsSelectable;
+
+
+
 		ObservableCollection<CGeoLayer> Layers { get; set; }
 		ObservableCollection<CGeoObject> Objects { get; set; }
 		ObservableCollection<SaturationVolumeStack> Stacks { get; set; }

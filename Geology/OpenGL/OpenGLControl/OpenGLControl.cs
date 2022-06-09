@@ -6,84 +6,138 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Geology.DrawNewWindow.Controller;
+using Geology.DrawNewWindow.View;
 
 namespace Geology.OpenGL.OpenGLControl
 {
+	public enum ConstructorType
+	{
+        ThreeDimensional, 
+        TwoDimensional, 
+        Curve 
+	}
+
     public partial class OpenGLControl : UserControl
     {
-        protected int oglcontext = 0;
-        protected IntPtr hdc;
-        public double[] BoundingBox;
-        public int OglContex { get { return oglcontext; } }
-        public IntPtr Hdc { get { return hdc; } }
-        protected override void OnPaintBackground(PaintEventArgs pevent) { }
-   
+        IViewWindow View;
+        IControllerWindow Controller;
+
+        public ConstructorType constructorType;
+        //protected int oglcontext = 0;
+        //protected IntPtr hdc;
+        //public double[] BoundingBox;
+        //public int OglContex { get { return oglcontext; } }
+        //public IntPtr Hdc { get { return hdc; } }
+        //protected override void OnPaintBackground(PaintEventArgs pevent) { }
+        
+
         public OpenGLControl()
         {
-            BoundingBox = new double[]{-1,1,-1,1,-1,1};
+            //BoundingBox = new double[]{-1,1,-1,1,-1,1};
             InitializeComponent();
           
-            oglcontext = OpenGL.InitOpenGL((int)Handle);
-            hdc = Win32.GetDC(Handle);
-            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-            OpenGL.glClearColor(1, 1, 1, 1);
+            //oglcontext = OpenGL.InitOpenGL((int)Handle);
+            //hdc = Win32.GetDC(Handle);
+            //Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+            //OpenGL.glClearColor(1, 1, 1, 1);
 
-            OpenGL.glEnable(OpenGL.GL_DEPTH_TEST);
-          //  OpenGL.glHint(OpenGL.GL_POLYGON_SMOOTH_HINT, OpenGL.GL_NICEST);
-         //   OpenGL.glDepthFunc(OpenGL.GL_LEQUAL);    // Set the type of depth-test
-         //   OpenGL.glShadeModel(OpenGL.GL_POLYGON_SMOOTH);   // Enable smooth shading
-        //    OpenGL.glHint(OpenGL.GL_PERSPECTIVE_CORRECTION_HINT, OpenGL.GL_NICEST);  // Nice perspective corrections
-       //     OpenGL.glEnable(OpenGL.GL_POLYGON_SMOOTH);
-         //   OpenGL.glEnable(OpenGL.GL_LINE_SMOOTH);
-            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-         
+            //OpenGL.glEnable(OpenGL.GL_DEPTH_TEST);
+            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
         }
 
-     /*   private void OpenGLControl_Disposed(object sender, EventArgs e)
-        {
-          ;
-        }*/
+        public void SetCostructor(ConstructorType constructorType)
+		{
+            this.constructorType = constructorType;
+			switch (constructorType)
+			{
+				case ConstructorType.ThreeDimensional:
+                    {
+                        Controller = new ControllerWindow3D(Width, Height, Handle);                        
+                        break; 
+                    }
+				case ConstructorType.TwoDimensional:
+					{
+                        Controller = new ControllerWindow3DDraw2D(Width, Height, Handle);
+                        break;
+                    }
+				case ConstructorType.Curve:
+					{
+                        Controller = new ControllerCurve(Width, Height, Handle);
+                        break;
+                    }
+					
+				default:
+					break;
+			}
+
+            View = Controller.View;
+        }
 
         private void OpenGLControl_Paint(object sender, PaintEventArgs e)
         {
-            if (oglcontext != 0)
-            {
-                Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-                OpenGL.glClearColor(1, 1, 1, 1);
-                OpenGL.glClear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            if (View.OglContex != 0)
+			{
+                View.Paint(sender, e);
+			}
+            //if (oglcontext != 0)
+            //{
+            //    Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+            //    OpenGL.glClearColor(1, 1, 1, 1);
+            //    OpenGL.glClear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
 
-                Draw();
+            //    Draw();
 
-                Win32.SwapBuffers(hdc);
-                Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-            }
+            //    Win32.SwapBuffers(hdc);
+            //    Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+            //}
         }
+
         private void OpenGLControl_Load(object sender, EventArgs e)
         {
           
         }
-		private void OpenGLControl_Resize(object sender, EventArgs e)
+
+		public virtual void OpenGLControl_Resize(object sender, EventArgs e)
 		{
 			Resize_Window();
 		}
+
 		public void Resize_Window()
         {
-            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-            UpdateViewMatrix();
-            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+            //Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+            //UpdateViewMatrix();
+            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+            View.ResizeWindow();
         }
 
         protected void OpenGLControl_Prepare()
         {
-            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-            UpdateViewMatrix();
-        }
-        protected void OpenGLControl_Release()
-        {
-            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+            View.Prepare();
+            //Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+            //UpdateViewMatrix();
         }
 
-        protected virtual void Draw(){}
-        protected virtual void UpdateViewMatrix() { }
+        protected void OpenGLControl_Release()
+        {
+            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+            View.Release();
+        }
+
+		protected override void OnMouseDown(MouseEventArgs e)
+		{
+            if (!Focused) Focus();
+            Controller.OnMouseDown(e);
+		}
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            if (!Focused) Focus();
+            //Controller.OpenGLControl_Prepare() => this.OpenGLControl_Prepare();
+            Controller.OnMouseUp(e);
+        }
+        protected override void OnMouseWheel(MouseEventArgs e) => Controller.OnMouseWheel(e);
+        protected override void OnMouseMove(MouseEventArgs e) => Controller.OnMouseMove(e);
+        protected virtual void Draw() => View?.Draw();
+        protected virtual void UpdateViewMatrix() => View?.UpdateViewMatrix();
     }
 }

@@ -870,6 +870,12 @@ namespace Geology.DrawNewWindow.Model
     }
     public class ModelWindow : IModelWindow, INotifyPropertyChanged, IViewportObjectsDrawable, IViewportMouseMoveReaction, IViewportObjectsSelectable, IViewportObjectsClickable
     {
+        public Dictionary<PageType, List<IViewportObjectsSelectable>> selectableObjects = new Dictionary<PageType, List<IViewportObjectsSelectable>>();
+        public Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects = new Dictionary<PageType, List<IViewportObjectsDrawable>>();
+        public Dictionary<PageType, List<IViewportObjectsClickable>> clickableObjects = new Dictionary<PageType, List<IViewportObjectsClickable>>();
+        public Dictionary<PageType, List<IViewportObjectsContextmenuClickable>> contextMenuClickableObjects = new Dictionary<PageType, List<IViewportObjectsContextmenuClickable>>();
+        public Dictionary<PageType, List<IViewportMouseMoveReaction>> mouseMoveReactionObjects = new Dictionary<PageType, List<IViewportMouseMoveReaction>>();
+
         private class HighlightedObjectInfo
         {
 

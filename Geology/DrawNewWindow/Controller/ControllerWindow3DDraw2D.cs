@@ -18,14 +18,14 @@ namespace Geology.DrawNewWindow.Controller
 	//public enum PlaneType
 	//{ XY = 0, XZ, YZ }
 
-	class ControllerWindow3DDraw2D : ControllerWindow2D, IControllerWindow
+	class ControllerWindow3DDraw2D : ControllerWindow2D
 	{	
         public EPlaneType axisType;
-        public Dictionary<PageType, List<IViewportObjectsSelectable>> selectableObjects = new Dictionary<PageType, List<IViewportObjectsSelectable>>();
-		public Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects = new Dictionary<PageType, List<IViewportObjectsDrawable>>();
-		public Dictionary<PageType, List<IViewportObjectsClickable>> clickableObjects = new Dictionary<PageType, List<IViewportObjectsClickable>>();
-		public Dictionary<PageType, List<IViewportObjectsContextmenuClickable>> contextMenuClickableObjects = new Dictionary<PageType, List<IViewportObjectsContextmenuClickable>>();
-		public Dictionary<PageType, List<IViewportMouseMoveReaction>> mouseMoveReactionObjects = new Dictionary<PageType, List<IViewportMouseMoveReaction>>();
+        //public Dictionary<PageType, List<IViewportObjectsSelectable>> selectableObjects = new Dictionary<PageType, List<IViewportObjectsSelectable>>();
+		//public Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects = new Dictionary<PageType, List<IViewportObjectsDrawable>>();
+		//public Dictionary<PageType, List<IViewportObjectsClickable>> clickableObjects = new Dictionary<PageType, List<IViewportObjectsClickable>>();
+		//public Dictionary<PageType, List<IViewportObjectsContextmenuClickable>> contextMenuClickableObjects = new Dictionary<PageType, List<IViewportObjectsContextmenuClickable>>();
+		//public Dictionary<PageType, List<IViewportMouseMoveReaction>> mouseMoveReactionObjects = new Dictionary<PageType, List<IViewportMouseMoveReaction>>();
 
 		
 		//private PageType page = PageType.Model;
