@@ -45,8 +45,8 @@ namespace Geology.DrawNewWindow.Controller
 		public FontGeology fontReceivers { get; set; }
 		public FontGeology paletteFont { get; set; }
 
-        private IntPtr hdc;
-        private int oglcontext;
+        //private IntPtr hdc;
+        //private int oglcontext;
 		private int XPrevious = 0, YPrevious = 0;
         private bool selecting = false;
         private MainWindow window;
@@ -66,23 +66,23 @@ namespace Geology.DrawNewWindow.Controller
         private ToolStripMenuItem mnuStartView;
         private ToolStripMenuItem mnuSelect;
 
-        public ControllerWindow3D(IntPtr hdc, int oglcontext, int Width, int Heigth)
+        public ControllerWindow3D(int Width, int Height, IntPtr Handle)
         {
-            this.hdc = hdc;
-            this.oglcontext = oglcontext;
             Model = new ModelWindow();
             //model.Objects.Add(new CGeoObject());
             window = null;
             project = new CPerspective();
 
-            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-            caption = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            fontReceivers = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            paletteFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            view = new ViewWindow3D(project, model, page, Width, Height, BoundingBox, Handle);
 
-            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+            //Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContex);
+            //caption = new FontGeology(view.Hdc, view.OglContex, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
 
-            view = new ViewWindow3D(project, model, page, Width, Height, BoundingBox, caption);
+            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+
+           
 
             mnu = new ContextMenuStrip();
 			mnuAlongWindow = new ToolStripMenuItem("Along Window");

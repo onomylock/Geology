@@ -17,54 +17,29 @@ using Geology.DrawWindow;
 
 namespace Geology.DrawNewWindow.View
 {
-    public class ViewWindow3D : IViewWindow
+    public class ViewWindow3D : ViewAbstract, IViewWindow
     {
-        public int Width { get { return _Width; } set { _Width = value; } }
-        public int Height { get { return _Height; } set { _Height = value; } }
-
-		public int WidthLocal { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-		public int HeightLocal { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        
-        public int OglContex { get { return oglcontext; } set { oglcontext = value; } }
-        public IntPtr Hdc { get { return hdc; } set { hdc = value; } }
-
-        protected IntPtr hdc;
-        protected int oglcontext;
-        private readonly FontGeology caption;
-        //public FontGeology fontReceivers { get; set; }
-        //public FontGeology paletteFont { get; set; }
-
-        //protected readonly IntPtr hdc;
-        //protected readonly int oglcontext;
-        protected readonly CPerspective project;
-        protected readonly IModelWindow model;
-        protected readonly PageType page;
-        
-        private int _Height;
-        private int _Width;
-        protected readonly double[] BoundingBox;
-
         public ViewWindow3D(CPerspective project, IModelWindow model, 
-            PageType page, int Width, int Height, double[] BoundingBox, FontGeology caption, IntPtr Handle)
+            PageType page, int Width, int Height, double[] BoundingBox, IntPtr Handle)
         {
-            this.BoundingBox = BoundingBox;
-            this.caption = caption;
-            this.project = project;
-            this.Height = Height;
-            this.model = model;
-            this.Width = Width;
-            this.page = page;
+            base.BoundingBox = BoundingBox;
+            base.caption = caption;
+            base.project = project;
+            base.Height = Height;
+            base.model = model;
+            base.Width = Width;
+            base.page = page;
 
             oglcontext = GLContex.InitOpenGL((int)Handle);
             hdc = Win32.GetDC(Handle);
             Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
             GLContex.glClearColor(1, 1, 1, 1);
-
+            caption = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
             GLContex.glEnable(GLContex.GL_DEPTH_TEST);
             Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
         }
 
-		public virtual void Draw()
+		public override void Draw()
         {
             double scale = 1.0;
             if (page == PageType.ViewModel)
@@ -258,23 +233,23 @@ namespace Geology.DrawNewWindow.View
 
                 GLContex.glMatrixMode(GLContex.GL_PROJECTION);
                 GLContex.glPopMatrix();
-                GLContex.glViewport(0, 0, _Width, _Height);
+                GLContex.glViewport(0, 0, width, height);
                 GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
                 GLContex.glPopMatrix();
             }
         }
 
-        public virtual void UpdateViewMatrix()
+        public override void UpdateViewMatrix()
         {
             try
             {
                 GLContex.glMatrixMode(GLContex.GL_PROJECTION);
                 GLContex.glLoadIdentity();
                 double dMax, startAngle, dView;
-                GLContex.glViewport(0, 0, _Width, _Height);
+                GLContex.glViewport(0, 0, width, height);
                 project.PrepareDraw(out dMax, out startAngle, out dView, BoundingBox);
 
-                GLContex.gluPerspective(startAngle, _Width / (double)_Height, dView, (dMax) * 30);
+                GLContex.gluPerspective(startAngle, width / (double)height, dView, (dMax) * 30);
                 GLContex.glMatrixMode(GLContex.GL_MODELVIEW);     // To operate on model-view matrix
                 GLContex.glLoadIdentity();
                 CCamera tmpCam = project.GetCamera;
@@ -287,35 +262,5 @@ namespace Geology.DrawNewWindow.View
 
             }
         }
-
-		public void UpdateViewMatrix(COrthoControlProport Ortho)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void UpdateViewMatrix(COrthoControlProport Ortho, out int WidthLocal, out int HeightLocal)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Paint(object sender, PaintEventArgs e)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void ResizeWindow()
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Release()
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Prepare()
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

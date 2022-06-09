@@ -27,7 +27,7 @@ namespace Geology.DrawNewWindow.Model
 		//Dictionary<PageType, List<IViewportObjectsContextmenuClickable>> contextMenuClickableObjects { get; set; }
 		//Dictionary<PageType, List<IViewportMouseMoveReaction>> mouseMoveReactionObjects { get; set; }
 
-		IViewportObjectsSelectable;
+		//IViewportObjectsSelectable;
 
 
 

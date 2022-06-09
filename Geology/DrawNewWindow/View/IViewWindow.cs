@@ -31,7 +31,7 @@ namespace Geology.DrawNewWindow.View
         int Height { get; set; }
         int WidthLocal { get; set; }
         int HeightLocal { get; set; }
-        int OglContex { get; set; }
+        int OglContext { get; set; }
         IntPtr Hdc { get; set; }
     }
 

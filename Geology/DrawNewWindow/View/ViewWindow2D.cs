@@ -20,27 +20,12 @@ using Geology.DrawNewWindow.Controller;
 
 namespace Geology.DrawNewWindow.View
 {
-	class ViewWindow2D : IViewWindow
+	class ViewWindow2D : ViewAbstract, IViewWindow
 	{
-		//public FontGeology caption { get; set; }
-		//public FontGeology wellFont { get; set; }
-
-		public int Width { get { return _Width; } set { _Width = value; } }
-		public int Height { get { return _Height; } set { _Height = value; } }
-
-		public int WidthLocal { get { return widthLocal; } set { widthLocal = value; } }
-		public int HeightLocal { get { return heightLocal; } set { heightLocal = value; } }
-
-		public int OglContex { get { return oglcontext; } set { oglcontext = value; } }
-		public IntPtr Hdc { get { return hdc; } set { hdc = value; } }
-
 		public double scaleV;
 		private int widthLocal, heightLocal;
 
 		protected readonly EPlaneType axisType;
-		protected IntPtr hdc;
-		protected int oglcontext;
-		protected readonly PageType page;
 		private readonly Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects;
 		private readonly CaptionAxisHorAndVert captionHorAndVert;
 		private COrthoControlProport Ortho;
@@ -50,7 +35,6 @@ namespace Geology.DrawNewWindow.View
 		private double selectionX0, selectionX1;
 		private double selectionY0, selectionY1;
 		protected int _Width, _Height;
-		protected readonly double[] BoundingBox;
 		private readonly FontGeology fontReceivers;
 		private readonly FontGeology paletteFont;
 
@@ -172,36 +156,6 @@ namespace Geology.DrawNewWindow.View
 
 
 			DrawSelection();
-		}
-
-		public void Paint(object sender, PaintEventArgs e)
-		{
-			Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-			GLContex.glClearColor(1, 1, 1, 1);
-			GLContex.glClear(GLContex.GL_COLOR_BUFFER_BIT | GLContex.GL_DEPTH_BUFFER_BIT);
-
-			Draw();
-
-			Win32.SwapBuffers(hdc);
-			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-		}
-
-		public void ResizeWindow()
-		{
-			Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-			UpdateViewMatrix();
-			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-		}
-
-		public void Release()
-		{
-			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-		}
-
-		public void Prepare()
-		{
-			Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-			UpdateViewMatrix();
 		}
 	}
 }

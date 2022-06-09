@@ -13,18 +13,8 @@ using Geology.DrawNewWindow.Controller;
 
 namespace Geology.DrawNewWindow.View
 {
-	public class ViewWindowCurve : IViewWindow
+	public class ViewWindowCurve : ViewAbstract, IViewWindow
 	{
-		public int Width { get { return _Width; } set { _Width = value; } }
-		public int Height { get { return _Height; } set { _Height = value; } }
-
-		public int WidthLocal { get { return widthLocal; } set { widthLocal = value; } }
-		public int HeightLocal { get { return heightLocal; } set { heightLocal = value; } }
-
-		//public ObservableCollection<CCurveInfo> CurvesInfoList { get { return curvesInfoList; } set { curvesInfoList = value; } }
-
-		private int widthLocal, heightLocal;
-		private int _Width, _Height;
 		private CaptionAxisHorAndVert captionHorAndVert;
 		private COrthoControlProport Ortho;
 		private bool mZoomStarted;
@@ -34,7 +24,7 @@ namespace Geology.DrawNewWindow.View
 		private double Arg;
 
 		public ViewWindowCurve(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho, 
-			ObservableCollection<Objects.CCurveInfo> CurvesInfoList, Rect mRect, bool mZoomStarted, ObservableCollection<Objects.CCurve> Curves, double Arg)
+			ObservableCollection<Objects.CCurveInfo> CurvesInfoList, Rect mRect, bool mZoomStarted, ObservableCollection<Objects.CCurve> Curves, double Arg, IntPtr Handle)
 		{
 			this.captionHorAndVert = captionHorAndVert;
 			this.Curves = Curves;
@@ -43,9 +33,17 @@ namespace Geology.DrawNewWindow.View
 			this.mZoomStarted = mZoomStarted;
 			this.Ortho = Ortho;
 			this.Arg = Arg;
+
+			oglcontext = GLContex.InitOpenGL((int)Handle);
+			hdc = Win32.GetDC(Handle);
+			Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+			GLContex.glClearColor(1, 1, 1, 1);
+
+			GLContex.glEnable(GLContex.GL_DEPTH_TEST);
+			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 		}
 
-		public void Draw()
+		public override void Draw()
 		{
 			GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
 			GLContex.glLoadIdentity();
@@ -117,7 +115,7 @@ namespace Geology.DrawNewWindow.View
 			}
 		}
 
-		public void UpdateViewMatrix()
+		public override void UpdateViewMatrix()
 		{
 			try
 			{
