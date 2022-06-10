@@ -69,7 +69,6 @@ namespace Geology.DrawNewWindow.Controller
         public ControllerWindow3D(int Width, int Height, IntPtr Handle)
         {
             Model = new ModelWindow();
-            //model.Objects.Add(new CGeoObject());
             window = null;
             project = new CPerspective();
 
@@ -80,9 +79,7 @@ namespace Geology.DrawNewWindow.Controller
             fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
             paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
 
-            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-
-           
+            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);       
 
             mnu = new ContextMenuStrip();
 			mnuAlongWindow = new ToolStripMenuItem("Along Window");
@@ -93,7 +90,6 @@ namespace Geology.DrawNewWindow.Controller
 			mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
 			mnuStartView = new ToolStripMenuItem("Start view");
 			mnuSelect = new ToolStripMenuItem("Select");
-
 			
 			//this.Disposed += CView3D_Disposed;
             //this.Resize += Controller_Resize;
@@ -136,13 +132,13 @@ namespace Geology.DrawNewWindow.Controller
         private void Controller_Resize(object sender, EventArgs e)
         {
             this.ResizeView();
-            Resize_Window();
-            this.Draw();
+            View.ResizeWindow();
+            View.Draw();
         }
 
         public void DisposedController(object sender, EventArgs e)
         {
-            Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+            Win32.wglMakeCurrent(View.Hdc, (IntPtr)View.OglContext);
             caption.ClearFont();
             Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
         }
@@ -210,7 +206,7 @@ namespace Geology.DrawNewWindow.Controller
 		{
 			project.ClearView();
 			Array.Copy(model.GlobalBoundingBox, BoundingBox, BoundingBox.Length);
-            Resize_Window();
+            view.ResizeWindow();
             //ResizeView();
             //view.Height = Height;
             //view.Width = Width;

@@ -24,29 +24,20 @@ namespace Geology.OpenGL.OpenGLControl
         IControllerWindow Controller;
 
         public ConstructorType constructorType;
-        //protected int oglcontext = 0;
-        //protected IntPtr hdc;
-        //public double[] BoundingBox;
-        //public int OglContex { get { return oglcontext; } }
-        //public IntPtr Hdc { get { return hdc; } }
-        //protected override void OnPaintBackground(PaintEventArgs pevent) { }
         
-
         public OpenGLControl()
         {
-            //BoundingBox = new double[]{-1,1,-1,1,-1,1};
             InitializeComponent();
-          
-            //oglcontext = OpenGL.InitOpenGL((int)Handle);
-            //hdc = Win32.GetDC(Handle);
-            //Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-            //OpenGL.glClearColor(1, 1, 1, 1);
 
-            //OpenGL.glEnable(OpenGL.GL_DEPTH_TEST);
-            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+			this.Disposed += OpenGLControl_Disposed;
         }
 
-        public void SetCostructor(ConstructorType constructorType)
+		private void OpenGLControl_Disposed(object sender, EventArgs e)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetCostructor(ConstructorType constructorType)
 		{
             this.constructorType = constructorType;
 			switch (constructorType)
@@ -76,7 +67,7 @@ namespace Geology.OpenGL.OpenGLControl
 
         private void OpenGLControl_Paint(object sender, PaintEventArgs e)
         {
-            if (View.OglContex != 0)
+            if (View.OglContext != 0)
 			{
                 View.Paint(sender, e);
 			}

@@ -44,7 +44,7 @@ namespace Geology.DrawNewWindow.Controller
             fontReceivers = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
             Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
             
-            this.Disposed += OpenGLControl_Disposed;
+            //this.Disposed += OpenGLControl_Disposed;
             //this.Resize += Controller_Resize;
 
             window = null;
