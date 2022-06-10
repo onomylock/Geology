@@ -125,6 +125,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DrawNewWindow\Controller\ControllerAbstract.cs" />
     <Compile Include="DrawNewWindow\Controller\ControllerCurve.cs" />
     <Compile Include="DrawNewWindow\Controller\ControllerWindow3DDraw2D.cs">
       <SubType>UserControl</SubType>

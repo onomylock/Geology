@@ -28,6 +28,7 @@ namespace Geology.OpenGL.OpenGLControl
         public OpenGLControl()
         {
             InitializeComponent();
+            
 
 			this.Disposed += OpenGLControl_Disposed;
         }
