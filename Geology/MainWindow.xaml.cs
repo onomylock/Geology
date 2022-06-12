@@ -104,7 +104,7 @@ namespace Geology
 
 			Controller2DMesh.setRotateAndNameAxes(EPlaneType.XY);
 			Controller2DMesh.ChangeOrtho(geoModel1.GlobalBoundingBox);
-			Controller2DMesh.SetBoundingBox(geoModel1.GlobalBoundingBox);
+			Controller2DMesh.BoundingBox = geoModel1.GlobalBoundingBox;
 			foreach(var DrawObj in geoModel1.Objects)
 			{
 				Controller2DMesh.Model.drawableObjects[PageType.Model].Add(DrawObj);

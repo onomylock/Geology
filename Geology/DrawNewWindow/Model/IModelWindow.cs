@@ -29,7 +29,7 @@ namespace Geology.DrawNewWindow.Model
 
 		//IViewportObjectsSelectable;
 
-
+		//IViewportObjectsSelectable
 
 		ObservableCollection<CGeoLayer> Layers { get; set; }
 		ObservableCollection<CGeoObject> Objects { get; set; }

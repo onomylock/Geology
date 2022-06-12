@@ -20,58 +20,61 @@ namespace Geology.DrawNewWindow.Controller
 {
     public class ControllerWindow3D : IControllerWindow
     {
-        public IViewWindow View{ get { return view; } set { view = value; } }
-        public PageType Page{ get { return page; } set { page = value; } }
-        public double[] BoundingBox { get; set; }
-
-        public IModelWindow Model 
-        { 
-            get { return model; } 
-            set 
+        public IViewWindow View { get { return view; } set { view = value; } }
+        public PageType Page { get { return page; } set { page = value; } }
+        public IModelWindow Model
+        {
+            get { return model; }
+            set
             {
                 if (model == null)
                     model = new ModelWindow();
                 else
-                { 
+                {
                     model = value;
-                    this.ResizeView();
+                    //this.ResizeView();
                     this.View.UpdateViewMatrix();
                     this.View.Draw();
-                } 
-            } 
+                }
+            }
         }
+        public double[] BoundingBox { get; set; }
+        public FontGeology caption { get; set; }
+        public ContextMenuStrip mnu { get; set; }
         public CPerspective project { get; set; }
-		public FontGeology caption { get; set; }
 		public FontGeology fontReceivers { get; set; }
-		public FontGeology paletteFont { get; set; }
+		public FontGeology paletteFont { get; set; }  
+        public event Action InvalidateEvent;
 
-        //private IntPtr hdc;
-        //private int oglcontext;
-		private int XPrevious = 0, YPrevious = 0;
+        protected IModelWindow model;
+        protected IViewWindow view;
+        protected PageType page = PageType.Model;
+        protected ToolStripMenuItem mnuSaveBitmap;
+        protected Cursor Cursor;
+
+
+        private int XPrevious = 0, YPrevious = 0;
         private bool selecting = false;
         private MainWindow window;
         private TypeTransformation typeTransform;
         private bool mouseDown = false;
-        private IViewWindow view;
-        private PageType page = PageType.Model;
-        private IModelWindow model;
-
-        private ContextMenuStrip mnu;
+ 
+        
         private ToolStripMenuItem mnuAlongWindow;
         private ToolStripMenuItem mnuAroundX;
         private ToolStripMenuItem mnuAroundY;
         private ToolStripMenuItem mnuAroundZ;
         private ToolStripMenuItem mnuNone;
-        private ToolStripMenuItem mnuSaveBitmap;
+        
         private ToolStripMenuItem mnuStartView;
         private ToolStripMenuItem mnuSelect;
 
-        public ControllerWindow3D(int Width, int Height, IntPtr Handle)
+        public ControllerWindow3D(int Width, int Height, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap)
         {
             Model = new ModelWindow();
             window = null;
             project = new CPerspective();
-
+            Cursor = new Cursor(Handle);
             view = new ViewWindow3D(project, model, page, Width, Height, BoundingBox, Handle);
 
             //Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContex);
@@ -87,18 +90,18 @@ namespace Geology.DrawNewWindow.Controller
 			mnuAroundY = new ToolStripMenuItem("Around Y");
 			mnuAroundZ = new ToolStripMenuItem("Around Z");
 			mnuNone = new ToolStripMenuItem("None");
-			mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
+			//mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
 			mnuStartView = new ToolStripMenuItem("Start view");
 			mnuSelect = new ToolStripMenuItem("Select");
 			
-			//this.Disposed += CView3D_Disposed;
+			//this.Disposed += DisposedController;
             //this.Resize += Controller_Resize;
 
             mnuAlongWindow.CheckOnClick = true;
             mnuAlongWindow.Checked = true;
             typeTransform = TypeTransformation.alongWindow;
             mnuAlongWindow.Click += mnuAlongWindow_Click;
-            mnuSaveBitmap.Click += mnuSaveBitmap_Click;
+            //mnuSaveBitmap.Click += mnuSaveBitmap_Click;
             mnuAroundX.CheckOnClick = true;
             mnuAroundX.Click += mnuAroundX_Click;
             mnuAroundY.CheckOnClick = true;
@@ -115,14 +118,14 @@ namespace Geology.DrawNewWindow.Controller
             mnu.Items.AddRange(new ToolStripItem[] { mnuAlongWindow,/* mnuAlongX, mnuAlongY, mnuAlongZ,*/ 
                 mnuAroundX, mnuAroundY, mnuAroundZ, mnuNone, 
                 mnuSaveBitmap, mnuStartView, mnuSelect });
-            this.ContextMenuStrip = mnu;
+            //this.ContextMenuStrip = mnu;
         }
 
-        public void ResizeView()
-		{
-            view.Width = Width;
-            view.Height = Height;
-		}
+  //      public void ResizeView()
+		//{
+  //          view.Width = Width;
+  //          view.Height = Height;
+		//}
 
         public void SetMainRef(MainWindow _window)
         {
@@ -131,76 +134,76 @@ namespace Geology.DrawNewWindow.Controller
 
         private void Controller_Resize(object sender, EventArgs e)
         {
-            this.ResizeView();
+            //this.ResizeView();
             View.ResizeWindow();
             View.Draw();
         }
 
-        public void DisposedController(object sender, EventArgs e)
-        {
-            Win32.wglMakeCurrent(View.Hdc, (IntPtr)View.OglContext);
-            caption.ClearFont();
-            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-        }
+		public void DisposedController(object sender, EventArgs e)
+		{
+			Win32.wglMakeCurrent(View.Hdc, (IntPtr)View.OglContext);
+			caption.ClearFont();
+			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+		}
 
-        private void uncheckMenuItem(ToolStripItem itemClick)
+		private void uncheckMenuItem(ToolStripItem itemClick)
         {
             foreach (ToolStripMenuItem item in mnu.Items)
             {
                 item.Checked = false;
             }
-            this.Cursor = Cursors.Default;
+            Cursor = Cursors.Default;
             selecting = false;
         }
 
-        private ImageCodecInfo GetEncoder(ImageFormat format)
-        {
-            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
-            foreach (ImageCodecInfo codec in codecs)
-            {
-                if (codec.FormatID == format.Guid)
-                {
-                    return codec;
-                }
-            }
-            return null;
-        }
+        //private ImageCodecInfo GetEncoder(ImageFormat format)
+        //{
+        //    ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
+        //    foreach (ImageCodecInfo codec in codecs)
+        //    {
+        //        if (codec.FormatID == format.Guid)
+        //        {
+        //            return codec;
+        //        }
+        //    }
+        //    return null;
+        //}
 
-        private void mnuSaveBitmap_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            //saveFileDialog.InitialDirectory = FilesWorking.LastOpenSaveDirectory;
+        //private void mnuSaveBitmap_Click(object sender, EventArgs e)
+        //{
+        //    SaveFileDialog saveFileDialog = new SaveFileDialog();
+        //    //saveFileDialog.InitialDirectory = FilesWorking.LastOpenSaveDirectory;
 
 
-            //saveFileDialog.InitialDirectory = GetLastOpenSaveDirectory();
-            saveFileDialog.Filter = "Png-files (*.png)|*.png";
-            saveFileDialog.FilterIndex = 0;
-            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                System.Drawing.Bitmap b = new System.Drawing.Bitmap(this.Size.Width, this.Size.Height);
-                System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(b);
-                System.Drawing.Point loc = this.PointToScreen(new System.Drawing.Point(0, 0));
-                g.CopyFromScreen(loc, new System.Drawing.Point(0, 0), this.Size);
-                System.Drawing.Size size = new System.Drawing.Size(b.Width * 2, b.Height * 2);
-                using (System.Drawing.Bitmap newb = new System.Drawing.Bitmap(b, size))
-                {
-                    ImageCodecInfo jgpEncoder = GetEncoder(ImageFormat.Jpeg);
-                    ImageCodecInfo pngEncoder = GetEncoder(ImageFormat.Png);
-                    var encoder = System.Drawing.Imaging.Encoder.Quality;
-                    //var encoder2 = System.Drawing.Imaging.Encoder.ColorDepth;
-                    var myEncoderParameters = new EncoderParameters(1);
-                    var myEncoderParameter = new EncoderParameter(encoder, 100L);
-                    //var myEncoderParameter2 = new System.Drawing.Imaging.EncoderParameter(encoder2, 100L);
+        //    //saveFileDialog.InitialDirectory = GetLastOpenSaveDirectory();
+        //    saveFileDialog.Filter = "Png-files (*.png)|*.png";
+        //    saveFileDialog.FilterIndex = 0;
+        //    if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        //    {
+        //        System.Drawing.Bitmap b = new System.Drawing.Bitmap(this.Size.Width, this.Size.Height);
+        //        System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(b);
+        //        System.Drawing.Point loc = this.PointToScreen(new System.Drawing.Point(0, 0));
+        //        g.CopyFromScreen(loc, new System.Drawing.Point(0, 0), this.Size);
+        //        System.Drawing.Size size = new System.Drawing.Size(b.Width * 2, b.Height * 2);
+        //        using (System.Drawing.Bitmap newb = new System.Drawing.Bitmap(b, size))
+        //        {
+        //            ImageCodecInfo jgpEncoder = GetEncoder(ImageFormat.Jpeg);
+        //            ImageCodecInfo pngEncoder = GetEncoder(ImageFormat.Png);
+        //            var encoder = System.Drawing.Imaging.Encoder.Quality;
+        //            //var encoder2 = System.Drawing.Imaging.Encoder.ColorDepth;
+        //            var myEncoderParameters = new EncoderParameters(1);
+        //            var myEncoderParameter = new EncoderParameter(encoder, 100L);
+        //            //var myEncoderParameter2 = new System.Drawing.Imaging.EncoderParameter(encoder2, 100L);
 
-                    myEncoderParameters.Param[0] = myEncoderParameter;
-                    //myEncoderParameters.Param[1] = myEncoderParameter2;
+        //            myEncoderParameters.Param[0] = myEncoderParameter;
+        //            //myEncoderParameters.Param[1] = myEncoderParameter2;
 
-                    newb.Save(saveFileDialog.FileName, pngEncoder, myEncoderParameters);
-                }
-                //b.Save(saveFileDialog.FileName);
-                g.Dispose();
-            }
-        }
+        //            newb.Save(saveFileDialog.FileName, pngEncoder, myEncoderParameters);
+        //        }
+        //        //b.Save(saveFileDialog.FileName);
+        //        g.Dispose();
+        //    }
+        //}
 
 		private void mnuStartView_Click(object sender, EventArgs e)
 		{
@@ -210,7 +213,7 @@ namespace Geology.DrawNewWindow.Controller
             //ResizeView();
             //view.Height = Height;
             //view.Width = Width;
-            Invalidate();
+            InvalidateEvent();
 		}
 
 		private void mnuAlongWindow_Click(object sender, EventArgs e)
@@ -256,16 +259,16 @@ namespace Geology.DrawNewWindow.Controller
             typeTransform = TypeTransformation.None;
         }
 
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            // 
-            // ViewControllerWindow3D
-            // 
-            this.Name = "ViewControllerWindow3D";
-            this.ResumeLayout(false);
+        //private void InitializeComponent()
+        //{
+        //    this.SuspendLayout();
+        //    // 
+        //    // ViewControllerWindow3D
+        //    // 
+        //    this.Name = "ViewControllerWindow3D";
+        //    this.ResumeLayout(false);
 
-        }
+        //}
 
         public void OnMouseMove(MouseEventArgs e)
         {
@@ -279,19 +282,20 @@ namespace Geology.DrawNewWindow.Controller
                     case TypeTransformation.alongX:
                     case TypeTransformation.alongY:
                     case TypeTransformation.alongZ:
-                        project.SetTrans(Width, Height, -e.X + XPrevious, e.Y - YPrevious, typeTransform, BoundingBox); break;
+                        project.SetTrans(view.Width, view.Height, -e.X + XPrevious, e.Y - YPrevious, typeTransform, BoundingBox); break;
                     case TypeTransformation.aroundX:
                     case TypeTransformation.aroundY:
                     case TypeTransformation.aroundZ:
-                        project.setRotD(360.0 * (-e.X + XPrevious) / (float)Width, typeTransform); break;
+                        project.setRotD(360.0 * (-e.X + XPrevious) / (float)view.Width, typeTransform); break;
                 }
 
                 XPrevious = e.X; YPrevious = e.Y;
-                Resize_Window();
+                view.ResizeWindow();
                 //ResizeView();
                 //view.Height = Height;
                 //view.Width = Width;
-                Invalidate();
+                //InvalidateM();
+                InvalidateEvent();
             }
             //if (window != null)
             //    window.StatusBarView.Text = "View: 3D";
@@ -321,13 +325,13 @@ namespace Geology.DrawNewWindow.Controller
 
             if (selecting && e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                OpenGLControl_Prepare();
+                view.Prepare();
                 //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 
                 double[] p1 = new double[3];
                 double[] p2 = new double[3];
-                _GetSceneCoord(e.X, Height - e.Y, 0, p1);
-                _GetSceneCoord(e.X, Height - e.Y, 1, p2);
+                _GetSceneCoord(e.X, view.Height - e.Y, 0, p1);
+                _GetSceneCoord(e.X, view.Height - e.Y, 1, p2);
                 bool selected = false;
                 Utilities.Vector3 ip;
                 foreach (var p in model.Objects)
@@ -337,10 +341,11 @@ namespace Geology.DrawNewWindow.Controller
                         selected = true;
                         break;
                     }
-                OpenGLControl_Release();
+                view.Release();
                 if (!selected)
                     return;
-                Invalidate();
+                InvalidateEvent();
+                //Invalidate();
             }
             else
             {
@@ -351,7 +356,7 @@ namespace Geology.DrawNewWindow.Controller
 
         public void OnMouseUp(MouseEventArgs e)
         {
-            if (!Focused) Focus();
+            //if (!Focused) Focus();
 
             if (selecting && e.Button == System.Windows.Forms.MouseButtons.Left)
             {
@@ -359,7 +364,8 @@ namespace Geology.DrawNewWindow.Controller
                     if (p.Selected)
                     {
                         p.Selected = false;
-                        Invalidate();
+                        //Invalidate();
+                        InvalidateEvent();
                         break;
                     }
             }
@@ -371,15 +377,13 @@ namespace Geology.DrawNewWindow.Controller
             double scal = e.Delta < 0 ? 1.05 : 1 / 1.05;
             project.Scale *= scal;
 
-            Resize_Window();
+            view.ResizeWindow();
             //ResizeView();
             //view.Height = Height;
             //view.Width = Width;
-            Invalidate();
+            //Invalidate();
+            InvalidateEvent();
         }
-
-  //      protected void Draw() => view?.Draw();
-		//protected void UpdateViewMatrix() => view?.UpdateViewMatrix();
 	}
 }
 

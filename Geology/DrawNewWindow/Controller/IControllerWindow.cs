@@ -18,10 +18,17 @@ namespace Geology.DrawNewWindow.Controller
 		IViewWindow View { get; set; }
 		PageType Page { get; set; }
 		IModelWindow Model { get; set; }
+		ContextMenuStrip mnu { get; set; }
 		void OnMouseDown(MouseEventArgs e);
 		void OnMouseMove(MouseEventArgs e);
 		void OnMouseUp(MouseEventArgs e);
 		void OnMouseWheel(MouseEventArgs e);
+		event Action InvalidateEvent;
+		void DisposedController(object sender, EventArgs e)
+		//delegate InvalidateEventArgs
+		//event InvalidateEventArgs e;
+		//delegate void InvalidateMethod();
+		//event InvalidateEventArgs();
 		//void Resize_Window();
 
 		//FontGeology caption { get; set; }

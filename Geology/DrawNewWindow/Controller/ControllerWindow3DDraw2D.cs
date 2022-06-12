@@ -18,19 +18,23 @@ namespace Geology.DrawNewWindow.Controller
 	//public enum PlaneType
 	//{ XY = 0, XZ, YZ }
 
-	class ControllerWindow3DDraw2D : ControllerWindow2D
+	class ControllerWindow3DDraw2D : ControllerWindow2D, IControllerWindow
 	{	
         public EPlaneType axisType;
-        //public Dictionary<PageType, List<IViewportObjectsSelectable>> selectableObjects = new Dictionary<PageType, List<IViewportObjectsSelectable>>();
+#pragma warning disable CS0108 // Член скрывает унаследованный член: отсутствует новое ключевое слово
+		public event Action InvalidateEvent;
+#pragma warning restore CS0108 // Член скрывает унаследованный член: отсутствует новое ключевое слово
+
+		//public Dictionary<PageType, List<IViewportObjectsSelectable>> selectableObjects = new Dictionary<PageType, List<IViewportObjectsSelectable>>();
 		//public Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects = new Dictionary<PageType, List<IViewportObjectsDrawable>>();
 		//public Dictionary<PageType, List<IViewportObjectsClickable>> clickableObjects = new Dictionary<PageType, List<IViewportObjectsClickable>>();
 		//public Dictionary<PageType, List<IViewportObjectsContextmenuClickable>> contextMenuClickableObjects = new Dictionary<PageType, List<IViewportObjectsContextmenuClickable>>();
 		//public Dictionary<PageType, List<IViewportMouseMoveReaction>> mouseMoveReactionObjects = new Dictionary<PageType, List<IViewportMouseMoveReaction>>();
 
-		
+
 		//private PageType page = PageType.Model;
-        
-        private double zRange;
+
+		private double zRange;
         private double selectionX0 = 0, selectionX1 = 0;
         private double selectionY0 = 0, selectionY1 = 0;
         private double prevX = 0, prevY = 0;
@@ -42,7 +46,7 @@ namespace Geology.DrawNewWindow.Controller
         private bool LMBDown = false;
         private bool RMBDown = false;
         
-        public ControllerWindow3DDraw2D() : base(true)
+        public ControllerWindow3DDraw2D(int Width, int Height) : base(true)
 		{
 			axisType = EPlaneType.XY;
 			zRange = 1e+7;
@@ -60,14 +64,14 @@ namespace Geology.DrawNewWindow.Controller
 			this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
 
             view = new ViewWindow2D(captionHorAndVert, Ortho, drawableObjects, axisType, zRange, page, Width, Height, BoundingBox, fontReceivers, paletteFont);
-            this.Resize += Controller_Resize;	
+            //this.Resize += Controller_Resize;	
         }
 
-		public void ResizeView()
-		{
-			view.Width = Width;
-			view.Height = Height;
-		}
+		//public void ResizeView()
+		//{
+		//	view.Width = Width;
+		//	view.Height = Height;
+		//}
 
 		public void SetMainRef(MainWindow _window)
         {
@@ -76,14 +80,14 @@ namespace Geology.DrawNewWindow.Controller
 
         private void ContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            Invalidate();
+            InvalidateEvent();
         }
 
 		private void Controller_Resize(object sender, EventArgs e)
 		{
-			this.ResizeView();
-			Resize_Window();
-			this.Draw();
+			//this.ResizeView();
+			view.ResizeWindow();
+		    view.Draw();
 		}
 
 		private void StartSelection(double x, double y)
@@ -96,7 +100,7 @@ namespace Geology.DrawNewWindow.Controller
             toAdd = Keyboard.IsKeyDown(Key.LeftCtrl) ||
                 Keyboard.IsKeyDown(Key.RightCtrl);
 
-            Invalidate();
+            InvalidateEvent();
         }
         
         private void ContinueSelection(double x, double y)
@@ -105,7 +109,7 @@ namespace Geology.DrawNewWindow.Controller
             selectionY1 = y;
             //this.ControllerWindow3DDraw2D_MouseMove();
 
-            Invalidate();
+            InvalidateEvent();
         }
         
         private void FinishSelection(double x, double y)
@@ -128,7 +132,7 @@ namespace Geology.DrawNewWindow.Controller
             foreach (var obj in selectableObjects[PageType.None])
                 obj.FinishSelection(selectionX0, selectionY0, selectionX1, selectionY1, toAdd, axisType);
 
-            Invalidate();
+            InvalidateEvent();
         }
 
         private void ConvertScreenToWorldCoord(int screenX, int screenY, out double x, out double y)
@@ -185,7 +189,7 @@ namespace Geology.DrawNewWindow.Controller
                 }
             }
 
-            this.ContextMenuStrip = mnu;
+            //this.ContextMenuStrip = mnu;
         }
 
         protected void GetRays(double x, double y, out double[] r1, out double[] r2)
@@ -212,7 +216,7 @@ namespace Geology.DrawNewWindow.Controller
             }
         }
 
-        protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
+        public override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
         {
             double x, y;
             ConvertScreenToWorldCoord(e.X, e.Y, out x, out y);
@@ -241,12 +245,12 @@ namespace Geology.DrawNewWindow.Controller
             base.OnMouseDown(e);
         }
 
-        protected override void OnMouseUp(System.Windows.Forms.MouseEventArgs e)
+        public override void OnMouseUp(System.Windows.Forms.MouseEventArgs e)
         {
             double x, y;
             LMBDown = false;
             ConvertScreenToWorldCoord(e.X, e.Y, out x, out y);
-            if (!Focused) Focus();
+            //if (!Focused) Focus();
 
             if (e.Button == MouseButtons.Right)
             {
@@ -256,7 +260,7 @@ namespace Geology.DrawNewWindow.Controller
             if (selectionStarted && !selectionFinished)
             {
                 FinishSelection(x, y);
-                Invalidate();
+                InvalidateEvent();
                 return;
             }
 
@@ -276,10 +280,10 @@ namespace Geology.DrawNewWindow.Controller
 
 
             base.OnMouseUp(e);
-            Invalidate();
+            InvalidateEvent();
         }
        
-        protected override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
+        public override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
         {
             double x, y;
             ConvertScreenToWorldCoord(e.X, e.Y, out x, out y);
@@ -315,14 +319,14 @@ namespace Geology.DrawNewWindow.Controller
                 foreach (var item in mouseMoveReactionObjects[page])
                     if (item.MouseMove(x, y, r1, r2, mPerPixel, ctrlPressed, shiftPressed, LMBDown, RMBDown, axisType))
                     {
-                        Invalidate();
+                        InvalidateEvent();
                         return;
                     }
 
                 foreach (var item in mouseMoveReactionObjects[PageType.None])
                     if (item.MouseMove(x, y, r1, r2, mPerPixel, ctrlPressed, shiftPressed, LMBDown, RMBDown, axisType))
                     {
-                        Invalidate();
+                        InvalidateEvent();
                         return;
                     }
             }
@@ -333,13 +337,13 @@ namespace Geology.DrawNewWindow.Controller
             if (selectionStarted && !selectionFinished)
             {
                 ContinueSelection(x, y);
-                Invalidate();
+                InvalidateEvent();
                 return;
             }
 
 
             base.OnMouseMove(e);
-            Invalidate();
+            InvalidateEvent();
         }
 
         public void ChangeBoundingBox(double[] newBoundingBox)
@@ -410,12 +414,12 @@ namespace Geology.DrawNewWindow.Controller
             }
         }
 
-        protected override void Draw() => view?.Draw();
-        protected override void UpdateViewMatrix()
-        {
-            view?.UpdateViewMatrix();
-            //view.WidthLocal = view.WidthLocal;
-            //view.HeightLocal = view.HeightLocal;
-        }
+        //protected override void Draw() => view?.Draw();
+        //protected override void UpdateViewMatrix()
+        //{
+        //    view?.UpdateViewMatrix();
+        //    //view.WidthLocal = view.WidthLocal;
+        //    //view.HeightLocal = view.HeightLocal;
+        //}
 	}
 }
