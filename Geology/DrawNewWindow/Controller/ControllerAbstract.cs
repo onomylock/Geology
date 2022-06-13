@@ -45,7 +45,7 @@ namespace Geology.DrawNewWindow.Controller
 		protected ToolStripMenuItem mnuSaveBitmap;
 		protected Cursor Cursor;
 
-		
+		public event Action InvalidateEvent;
 
 		public virtual void OnMouseDown(MouseEventArgs e)
 		{
@@ -67,7 +67,7 @@ namespace Geology.DrawNewWindow.Controller
 			throw new NotImplementedException();
 		}
 
-		protected void DisposedController(object sender, EventArgs e)
+		public void DisposedController(object sender, EventArgs e)
 		{
 			Win32.wglMakeCurrent(View.Hdc, (IntPtr)View.OglContext);
 			caption.ClearFont();

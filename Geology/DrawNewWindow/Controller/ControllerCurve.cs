@@ -43,15 +43,15 @@ namespace Geology.DrawNewWindow.Controller
 	class ControllerCurve : ControllerWindow2D
 	{
 		bool png = true;
-		protected override void OnMouseLeave(EventArgs e)
-		{
-			//if (Focused) Parent.Focus();
-		}
+		//protected override void OnMouseLeave(EventArgs e)
+		//{
+		//	//if (Focused) Parent.Focus();
+		//}
 
-		protected override void OnMouseEnter(EventArgs e)
-		{
-			//if (!Focused) Focus();
-		}
+		//protected override void OnMouseEnter(EventArgs e)
+		//{
+		//	//if (!Focused) Focus();
+		//}
 
 		[DllImport("shell32.dll")]
 		public static extern Int32 SHGetPathFromIDListW(
@@ -72,9 +72,11 @@ String lpszFile // File
 		  IntPtr hemf // Handle to EMF
 		);
 
-		
 
 
+#pragma warning disable CS0108 // Член скрывает унаследованный член: отсутствует новое ключевое слово
+		public event Action InvalidateEvent;
+#pragma warning restore CS0108 // Член скрывает унаследованный член: отсутствует новое ключевое слово
 		public enum MouseState { msNormal, msZoom }
 		//public IViewWindowAndCurveInfo viewWindowAndCurveInfo;
 		public ObservableCollection<Objects.CCurve> Curves;
@@ -104,7 +106,7 @@ String lpszFile // File
 			set { _Arg = value; CalcValues(); labelArg.Content = _Arg.ToString(); }
 		}
 
-		public ControllerCurve() : base(false)
+		public ControllerCurve(int Width, int Height, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap) : base(false)
 		{
 			Curves = new ObservableCollection<Objects.CCurve>();
 			CurvesCopy = new ObservableCollection<Objects.CCurve>();
@@ -148,7 +150,7 @@ String lpszFile // File
 			ToolStripMenuItem mnuSetFontSize = new ToolStripMenuItem("Font size");
 			ToolStripMenuItem mnuSetXAxisLabel = new ToolStripMenuItem("X-axis label");
 			ToolStripMenuItem mnuSetYAxisLabel = new ToolStripMenuItem("Y-axis label");
-			ToolStripMenuItem mnuSaveBitmap = png ? new ToolStripMenuItem("Save as PNG") : new ToolStripMenuItem("Save as JPG");
+			//ToolStripMenuItem mnuSaveBitmap = png ? new ToolStripMenuItem("Save as PNG") : new ToolStripMenuItem("Save as JPG");
 			ToolStripMenuItem mnuSaveMetaFile = new ToolStripMenuItem("Save as EMF");
 			ToolStripMenuItem mnuLegendSettings = new ToolStripMenuItem("Legend settings");
 			ToolStripMenuItem mnuShowGrid = new ToolStripMenuItem("Show grid");
@@ -158,7 +160,7 @@ String lpszFile // File
 			//mnuSetXAxisLabel.Click += mnuSetXAxisLabelClick;
 			//mnuSetYAxisLabel.Click += mnuSetYAxisLabelClick;
 			mnuLabelSettings.Click += mnuLabelSettingsClick;
-			mnuSaveBitmap.Click += mnuSaveBitmapClick;
+			//mnuSaveBitmap.Click += mnuSaveBitmapClick;
 			mnuLegendSettings.Click += mnuLegendSettingsClick;
 			mnuSaveMetaFile.Click += mnuSaveMetaFileClick;
 			mnuShowGrid.CheckOnClick = true;
@@ -188,15 +190,15 @@ String lpszFile // File
 
 			drawLegend = false;
 
-			view = new ViewWindowCurve(captionHorAndVert, Ortho, CurvesInfoList, mRect, mZoomStarted, Curves, Arg);
-			this.Resize += Controller_Resize;
+			view = new ViewWindowCurve(captionHorAndVert, Ortho, CurvesInfoList, mRect, mZoomStarted, Curves, Arg, Handle);
+			//this.Resize += Controller_Resize;
 		}
 
-		public void ResizeView()
-		{
-			view.Width = Width;
-			view.Height = Height;
-		}
+		//public void ResizeView()
+		//{
+		//	view.Width = Width;
+		//	view.Height = Height;
+		//}
 
 		public virtual void AddCurve(Objects.CCurve c)
 		{
@@ -283,7 +285,7 @@ String lpszFile // File
 			CurvesInfoList.RemoveAt(i);
 			Curves.RemoveAt(i);
 			CurvesCopy.RemoveAt(i);
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void DiffCurve(int i)
@@ -291,14 +293,14 @@ String lpszFile // File
 			if (i < 0 || i >= Curves.Count)
 				return;
 			Curves[i].Differentiate();
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		private void Controller_Resize(object sender, EventArgs e)
 		{
-			this.ResizeView();
-			Resize_Window();
-			this.Draw();
+			//this.ResizeView();
+			view.ResizeWindow();
+			view.Draw();
 		}
 
 		private static double CalculateDifference(Objects.CCurve cBase, Objects.CCurve c)
@@ -360,7 +362,7 @@ String lpszFile // File
 				Curves[j].Normalize(ci);
 			}
 			Arg = Arg;
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void AddCurve(int i)
@@ -375,7 +377,7 @@ String lpszFile // File
 				Curves[j] = Curves[j] + Curves[i];
 			}
 			Arg = Arg;
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void SubstructCurve(int i)
@@ -390,7 +392,7 @@ String lpszFile // File
 				Curves[j] = Curves[j] - Curves[i];
 			}
 			Arg = Arg;
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void MultiplyCurve(int i)
@@ -405,7 +407,7 @@ String lpszFile // File
 				Curves[j] = Curves[j] * Curves[i];
 			}
 			Arg = Arg;
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void DivideCurve(int i)
@@ -429,7 +431,7 @@ String lpszFile // File
 				}
 			}
 			Arg = Arg;
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void AbsCurve(int i)
@@ -437,7 +439,7 @@ String lpszFile // File
 			if (i < 0 || i >= Curves.Count)
 				return;
 			Curves[i].Abs();
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void SignCurve(int i)
@@ -445,7 +447,7 @@ String lpszFile // File
 			if (i < 0 || i >= Curves.Count)
 				return;
 			Curves[i].Sign();
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void SquareCurve(int i)
@@ -453,7 +455,7 @@ String lpszFile // File
 			if (i < 0 || i >= Curves.Count)
 				return;
 			Curves[i].Square();
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void RootCurve(int i)
@@ -478,7 +480,7 @@ String lpszFile // File
 				System.Windows.MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				ci = ci_copy;
 			}
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void CubeRootCurve(int i)
@@ -500,7 +502,7 @@ String lpszFile // File
 				System.Windows.MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				ci = ci_copy;
 			}
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void SmoothCurve(int i)
@@ -508,7 +510,7 @@ String lpszFile // File
 			if (i < 0 || i >= Curves.Count)
 				return;
 			Curves[i].Smooth();
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void Average(int i)
@@ -516,7 +518,7 @@ String lpszFile // File
 			if (i < 0 || i >= Curves.Count)
 				return;
 			Curves[i].Average();
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void CutLeftCurve(int i)
@@ -524,7 +526,7 @@ String lpszFile // File
 			if (i < 0 || i >= Curves.Count)
 				return;
 			Curves[i].CutLeft(Arg);
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		public virtual void CutRightCurve(int i)
@@ -532,7 +534,7 @@ String lpszFile // File
 			if (i < 0 || i >= Curves.Count)
 				return;
 			Curves[i].CutRight(Arg);
-			Invalidate();
+			InvalidateEvent();
 		}
 
 		internal void BuildSpline(int i)
@@ -559,8 +561,8 @@ String lpszFile // File
 				Ortho.GetOrtho(out oldOrtho);
 				OrthoHistory.Push(new Rect(oldOrtho));
 				Ortho.SetOrtho(newOrtho, x, y);
-				Resize_Window();
-				Invalidate();
+				view.ResizeWindow();
+				InvalidateEvent();
 			}
 		}
 
@@ -580,8 +582,8 @@ String lpszFile // File
 				newOrtho[3] = y_max;
 				OrthoHistory.Push(new Rect(oldOrtho));
 				Ortho.SetOrtho(newOrtho);
-				Resize_Window();
-				Invalidate();
+				view.ResizeWindow();
+				InvalidateEvent();
 			}
 		}
 
@@ -601,11 +603,11 @@ String lpszFile // File
 			newOrtho[3] = c23 + s23;
 			OrthoHistory.Push(new Rect(oldOrtho));
 			Ortho.SetOrtho(newOrtho);
-			Resize_Window();
-			Invalidate();
+			view.ResizeWindow();
+			InvalidateEvent();
 		}
 
-		public new int Load(String fileName)
+		public int Load(String fileName)
 		{
 			try
 			{
@@ -656,7 +658,7 @@ String lpszFile // File
 
 				inputFile.Close();
 				AddCurve(c);
-				Invalidate();
+				InvalidateEvent();
 			}
 			catch (Exception ex)
 			{
@@ -694,8 +696,8 @@ String lpszFile // File
 			newOrtho[2] = r.y1;
 			newOrtho[3] = r.y2;
 			Ortho.SetOrtho(newOrtho);
-			Resize_Window();
-			Invalidate();
+			view.ResizeWindow();
+			InvalidateEvent();
 		}
 
 		//protected void CView2DGraph_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -728,9 +730,9 @@ String lpszFile // File
 		//        mZoomStarted = true;
 		//    }
 		//}
-		protected override void OnMouseDown(MouseEventArgs e)
+		public override void OnMouseDown(MouseEventArgs e)
 		{
-			if (!Focused) Focus();
+			//if (!Focused) Focus();
 
 			if (e.Button == MouseButtons.Right)
 			{
@@ -750,7 +752,7 @@ String lpszFile // File
 				double x, y;
 				ScreenToWorldCoord(e.X, e.Y, out x, out y);
 				Arg = (base.captionHorAndVert.LogH ? Objects.CCurve.GetLinear(x, base.captionHorAndVert.ZeroLogH) : x);
-				Invalidate();
+				InvalidateEvent();
 			}
 			else
 			{
@@ -783,9 +785,9 @@ String lpszFile // File
 		//        Invalidate();
 		//    }
 		//}
-		protected override void OnMouseUp(MouseEventArgs e)
+		public override void OnMouseUp(MouseEventArgs e)
 		{
-			if (!Focused) Focus();
+			//if (!Focused) Focus();
 
 			if (mState == MouseState.msNormal)
 				base.OnMouseUp(e);
@@ -803,8 +805,8 @@ String lpszFile // File
 				newOrtho[3] = Math.Max(mRect.y1, mRect.y2);
 				OrthoHistory.Push(new Rect(oldOrtho));
 				Ortho.SetOrtho(newOrtho);
-				Resize_Window();
-				Invalidate();
+				view.ResizeWindow();
+				InvalidateEvent();
 			}
 		}
 
@@ -818,7 +820,7 @@ String lpszFile // File
 		//        Invalidate();
 		//    }
 		//}
-		protected override void OnMouseMove(MouseEventArgs e)
+		public override void OnMouseMove(MouseEventArgs e)
 		{
 			//if (!Focused) Focus();
 
@@ -827,7 +829,7 @@ String lpszFile // File
 			else
 			{
 				ScreenToWorldCoord(e.X, e.Y, out mRect.x2, out mRect.y2);
-				Invalidate();
+				InvalidateEvent();
 			}
 		}
 
@@ -856,25 +858,25 @@ String lpszFile // File
 			}
 			else
 			{
-				Resize_Window();
-				Invalidate();
+				view.ResizeWindow();
+				InvalidateEvent();
 			}
 		}
 
-		private System.Drawing.Imaging.ImageCodecInfo GetEncoder(System.Drawing.Imaging.ImageFormat format)
-		{
+		//private System.Drawing.Imaging.ImageCodecInfo GetEncoder(System.Drawing.Imaging.ImageFormat format)
+		//{
 
-			System.Drawing.Imaging.ImageCodecInfo[] codecs = System.Drawing.Imaging.ImageCodecInfo.GetImageDecoders();
+		//	System.Drawing.Imaging.ImageCodecInfo[] codecs = System.Drawing.Imaging.ImageCodecInfo.GetImageDecoders();
 
-			foreach (System.Drawing.Imaging.ImageCodecInfo codec in codecs)
-			{
-				if (codec.FormatID == format.Guid)
-				{
-					return codec;
-				}
-			}
-			return null;
-		}
+		//	foreach (System.Drawing.Imaging.ImageCodecInfo codec in codecs)
+		//	{
+		//		if (codec.FormatID == format.Guid)
+		//		{
+		//			return codec;
+		//		}
+		//	}
+		//	return null;
+		//}
 
 		protected String GetLastOpenSaveDirectory()
 		{
@@ -911,40 +913,40 @@ String lpszFile // File
 			return "";
 		}
 
-		private void mnuSaveBitmapClick(object sender, EventArgs e)
-		{
-			System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-			//saveFileDialog.InitialDirectory = FilesWorking.LastOpenSaveDirectory;
+		//private void mnuSaveBitmapClick(object sender, EventArgs e)
+		//{
+		//	System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+		//	//saveFileDialog.InitialDirectory = FilesWorking.LastOpenSaveDirectory;
 
 
-			//saveFileDialog.InitialDirectory = GetLastOpenSaveDirectory();
-			saveFileDialog.Filter = png ? "png-files (*.png)|*.png" : "Jpg-files (*.jpg)|*.jpg";
-			saveFileDialog.FilterIndex = 0;
-			if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-			{
-				System.Drawing.Bitmap b = new System.Drawing.Bitmap(this.Size.Width, this.Size.Height);
-				System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(b);
-				System.Drawing.Point loc = this.PointToScreen(new System.Drawing.Point(0, 0));
-				g.CopyFromScreen(loc, new System.Drawing.Point(0, 0), this.Size);
-				System.Drawing.Size size = new System.Drawing.Size(b.Width, b.Height);
-				using (System.Drawing.Bitmap newb = new System.Drawing.Bitmap(b, size))
-				{
-					System.Drawing.Imaging.ImageCodecInfo jgpEncoder = GetEncoder(png ? System.Drawing.Imaging.ImageFormat.Png : System.Drawing.Imaging.ImageFormat.Jpeg);
-					var encoder = System.Drawing.Imaging.Encoder.Quality;
-					//var encoder2 = System.Drawing.Imaging.Encoder.ColorDepth;
-					var myEncoderParameters = new System.Drawing.Imaging.EncoderParameters(1);
-					var myEncoderParameter = new System.Drawing.Imaging.EncoderParameter(encoder, 100L);
-					//var myEncoderParameter2 = new System.Drawing.Imaging.EncoderParameter(encoder2, 100L);
+		//	//saveFileDialog.InitialDirectory = GetLastOpenSaveDirectory();
+		//	saveFileDialog.Filter = png ? "png-files (*.png)|*.png" : "Jpg-files (*.jpg)|*.jpg";
+		//	saveFileDialog.FilterIndex = 0;
+		//	if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+		//	{
+		//		System.Drawing.Bitmap b = new System.Drawing.Bitmap(this.Size.Width, this.Size.Height);
+		//		System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(b);
+		//		System.Drawing.Point loc = this.PointToScreen(new System.Drawing.Point(0, 0));
+		//		g.CopyFromScreen(loc, new System.Drawing.Point(0, 0), this.Size);
+		//		System.Drawing.Size size = new System.Drawing.Size(b.Width, b.Height);
+		//		using (System.Drawing.Bitmap newb = new System.Drawing.Bitmap(b, size))
+		//		{
+		//			System.Drawing.Imaging.ImageCodecInfo jgpEncoder = GetEncoder(png ? System.Drawing.Imaging.ImageFormat.Png : System.Drawing.Imaging.ImageFormat.Jpeg);
+		//			var encoder = System.Drawing.Imaging.Encoder.Quality;
+		//			//var encoder2 = System.Drawing.Imaging.Encoder.ColorDepth;
+		//			var myEncoderParameters = new System.Drawing.Imaging.EncoderParameters(1);
+		//			var myEncoderParameter = new System.Drawing.Imaging.EncoderParameter(encoder, 100L);
+		//			//var myEncoderParameter2 = new System.Drawing.Imaging.EncoderParameter(encoder2, 100L);
 
-					myEncoderParameters.Param[0] = myEncoderParameter;
-					//myEncoderParameters.Param[1] = myEncoderParameter2;
+		//			myEncoderParameters.Param[0] = myEncoderParameter;
+		//			//myEncoderParameters.Param[1] = myEncoderParameter2;
 
-					newb.Save(saveFileDialog.FileName, jgpEncoder, myEncoderParameters);
-				}
-				//b.Save(saveFileDialog.FileName);
-				g.Dispose();
-			}
-		}
+		//			newb.Save(saveFileDialog.FileName, jgpEncoder, myEncoderParameters);
+		//		}
+		//		//b.Save(saveFileDialog.FileName);
+		//		g.Dispose();
+		//	}
+		//}
 
 		private void mnuSaveMetaFileClick(object sender, EventArgs e)
 		{
@@ -970,7 +972,7 @@ String lpszFile // File
 						m = new Metafile(
 						  stream,
 						  deviceContextHandle,
-						  new RectangleF(0, 0, this.Size.Width, this.Size.Height),
+						  new RectangleF(0, 0, view.Width, view.Height),
 							MetafileFrameUnit.Pixel,
 						  EmfType.EmfPlusOnly);
 						offScreenBufferGraphics.ReleaseHdc();
@@ -982,7 +984,7 @@ String lpszFile // File
 					double horzValue = view.HeightLocal / (ort[3] - ort[2]);
 					double vertValue = view.WidthLocal / (ort[1] - ort[0]);
 					//float horzAxcis = Width - WidthLocal;
-					float horzAxcis = Height - view.HeightLocal;
+					float horzAxcis = view.Height - view.HeightLocal;
 
 					g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
 					g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
@@ -1008,13 +1010,13 @@ String lpszFile // File
 					//g.Dispose();
 					//Ось X
 
-					g.SetClip(new System.Drawing.RectangleF(horzAxcis, view.HeightLocal, view.WidthLocal, Height - view.HeightLocal));
+					g.SetClip(new System.Drawing.RectangleF(horzAxcis, view.HeightLocal, view.WidthLocal, view.Height - view.HeightLocal));
 
 					// clears the image and colors the entire background
 					g.Clear(System.Drawing.Color.White);
 					captionHorAndVert.DrawScaleLblsHorzMetaFile(view.WidthLocal, view.HeightLocal, g, horzValue, vertValue, horzAxcis);
 
-					g.SetClip(new System.Drawing.RectangleF(0, 0, Width - view.WidthLocal, view.HeightLocal));
+					g.SetClip(new System.Drawing.RectangleF(0, 0, view.Width - view.WidthLocal, view.HeightLocal));
 
 					// clears the image and colors the entire background
 					g.Clear(System.Drawing.Color.White);
@@ -1100,20 +1102,8 @@ String lpszFile // File
 
 			Ortho.SetOrtho(newOrtho);
 			Ortho.SetZBuffer(newOrtho[4], newOrtho[5]);
-			Resize_Window();
+			view.ResizeWindow();
 		}
-
-		protected override void Draw()
-		{
-			view?.Draw();	
-		}
-		protected override void UpdateViewMatrix()
-		{
-			view?.UpdateViewMatrix();
-			//view.WidthLocal = view.WidthLocal;
-			//view.HeightLocal = view.HeightLocal;
-		}
-
 	}
 }
 

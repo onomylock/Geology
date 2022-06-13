@@ -46,24 +46,25 @@ namespace Geology.DrawNewWindow.Controller
         private bool LMBDown = false;
         private bool RMBDown = false;
         
-        public ControllerWindow3DDraw2D(int Width, int Height) : base(true)
+        public ControllerWindow3DDraw2D(int Width, int Height, IntPtr Handle) : base(true)
 		{
 			axisType = EPlaneType.XY;
 			zRange = 1e+7;
+            this.Handle = Handle;
 			//ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });
 
-			foreach (var item in (PageType[])Enum.GetValues(typeof(PageType)))
-			{
-				selectableObjects.Add(item, new List<IViewportObjectsSelectable>());
-				drawableObjects.Add(item, new List<IViewportObjectsDrawable>());
-				clickableObjects.Add(item, new List<IViewportObjectsClickable>());
-				contextMenuClickableObjects.Add(item, new List<IViewportObjectsContextmenuClickable>());
-				mouseMoveReactionObjects.Add(item, new List<IViewportMouseMoveReaction>());
-			}
+			//foreach (var item in (PageType[])Enum.GetValues(typeof(PageType)))
+			//{
+			//	selectableObjects.Add(item, new List<IViewportObjectsSelectable>());
+			//	drawableObjects.Add(item, new List<IViewportObjectsDrawable>());
+			//	clickableObjects.Add(item, new List<IViewportObjectsClickable>());
+			//	contextMenuClickableObjects.Add(item, new List<IViewportObjectsContextmenuClickable>());
+			//	mouseMoveReactionObjects.Add(item, new List<IViewportMouseMoveReaction>());
+			//}
 
-			this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
+			//this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
 
-            view = new ViewWindow2D(captionHorAndVert, Ortho, drawableObjects, axisType, zRange, page, Width, Height, BoundingBox, fontReceivers, paletteFont);
+            view = new ViewWindow2D(captionHorAndVert, Ortho, model.viewportObjectsDrawablesGet(page), axisType, zRange, page, Width, Height, BoundingBox, fontReceivers, paletteFont, Handle);
             //this.Resize += Controller_Resize;	
         }
 
@@ -367,7 +368,7 @@ namespace Geology.DrawNewWindow.Controller
 
                 Ortho.SetOrtho(newOrtho);
                 Ortho.SetZBuffer(newOrtho[4], newOrtho[5]);
-                Resize_Window();
+                view.ResizeWindow();
                 return;
             }
             switch (axisType)
@@ -400,7 +401,7 @@ namespace Geology.DrawNewWindow.Controller
 
             Ortho.SetOrtho(newOrtho);
             Ortho.SetZBuffer(newOrtho[4], newOrtho[5]);
-            Resize_Window();
+            view.ResizeWindow();
         }
         
         public void setRotateAndNameAxes(EPlaneType numAxis)

@@ -23,10 +23,11 @@ namespace Geology.DrawNewWindow.View
 	class ViewWindow2D : ViewAbstract, IViewWindow
 	{
 		public double scaleV;
-		private int widthLocal, heightLocal;
+		//private int widthLocal, heightLocal;
 
 		protected readonly EPlaneType axisType;
-		private readonly Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects;
+		//private readonly Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects;
+		private readonly IViewportObjectsDrawable[] viewportObjectsDrawables;
 		private readonly CaptionAxisHorAndVert captionHorAndVert;
 		private COrthoControlProport Ortho;
 		private bool selectionStarted = false;
@@ -34,18 +35,18 @@ namespace Geology.DrawNewWindow.View
 		private readonly double zRange = 1e+7;
 		private double selectionX0, selectionX1;
 		private double selectionY0, selectionY1;
-		protected int _Width, _Height;
+		//protected int _Width, _Height;
 		private readonly FontGeology fontReceivers;
 		private readonly FontGeology paletteFont;
 
 		
 
-		public ViewWindow2D(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho, Dictionary<PageType, 
-			List<IViewportObjectsDrawable>> drawableObjects, EPlaneType axisType, double zRange, PageType page, 
+		public ViewWindow2D(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho, 
+			IViewportObjectsDrawable[] viewportObjectsDrawables, EPlaneType axisType, double zRange, PageType page, 
 			int Width, int Height, double[] BoundingBox, FontGeology fontReceivers, FontGeology paletteFont, IntPtr Handle) : base()
 		{
 			this.captionHorAndVert = captionHorAndVert;
-			this.drawableObjects = drawableObjects;
+			this.viewportObjectsDrawables = viewportObjectsDrawables;
 			this.fontReceivers = fontReceivers;
 			this.paletteFont = paletteFont;
 			this.BoundingBox = BoundingBox;
@@ -65,7 +66,7 @@ namespace Geology.DrawNewWindow.View
 			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 		}
 
-		public void Draw()
+		public override void Draw()
 		{
 			GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
 			GLContex.glLoadIdentity();
@@ -78,7 +79,7 @@ namespace Geology.DrawNewWindow.View
 			DrawObjetcs();
 		}
 
-		public void UpdateViewMatrix()
+		public override void UpdateViewMatrix()
 		{
 			try
 			{
@@ -151,9 +152,8 @@ namespace Geology.DrawNewWindow.View
 			foreach (var item in drawableObjects[PageType.None])
 				item.Draw(axisType, BoundingBox, widthLocal, heightLocal, fontReceivers, paletteFont);
 
-			foreach (var item in drawableObjects[page])
+			foreach (var item in viewportObjectsDrawables)
 				item.Draw(axisType, BoundingBox, widthLocal, heightLocal, fontReceivers, paletteFont);
-
 
 			DrawSelection();
 		}

@@ -48,6 +48,7 @@ namespace Geology.DrawNewWindow.Controller
         protected PageType page = PageType.Model;
         protected ToolStripMenuItem mnuSaveBitmap;
         protected Cursor Cursor;
+        protected IntPtr Handle;
 
         protected CaptionAxisHorAndVert captionHorAndVert;
         protected Geology.MainWindow window;

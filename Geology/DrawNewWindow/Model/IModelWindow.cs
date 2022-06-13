@@ -27,7 +27,11 @@ namespace Geology.DrawNewWindow.Model
 		//Dictionary<PageType, List<IViewportObjectsContextmenuClickable>> contextMenuClickableObjects { get; set; }
 		//Dictionary<PageType, List<IViewportMouseMoveReaction>> mouseMoveReactionObjects { get; set; }
 
-		//IViewportObjectsSelectable;
+		IViewportObjectsSelectable[] viewportObjectsSelectablesGet(PageType pageType);
+		IViewportObjectsDrawable[] viewportObjectsDrawablesGet(PageType pageType);
+		IViewportObjectsClickable[] viewportObjectsClickablesGet(PageType pageType);
+		IViewportObjectsContextmenuClickable[] viewportObjectsContextmenuClickablesGet(PageType pageType);
+		IViewportMouseMoveReaction[] viewportMouseMoveReactionsGet(PageType pageType);
 
 		//IViewportObjectsSelectable
 
