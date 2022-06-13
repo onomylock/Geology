@@ -81,19 +81,19 @@ namespace Geology
 #endif
             InitializeComponent();
 
-			Mesh mesh = new Mesh();
+			//Mesh mesh = new Mesh();
 			ModelWindow geoModel1 = new ModelWindow();
-			int index = 0;
-			foreach(Element ver in mesh.Elements)
-			{
-				geoModel1.Objects.Add(new CGeoObject());
-				geoModel1.Objects[index].Color = (Color)ColorConverter.ConvertFromString("Blue");
-				geoModel1.Objects[index].X0 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[0]].R;
-				geoModel1.Objects[index].X1 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[1]].R;
-				geoModel1.Objects[index].Y0 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[0]].Z;
-				geoModel1.Objects[index].Y1 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[2]].Z;
-				index++;
-			}
+			//int index = 0;
+			//foreach(Element ver in mesh.Elements)
+			//{
+			//	geoModel1.Objects.Add(new CGeoObject());
+			//	geoModel1.Objects[index].Color = (Color)ColorConverter.ConvertFromString("Blue");
+			//	geoModel1.Objects[index].X0 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[0]].R;
+			//	geoModel1.Objects[index].X1 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[1]].R;
+			//	geoModel1.Objects[index].Y0 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[0]].Z;
+			//	geoModel1.Objects[index].Y1 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[2]].Z;
+			//	index++;
+			//}
 
 			geoModel1.GlobalBoundingBox[0] = -10000;
 			geoModel1.GlobalBoundingBox[1] = 10000;
@@ -102,17 +102,18 @@ namespace Geology
 			geoModel1.GlobalBoundingBox[4] = -10000;
 			geoModel1.GlobalBoundingBox[5] = 10000;
 
-			Controller2DMesh.setRotateAndNameAxes(EPlaneType.XY);
-			Controller2DMesh.ChangeOrtho(geoModel1.GlobalBoundingBox);
-			Controller2DMesh.BoundingBox = geoModel1.GlobalBoundingBox;
-			foreach(var DrawObj in geoModel1.Objects)
-			{
-				Controller2DMesh.Model.drawableObjects[PageType.Model].Add(DrawObj);
-			}
+			//Controller2DMesh.setRotateAndNameAxes(EPlaneType.XY);
+			//Controller2DMesh.ChangeOrtho(geoModel1.GlobalBoundingBox);
+			//Controller2DMesh.BoundingBox = geoModel1.GlobalBoundingBox;
+			//foreach(var DrawObj in geoModel1.Objects)
+			//{
+			//	Controller2DMesh.Model.drawableObjects[PageType.Model].Add(DrawObj);
+			//}
 
+			Controller3D.SetCostructor(OpenGL.OpenGLControl.ConstructorType.ThreeDimensional);
 
-			//Controller3D.SetBoundingBox(geoModel1.GlobalBoundingBox);
-			//Controller3D.SetMainRef(this);
+			Controller3D.Controller.BoundingBox = geoModel1.GlobalBoundingBox;
+			//Controller3D.Controller.SetMainRef(this);
 
 			//Controller2DYZ.setRotateAndNameAxes(EPlaneType.YZ);
 			//Controller2DXY.setRotateAndNameAxes(EPlaneType.XY);

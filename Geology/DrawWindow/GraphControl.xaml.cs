@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Data;
 using System.Collections.ObjectModel;
 using Geology.Objects;
+//using System.Windows.Forms;
 using System.Windows.Input;
 using System.Runtime.InteropServices;
 using System.Collections.Specialized;
@@ -49,20 +50,20 @@ namespace Geology.Controls
         private void chkSelectAllCurves_Checked(object sender, RoutedEventArgs e)
         {
             TGraph.CurvesInfoList.ToList().ForEach(x => x.Visible = true);
-            TGraph.Invalidate();
+            //TGraph.InvalidateEvent += ;
         }
         protected void chkSelectAllCurves_UnChecked(object sender, RoutedEventArgs e)
         {
             TGraph.CurvesInfoList.ToList().ForEach(x => x.Visible = false);
-            TGraph.Invalidate();
+            //TGraph.Invalidate();
         }
         public GraphControl()
         {
             //CurvesInfoList = new ObservableCollection<Objects.CCurveInfo>();
 
             InitializeComponent();
-
-            CurvesList.ItemsSource = TGraph.CurvesInfoList;
+            TGraph.SetCostructor(OpenGL.OpenGLControl.ConstructorType.Curve);
+            CurvesList.ItemsSource = TGraph.Controller.CurvesInfoList;
             //TGraph.CurvesInfoList = CurvesInfoList;
             TGraph.labelArg = LabelArgument;
             buttonDownX.IsEnabled = false;
@@ -71,6 +72,7 @@ namespace Geology.Controls
             buttonUpY.IsEnabled = false;
 
             TGraph.CurvesInfoList.CollectionChanged += OnCurvesInfoListCollectionChanged;
+            //TGraph.InvalidateEvent += Control.Invalidate;
         }
         private void SetCurvesOldColors()
         {
@@ -105,11 +107,11 @@ namespace Geology.Controls
         }
         protected void CurvesListCheckedVis(object sender, RoutedEventArgs e)
         {
-            TGraph.Invalidate();
+            //TGraph.Invalidate();
         }
         protected void CurvesList_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
-            TGraph.Invalidate();
+            //TGraph.Invalidate();
         }
         protected void GraphContextMenuLostMouse(object sender, MouseEventArgs e)
         {
@@ -129,7 +131,7 @@ namespace Geology.Controls
                 if (cd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     TGraph.CurvesInfoList[CurvesList.SelectedIndex].Color = System.Windows.Media.Color.FromRgb(cd.Color.R, cd.Color.G, cd.Color.B);
-                    TGraph.Invalidate();
+                    //TGraph.Invalidate();
                 }
             }
 
@@ -165,7 +167,7 @@ namespace Geology.Controls
             {
 
             }
-            TGraph.Invalidate();
+            //TGraph.Invalidate();
         }
         private void CurvesSaveSelected_Click(object sender, RoutedEventArgs e)
         {
@@ -502,8 +504,8 @@ namespace Geology.Controls
                         TGraph.CurvesInfoList.Add(new CCurveInfo(cName));
                         if (TGraph.Curves.Count == 1)
                             TGraph.ViewAll(true, true);
-                        else
-                            TGraph.Invalidate();
+                        //else
+                          //  TGraph.Invalidate();
                         TGraph.Arg = TGraph.Arg;
                     }
                 }
@@ -581,7 +583,7 @@ namespace Geology.Controls
             {
                 foreach (var item in CurvesList.SelectedItems)
                     ((CCurveInfo)item).Color = System.Windows.Media.Color.FromRgb(cd.Color.R, cd.Color.G, cd.Color.B);
-                TGraph.Invalidate();
+                //TGraph.InvalidateEvent();
             }
 
             //RefreshOldColors();

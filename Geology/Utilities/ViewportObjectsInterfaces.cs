@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Geology.DrawWindow;
-using static Geology.DrawWindow.CObject3DDraw2D;
+//using static Geology.DrawWindow.CObject3DDraw2D;
 
 namespace Geology.Utilities
 {

@@ -11,7 +11,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using static Geology.DrawWindow.CObject3DDraw2D;
+//using static Geology.DrawWindow.CObject3DDraw2D;
 using GLContex = Geology.OpenGL.OpenGL;
 
 namespace Geology.Objects.GeoModel

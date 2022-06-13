@@ -24,7 +24,7 @@ namespace Geology.DrawNewWindow.Controller
 		void OnMouseUp(MouseEventArgs e);
 		void OnMouseWheel(MouseEventArgs e);
 		event Action InvalidateEvent;
-		void DisposedController(object sender, EventArgs e)
+		void DisposedController(object sender, EventArgs e);
 		//delegate InvalidateEventArgs
 		//event InvalidateEventArgs e;
 		//delegate void InvalidateMethod();

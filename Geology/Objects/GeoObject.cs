@@ -27,7 +27,7 @@ using GLContex = Geology.OpenGL.OpenGL;
 using Geology.Utilities;
 using System.IO;
 using Geology.DrawWindow;
-using static Geology.DrawWindow.CObject3DDraw2D;
+//using static Geology.DrawWindow.CObject3DDraw2D;
 
 namespace Geology.Objects
 {

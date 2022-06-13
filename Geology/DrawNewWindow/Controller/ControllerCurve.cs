@@ -737,15 +737,18 @@ String lpszFile // File
 			if (e.Button == MouseButtons.Right)
 			{
 				if (clickOnHor = captionHorAndVert.ClickOnHor(e.X, e.Y, view.WidthLocal, view.HeightLocal))
-					this.ContextMenuStrip = mnuAxis;
+					//this.ContextMenuStrip = mnuAxis;
+					mnu = mnuAxis;
 				else if (clickOnVer = captionHorAndVert.ClickOnVer(e.X, e.Y, view.WidthLocal, view.HeightLocal))
-					this.ContextMenuStrip = mnuAxis;
+					//this.ContextMenuStrip = mnuAxis;
+					mnu = mnuAxis;
 				else
-					this.ContextMenuStrip = mnuProp;
-				base.OnMouseDown(e);
+					//this.ContextMenuStrip = mnuProp;
+					mnu = mnuProp;
+					base.OnMouseDown(e);
 				return;
 			}
-			this.ContextMenuStrip = null;
+			//this.ContextMenuStrip = null;
 			if (mState == MouseState.msNormal)
 			{
 				base.OnMouseDown(e);

@@ -149,8 +149,8 @@ namespace Geology.DrawNewWindow.View
 					break;
 			}
 
-			foreach (var item in drawableObjects[PageType.None])
-				item.Draw(axisType, BoundingBox, widthLocal, heightLocal, fontReceivers, paletteFont);
+			//foreach (var item in drawableObjects[PageType.None])
+			//	item.Draw(axisType, BoundingBox, widthLocal, heightLocal, fontReceivers, paletteFont);
 
 			foreach (var item in viewportObjectsDrawables)
 				item.Draw(axisType, BoundingBox, widthLocal, heightLocal, fontReceivers, paletteFont);

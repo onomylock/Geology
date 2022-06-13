@@ -126,12 +126,18 @@ namespace Geology.DrawNewWindow.Controller
             if (selectionX1 < selectionX0) Utilities.LittleTools.Swap(ref selectionX0, ref selectionX1);
             if (selectionY1 < selectionY0) Utilities.LittleTools.Swap(ref selectionY0, ref selectionY1);
 
-            if (selectableObjects.ContainsKey(page))
-                foreach (var obj in selectableObjects[page])
+            if (Model.viewportObjectsSelectablesGet(page) != null)
+                foreach (var obj in model.viewportObjectsSelectablesGet(page))
                     obj.FinishSelection(selectionX0, selectionY0, selectionX1, selectionY1, toAdd, axisType);
 
-            foreach (var obj in selectableObjects[PageType.None])
+            foreach (var obj in model.viewportObjectsSelectablesGet(PageType.None))
                 obj.FinishSelection(selectionX0, selectionY0, selectionX1, selectionY1, toAdd, axisType);
+            //if (selectableObjects.ContainsKey(page))
+            //foreach (var obj in selectableObjects[page])
+            //obj.FinishSelection(selectionX0, selectionY0, selectionX1, selectionY1, toAdd, axisType);
+
+            //foreach (var obj in selectableObjects[PageType.None])
+            //obj.FinishSelection(selectionX0, selectionY0, selectionX1, selectionY1, toAdd, axisType);
 
             InvalidateEvent();
         }
@@ -168,24 +174,28 @@ namespace Geology.DrawNewWindow.Controller
             bool ctrlPressed = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
             bool shiftPressed = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
 
-            foreach (var obj in contextMenuClickableObjects[page])
+            foreach (var obj in model.viewportObjectsContextmenuClickablesGet(page))
             {
                 var m = obj.ContextMenuClick(x, y, mPerPixel, axisType, ctrlPressed, shiftPressed);
                 if (m != null)
                 {
-                    this.ContextMenuStrip = m;
-                    this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
+                    mnu = m;
+                    mnu.ItemClicked += ContextMenuStrip_ItemClicked;
+                    //this.ContextMenuStrip = m;
+                    //this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
                     return;
                 }
             }
 
-            foreach (var obj in contextMenuClickableObjects[PageType.None])
+            foreach (var obj in model.viewportObjectsContextmenuClickablesGet(PageType.None))
             {
                 var m = obj.ContextMenuClick(x, y, mPerPixel, axisType, ctrlPressed, shiftPressed);
                 if (m != null)
                 {
-                    this.ContextMenuStrip = m;
-                    this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
+                    mnu = m;
+                    mnu.ItemClicked += ContextMenuStrip_ItemClicked;
+                    //this.ContextMenuStrip = m;
+                    //this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
                     return;
                 }
             }
@@ -222,7 +232,7 @@ namespace Geology.DrawNewWindow.Controller
             double x, y;
             ConvertScreenToWorldCoord(e.X, e.Y, out x, out y);
 
-            if (!Focused) Focus();
+            //if (!Focused) Focus();
 
             if (e.Button == MouseButtons.Right)
             {
@@ -273,9 +283,9 @@ namespace Geology.DrawNewWindow.Controller
                 double mPerPixel = MetersPerPixel();
                 bool ctrlPressed = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
                 bool shiftPressed = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
-                foreach (var item in clickableObjects[page])
+                foreach (var item in model.viewportObjectsClickablesGet(page))
                     item.Click(x, y, r1, r2, mPerPixel, axisType, ctrlPressed, shiftPressed);
-                foreach (var item in clickableObjects[PageType.None])
+                foreach (var item in model.viewportObjectsClickablesGet(PageType.None))
                     item.Click(x, y, r1, r2, mPerPixel, axisType, ctrlPressed, shiftPressed);
             }
 
@@ -317,14 +327,14 @@ namespace Geology.DrawNewWindow.Controller
                         break;
                 }
 
-                foreach (var item in mouseMoveReactionObjects[page])
+                foreach (var item in model.viewportMouseMoveReactionsGet(page))
                     if (item.MouseMove(x, y, r1, r2, mPerPixel, ctrlPressed, shiftPressed, LMBDown, RMBDown, axisType))
                     {
                         InvalidateEvent();
                         return;
                     }
 
-                foreach (var item in mouseMoveReactionObjects[PageType.None])
+                foreach (var item in model.viewportMouseMoveReactionsGet(PageType.None))
                     if (item.MouseMove(x, y, r1, r2, mPerPixel, ctrlPressed, shiftPressed, LMBDown, RMBDown, axisType))
                     {
                         InvalidateEvent();

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Geology"
         xmlns:openglwin="clr-namespace:Geology.DrawWindow"
-        xmlns:openglwinnew="clr-namespace:Geology.DrawNewWindow.Controller"
+        xmlns:openglwinnew="clr-namespace:Geology.OpenGL.OpenGLControl"
         xmlns:controls ="clr-namespace:Geology.Controls"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="Geology.MainWindow"
         Title="Geology" Height="1050.866" Width="1840.895"
@@ -141,7 +141,7 @@
 
                                 
 
-                                <WindowsFormsHost x:Uid="WindowsFormsHost_5" Grid.Column="5" Grid.Row="0" Grid.RowSpan="4" Margin="3.666,0,0.334,-0.333">
+                                <!--<WindowsFormsHost x:Uid="WindowsFormsHost_5" Grid.Column="5" Grid.Row="0" Grid.RowSpan="4" Margin="3.666,0,0.334,-0.333">
                                     <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2DXY" x:Name="Controller2DXY" />
                                 </WindowsFormsHost>
 
@@ -151,10 +151,10 @@
 
                                 <WindowsFormsHost x:Uid="WindowsFormsHost_5" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="4" Margin="3.666,0,0.334,-0.333">
                                     <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2DYZ" x:Name="Controller2DYZ" />
-                                </WindowsFormsHost>
+                                </WindowsFormsHost>-->
 
                                 <WindowsFormsHost x:Uid="WindowsFormsHost_3" Grid.Column="6" Grid.Row="0" Grid.RowSpan="4" Grid.ColumnSpan="2" Margin="3.666,0,0.334,-0.333">
-                                    <openglwinnew:ControllerWindow3D x:Uid="Controller3D" x:Name="Controller3D" />
+                                    <openglwinnew:OpenGLControl  x:Uid="Controller3D" x:Name="Controller3D" />
                                 </WindowsFormsHost>
                                 
                        
@@ -171,19 +171,19 @@
                                 <controls:GraphControl  x:Uid="graphViewerControl" x:Name="graphViewerControl"  Margin="0"/>
                             </TabItem>
                             <!--<TabItem x:Uid="TabItem_7" Header="newInPoint" x:Name="newTabItemGraphsInPoint">
-                                -->
-                            <!--<controls:GraphControl  x:Uid="graphViewerControl" x:Name="graphViewerControl"  Margin="0"/>-->
-                            <!--
+                                
+                            <controls:GraphControl  x:Uid="graphViewerControl" x:Name="graphViewerControl"  Margin="0"/>
+                            
                             </TabItem>-->
                         </TabControl>
                     </TabItem>
-                    <TabItem x:Uid="TabItem_3" Header="Tests" x:Name="Test">
+                    <!--<TabItem x:Uid="TabItem_3" Header="Tests" x:Name="Test">
                         <TabControl x:Uid="TabControl_9">
                             <WindowsFormsHost x:Uid="WindowsFormsHost_7">
                                 <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2DMesh" x:Name="Controller2DMesh" />
                             </WindowsFormsHost>
                         </TabControl>
-                    </TabItem>
+                    </TabItem>-->
                 </TabControl>
             </Grid>
         </DockPanel>

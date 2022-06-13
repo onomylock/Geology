@@ -22,7 +22,7 @@ namespace Geology.OpenGL.OpenGLControl
     public partial class OpenGLControl : UserControl
     {
         IViewWindow View;
-        IControllerWindow Controller;
+        public IControllerWindow Controller;
         System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap;
 
         public ConstructorType constructorType;
@@ -59,7 +59,7 @@ namespace Geology.OpenGL.OpenGLControl
                     }
 				case ConstructorType.Curve:
 					{
-                        Controller = new ControllerCurve(Width, Height, Handle);
+                        Controller = new ControllerCurve(Width, Height, Handle, mnuSaveBitmap);
                         break;
                     }
 					
