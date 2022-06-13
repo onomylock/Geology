@@ -134,6 +134,7 @@
     </Compile>
     <Compile Include="DrawNewWindow\Controller\IControllerWindow.cs" />
     <Compile Include="DrawNewWindow\Mesh\Mesh.cs" />
+    <Compile Include="DrawNewWindow\Mesh\NewMesh.cs" />
     <Compile Include="DrawNewWindow\Model\IModelWindow.cs" />
     <Compile Include="DrawNewWindow\Model\ModelWindow.cs" />
     <Compile Include="DrawNewWindow\View\ViewWindow2D.cs" />
