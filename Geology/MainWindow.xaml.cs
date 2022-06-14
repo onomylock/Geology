@@ -81,19 +81,19 @@ namespace Geology
 #endif
             InitializeComponent();
 
-			Mesh mesh = new Mesh();
+			//Mesh mesh = new Mesh();
 			ModelWindow geoModel1 = new ModelWindow();
-			int index = 0;
-			foreach(Element ver in mesh.Elements)
-			{
-				geoModel1.Objects.Add(new CGeoObject());
-				geoModel1.Objects[index].Color = (Color)ColorConverter.ConvertFromString("Blue");
-				geoModel1.Objects[index].X0 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[0]].R;
-				geoModel1.Objects[index].X1 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[1]].R;
-				geoModel1.Objects[index].Y0 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[0]].Z;
-				geoModel1.Objects[index].Y1 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[2]].Z;
-				index++;
-			}
+			//int index = 0;
+			//foreach(Element ver in mesh.Elements)
+			//{
+			//	geoModel1.Objects.Add(new CGeoObject());
+			//	geoModel1.Objects[index].Color = (Color)ColorConverter.ConvertFromString("Blue");
+			//	geoModel1.Objects[index].X0 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[0]].R;
+			//	geoModel1.Objects[index].X1 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[1]].R;
+			//	geoModel1.Objects[index].Y0 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[0]].Z;
+			//	geoModel1.Objects[index].Y1 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[2]].Z;
+			//	index++;
+			//}
 
 			geoModel1.GlobalBoundingBox[0] = -10000;
 			geoModel1.GlobalBoundingBox[1] = 10000;
