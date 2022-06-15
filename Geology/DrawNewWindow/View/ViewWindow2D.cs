@@ -39,7 +39,16 @@ namespace Geology.DrawNewWindow.View
 		private readonly FontGeology fontReceivers;
 		private readonly FontGeology paletteFont;
 
-		
+		public ViewWindow2D(IntPtr Handle)
+		{
+			oglcontext = GLContex.InitOpenGL((int)Handle);
+			hdc = Win32.GetDC(Handle);
+			Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+			GLContex.glClearColor(1, 1, 1, 1);
+
+			GLContex.glEnable(GLContex.GL_DEPTH_TEST);
+			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+		}
 
 		public ViewWindow2D(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho, 
 			IViewportObjectsDrawable[] viewportObjectsDrawables, EPlaneType axisType, double zRange, PageType page, 
@@ -57,13 +66,7 @@ namespace Geology.DrawNewWindow.View
 			this.Width = Width;
 			this.page = page;
 
-			oglcontext = GLContex.InitOpenGL((int)Handle);
-			hdc = Win32.GetDC(Handle);
-			Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-			GLContex.glClearColor(1, 1, 1, 1);
-
-			GLContex.glEnable(GLContex.GL_DEPTH_TEST);
-			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+			
 		}
 
 		public override void Draw()

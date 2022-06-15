@@ -75,25 +75,25 @@ namespace Geology.DrawNewWindow.Controller
 
             //this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
 
-            captionHorAndVert = new CaptionAxisHorAndVert(IntPtr.Zero, 0, "Arial", 16, Ortho, Width, Height);
-            wellFont = new FontGeology(IntPtr.Zero, 0, FontGeology.TypeFont.Horizontal, "Arial", 14);
-            paletteFont = new FontGeology(IntPtr.Zero, 0, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            fontReceivers = new FontGeology(IntPtr.Zero, 0, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+            //captionHorAndVert = new CaptionAxisHorAndVert(IntPtr.Zero, 0, "Arial", 16, Ortho, Width, Height);
+            //wellFont = new FontGeology(IntPtr.Zero, 0, FontGeology.TypeFont.Horizontal, "Arial", 14);
+            //paletteFont = new FontGeology(IntPtr.Zero, 0, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            //fontReceivers = new FontGeology(IntPtr.Zero, 0, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 
             view = new ViewWindow2D(captionHorAndVert, Ortho, model.viewportObjectsDrawablesGet(page), axisType, zRange, page, Width, Height, BoundingBox, fontReceivers, paletteFont, Handle);
             Win32.wglMakeCurrent((IntPtr)view?.Hdc, (IntPtr)view?.OglContext);
-            
-            //captionHorAndVert = new CaptionAxisHorAndVert(view.Hdc, view.OglContext, "Arial", 16, Ortho, Width, Height);
-            //wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 14);
-            //paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            //fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 
-            //this.Disposed += OpenGLControl_Disposed;
-            //this.Resize += Controller_Resize;
+			captionHorAndVert = new CaptionAxisHorAndVert(view.Hdc, view.OglContext, "Arial", 16, Ortho, Width, Height);
+			wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 14);
+			paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+			fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 
-            window = null;
+			//this.Disposed += OpenGLControl_Disposed;
+			//this.Resize += Controller_Resize;
+
+			window = null;
 
             mnu = new System.Windows.Forms.ContextMenuStrip();
             System.Windows.Forms.ToolStripMenuItem mnuShowGrid = new System.Windows.Forms.ToolStripMenuItem("Show grid");
