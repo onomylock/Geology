@@ -60,7 +60,7 @@ namespace Geology.DrawNewWindow.Controller
 			axisType = EPlaneType.XY;
 			zRange = 1e+7;
             this.Handle = Handle;
-			//ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });
+			ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });
 
 			//foreach (var item in (PageType[])Enum.GetValues(typeof(PageType)))
 			//{

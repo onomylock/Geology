@@ -71,7 +71,7 @@
                     <RowDefinition x:Uid="RowDefinition_3" Height="2*"/>
                 </Grid.RowDefinitions>
 
-                <TabControl x:Uid="TabControl_1" Grid.Row="2" x:Name="TabControlBottom">
+                <TabControl x:Uid="TabControl_1" Grid.Row="2" x:Name="TabControlBottom" Margin="-50,0,50,0">
                     <!--<TabItem x:Uid="TabItem_1" Header="Model" x:Name="TabControlBottom_TabItemModel">
                         <DockPanel x:Uid="Testel" x:Name="Testel"  Grid.Row="2" >
                             <Grid x:Uid="Grid_30" x:Name="BottomGrid">
@@ -135,8 +135,8 @@
                                     <ColumnDefinition x:Uid="ColumnDefinition_94" Width="606*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <!--<WindowsFormsHost x:Uid="WindowsFormsHost_1" Grid.Column="7" Margin="0,0,3.667,0.333" Grid.Row="0">
-                                    <openglwin:CObject3DDraw2D x:Uid="XZOpenGlWindow" x:Name="XZOpenGlWindow"   />
+                                <!--<WindowsFormsHost x:Uid="WindowsFormsHost_1" Grid.Column="5" Margin="0,0,3.667,0.333" Grid.Row="0">
+                                    <openglwinnew:OpenGLControl ConstructorType="TwoDimensional" x:Uid="XZOpenGlWindow" x:Name="XZOpenGlWindow"   />
                                 </WindowsFormsHost>-->
 
                                 

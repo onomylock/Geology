@@ -94,13 +94,13 @@ namespace Geology
 			//	geoModel1.Objects[index].Y1 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[2]].Z;
 			//	index++;
 			//}
-			geoModel1.Objects.Add(new CGeoObject());
-			geoModel1.GlobalBoundingBox[0] = -10000;
-			geoModel1.GlobalBoundingBox[1] = 10000;
-			geoModel1.GlobalBoundingBox[2] = -10000;
-			geoModel1.GlobalBoundingBox[3] = 10000;
-			geoModel1.GlobalBoundingBox[4] = -10000;
-			geoModel1.GlobalBoundingBox[5] = 10000;
+			Controller3D.Controller.Model.Objects.Add(new CGeoObject());
+			Controller3D.Controller.Model.GlobalBoundingBox[0] = -10000;
+			Controller3D.Controller.Model.GlobalBoundingBox[1] = 10000;
+			Controller3D.Controller.Model.GlobalBoundingBox[2] = -10000;
+			Controller3D.Controller.Model.GlobalBoundingBox[3] = 10000;
+			Controller3D.Controller.Model.GlobalBoundingBox[4] = -10000;
+			Controller3D.Controller.Model.GlobalBoundingBox[5] = 10000;
 
 			//Controller2DMesh.setRotateAndNameAxes(EPlaneType.XY);
 			//Controller2DMesh.ChangeOrtho(geoModel1.GlobalBoundingBox);
@@ -111,13 +111,17 @@ namespace Geology
 			//}
 
 			//Controller3D.SetCostructor(OpenGL.OpenGLControl.ConstructorType.ThreeDimensional);
-			Controller3D.Controller.Model = geoModel1;
+
 			//Controller3D.Controller.BoundingBox = geoModel1.GlobalBoundingBox;
+			//Controller3D.Controller.Model. = geoModel1;
 			Controller3D.Controller.SetMainRef(this);
+
+			//XZOpenGlWindow.Controller.Model = geoModel1;
+			//XZOpenGlWindow.Controller.SetMainRef(this);
 
 			//Controller2DYZ.setRotateAndNameAxes(EPlaneType.YZ);
 			//Controller2DXY.setRotateAndNameAxes(EPlaneType.XY);
-			//Controller2DXZ.setRotateAndNameAxes(EPlaneType.XZ);
+			//XZOpenGlWindow.Controller.setRotateAndNameAxes(EPlaneType.XZ);
 
 			//Controller2DYZ.ChangeOrtho(geoModel1.GlobalBoundingBox);
 			//Controller2DYZ.SetBoundingBox(geoModel1.GlobalBoundingBox);

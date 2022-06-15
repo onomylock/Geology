@@ -233,7 +233,7 @@ namespace Geology.DrawNewWindow.View
 
                 GLContex.glMatrixMode(GLContex.GL_PROJECTION);
                 GLContex.glPopMatrix();
-                GLContex.glViewport(0, 0, width, height);
+                GLContex.glViewport(0, 0, Width, Height);
                 GLContex.glMatrixMode(GLContex.GL_MODELVIEW);
                 GLContex.glPopMatrix();
             }
