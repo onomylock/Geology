@@ -46,9 +46,9 @@ namespace Geology.DrawNewWindow.Controller
 
 		string name = "ControllerCurve";
 
-		public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap)
+		public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
 		{
-			return new ControllerCurve(Width, Height, Handle, mnuSaveBitmap);
+			return new ControllerCurve(Width, Height, Handle, mnuSaveBitmap, axisType);
 		}
 	}
 
@@ -118,7 +118,7 @@ String lpszFile // File
 			set { _Arg = value; CalcValues(); labelArg.Content = _Arg.ToString(); }
 		}
 
-		public ControllerCurve(int Width, int Height, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap) : base(false)
+		public ControllerCurve(int Width, int Height, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType) : base(false)
 		{
 			Curves = new ObservableCollection<Objects.CCurve>();
 			CurvesCopy = new ObservableCollection<Objects.CCurve>();

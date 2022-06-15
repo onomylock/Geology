@@ -24,9 +24,9 @@ namespace Geology.DrawNewWindow.Controller
 
         string name = "Controller3D";
 
-		public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap)
+		public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
 		{
-            return new ControllerWindow3D(Width, Height, Handle, mnuSaveBitmap);
+            return new ControllerWindow3D(Width, Height, Handle, mnuSaveBitmap, axisType);
 		}
 	}
 
@@ -57,8 +57,9 @@ namespace Geology.DrawNewWindow.Controller
 		public FontGeology fontReceivers { get; set; }
 		public FontGeology paletteFont { get; set; }  
         public event Action InvalidateEvent;
+		//public event EventHandler ResizeView;
 
-        protected IModelWindow model;
+		protected IModelWindow model;
         protected IViewWindow view;
         protected PageType page = PageType.Model;
         protected ToolStripMenuItem mnuSaveBitmap;
@@ -81,7 +82,7 @@ namespace Geology.DrawNewWindow.Controller
         private ToolStripMenuItem mnuStartView;
         private ToolStripMenuItem mnuSelect;
 
-        public ControllerWindow3D(int Width, int Height, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap)
+        public ControllerWindow3D(int Width, int Height, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
         {
             Model = new ModelWindow();
             window = null;
@@ -145,17 +146,17 @@ namespace Geology.DrawNewWindow.Controller
             window = _window;
         }
 
-        private void Controller_Resize(object sender, EventArgs e)
-        {
-            //this.ResizeView();
-            View.ResizeWindow();
-            View.Draw();
-        }
+        //private void Controller_Resize(object sender, EventArgs e)
+        //{
+        //    //this.ResizeView();
+        //    View.ResizeWindow();
+        //    View.Draw();
+        //}
 
 		public void DisposedController(object sender, EventArgs e)
 		{
 			Win32.wglMakeCurrent(View.Hdc, (IntPtr)View.OglContext);
-			caption.ClearFont();
+			View?.caption.ClearFont();
 			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 		}
 

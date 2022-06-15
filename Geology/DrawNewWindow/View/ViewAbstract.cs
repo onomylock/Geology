@@ -25,9 +25,10 @@ namespace Geology.DrawNewWindow.View
 		public int OglContext { get { return oglcontext; } set { oglcontext = value; } }
 		public IntPtr Hdc { get { return hdc; } set { hdc = value; } }
 
+		public FontGeology caption { get; set; }
+
 		protected IntPtr hdc;
 		protected int oglcontext;
-		protected FontGeology caption;
 		protected CPerspective project;
 		protected IModelWindow model;
 		protected PageType page;

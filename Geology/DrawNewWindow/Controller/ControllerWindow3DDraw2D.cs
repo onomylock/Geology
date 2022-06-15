@@ -21,9 +21,9 @@ namespace Geology.DrawNewWindow.Controller
 
         string name = "Controller3DDraw2D";
 
-        public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap)
+        public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
         {
-            return new ControllerWindow3DDraw2D(Width, Height, Handle, mnuSaveBitmap);
+            return new ControllerWindow3DDraw2D(Width, Height, Handle, mnuSaveBitmap, axisType);
         }
     }
 
@@ -55,25 +55,58 @@ namespace Geology.DrawNewWindow.Controller
         private bool LMBDown = false;
         private bool RMBDown = false;
         
-        public ControllerWindow3DDraw2D(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap) : base(true)
+        public ControllerWindow3DDraw2D(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType) : base(true)
 		{
-			axisType = EPlaneType.XY;
+			this.axisType = axisType;
 			zRange = 1e+7;
             this.Handle = Handle;
-			ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });
+            BoundingBox = new double[] { -10000, 10000, -10000, 10000, -10000, 10000 };
+            Ortho = new COrthoControlProport("X", "Y", Height / (double)Width, BoundingBox, true);
+            ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });
 
-			//foreach (var item in (PageType[])Enum.GetValues(typeof(PageType)))
-			//{
-			//	selectableObjects.Add(item, new List<IViewportObjectsSelectable>());
-			//	drawableObjects.Add(item, new List<IViewportObjectsDrawable>());
-			//	clickableObjects.Add(item, new List<IViewportObjectsClickable>());
-			//	contextMenuClickableObjects.Add(item, new List<IViewportObjectsContextmenuClickable>());
-			//	mouseMoveReactionObjects.Add(item, new List<IViewportMouseMoveReaction>());
-			//}
+            //foreach (var item in (PageType[])Enum.GetValues(typeof(PageType)))
+            //{
+            //	selectableObjects.Add(item, new List<IViewportObjectsSelectable>());
+            //	drawableObjects.Add(item, new List<IViewportObjectsDrawable>());
+            //	clickableObjects.Add(item, new List<IViewportObjectsClickable>());
+            //	contextMenuClickableObjects.Add(item, new List<IViewportObjectsContextmenuClickable>());
+            //	mouseMoveReactionObjects.Add(item, new List<IViewportMouseMoveReaction>());
+            //}
 
-			//this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
+            //this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
+
+            captionHorAndVert = new CaptionAxisHorAndVert(IntPtr.Zero, 0, "Arial", 16, Ortho, Width, Height);
+            wellFont = new FontGeology(IntPtr.Zero, 0, FontGeology.TypeFont.Horizontal, "Arial", 14);
+            paletteFont = new FontGeology(IntPtr.Zero, 0, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            fontReceivers = new FontGeology(IntPtr.Zero, 0, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 
             view = new ViewWindow2D(captionHorAndVert, Ortho, model.viewportObjectsDrawablesGet(page), axisType, zRange, page, Width, Height, BoundingBox, fontReceivers, paletteFont, Handle);
+            Win32.wglMakeCurrent((IntPtr)view?.Hdc, (IntPtr)view?.OglContext);
+            
+            //captionHorAndVert = new CaptionAxisHorAndVert(view.Hdc, view.OglContext, "Arial", 16, Ortho, Width, Height);
+            //wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 14);
+            //paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            //fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+
+            //this.Disposed += OpenGLControl_Disposed;
+            //this.Resize += Controller_Resize;
+
+            window = null;
+
+            mnu = new System.Windows.Forms.ContextMenuStrip();
+            System.Windows.Forms.ToolStripMenuItem mnuShowGrid = new System.Windows.Forms.ToolStripMenuItem("Show grid");
+            System.Windows.Forms.ToolStripMenuItem mnuStartView = new System.Windows.Forms.ToolStripMenuItem("Start view");
+            System.Windows.Forms.ToolStripMenuItem mnuLabelSettings = new System.Windows.Forms.ToolStripMenuItem("Label Settings");
+
+
+            mnuShowGrid.CheckOnClick = true;
+            mnuShowGrid.Checked = captionHorAndVert.DrawGridFlag;
+            mnuShowGrid.Click += mnuShowGrid_Click;
+            mnuLabelSettings.Click += mnuLabelSettings_Click;
+            mnuStartView.Click += mnuStartView_Click;
+            mnu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuShowGrid, mnuStartView, mnuLabelSettings, mnuSaveBitmap });
             //this.Resize += Controller_Resize;	
         }
 
@@ -420,7 +453,7 @@ namespace Geology.DrawNewWindow.Controller
 
             Ortho.SetOrtho(newOrtho);
             Ortho.SetZBuffer(newOrtho[4], newOrtho[5]);
-            view.ResizeWindow();
+            view?.ResizeWindow();
         }
         
         public void setRotateAndNameAxes(EPlaneType numAxis)

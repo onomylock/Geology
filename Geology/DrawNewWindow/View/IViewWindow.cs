@@ -32,6 +32,7 @@ namespace Geology.DrawNewWindow.View
         int WidthLocal { get; set; }
         int HeightLocal { get; set; }
         int OglContext { get; set; }
+        FontGeology caption { get; }
         IntPtr Hdc { get; set; }
     }
 

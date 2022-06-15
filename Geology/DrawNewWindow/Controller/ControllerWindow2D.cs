@@ -60,31 +60,31 @@ namespace Geology.DrawNewWindow.Controller
         public ControllerWindow2D(bool EqualScale)
 		{
 
-            Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContext);
-            Ortho = new COrthoControlProport("X", "Y", view.Height / (double)view.Width, BoundingBox, EqualScale);
-            captionHorAndVert = new CaptionAxisHorAndVert(view.Hdc, view.OglContext, "Arial", 16, Ortho, view.Width, view.Height);
-            wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 14);
-            paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+            //Win32.wglMakeCurrent((IntPtr)view?.Hdc, (IntPtr)view?.OglContext);
+            //Ortho = new COrthoControlProport("X", "Y", view.Height / (double)view.Width, BoundingBox, EqualScale);
+            //captionHorAndVert = new CaptionAxisHorAndVert(view.Hdc, view.OglContext, "Arial", 16, Ortho, view.Width, view.Height);
+            //wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 14);
+            //paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            //fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
             
-            //this.Disposed += OpenGLControl_Disposed;
-            //this.Resize += Controller_Resize;
+            ////this.Disposed += OpenGLControl_Disposed;
+            ////this.Resize += Controller_Resize;
 
-            window = null;
+            //window = null;
 
-            mnu = new System.Windows.Forms.ContextMenuStrip();
-            System.Windows.Forms.ToolStripMenuItem mnuShowGrid = new System.Windows.Forms.ToolStripMenuItem("Show grid");
-            System.Windows.Forms.ToolStripMenuItem mnuStartView = new System.Windows.Forms.ToolStripMenuItem("Start view");
-            System.Windows.Forms.ToolStripMenuItem mnuLabelSettings = new System.Windows.Forms.ToolStripMenuItem("Label Settings");
+            //mnu = new System.Windows.Forms.ContextMenuStrip();
+            //System.Windows.Forms.ToolStripMenuItem mnuShowGrid = new System.Windows.Forms.ToolStripMenuItem("Show grid");
+            //System.Windows.Forms.ToolStripMenuItem mnuStartView = new System.Windows.Forms.ToolStripMenuItem("Start view");
+            //System.Windows.Forms.ToolStripMenuItem mnuLabelSettings = new System.Windows.Forms.ToolStripMenuItem("Label Settings");
             
 
-            mnuShowGrid.CheckOnClick = true;
-            mnuShowGrid.Checked = captionHorAndVert.DrawGridFlag;
-            mnuShowGrid.Click += mnuShowGrid_Click;
-            mnuLabelSettings.Click += mnuLabelSettings_Click;
-            mnuStartView.Click += mnuStartView_Click;
-            mnu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuShowGrid, mnuStartView, mnuLabelSettings, mnuSaveBitmap });
+            //mnuShowGrid.CheckOnClick = true;
+            //mnuShowGrid.Checked = captionHorAndVert.DrawGridFlag;
+            //mnuShowGrid.Click += mnuShowGrid_Click;
+            //mnuLabelSettings.Click += mnuLabelSettings_Click;
+            //mnuStartView.Click += mnuStartView_Click;
+            //mnu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { mnuShowGrid, mnuStartView, mnuLabelSettings, mnuSaveBitmap });
             //this.ContextMenuStrip = mnu;
         }
 

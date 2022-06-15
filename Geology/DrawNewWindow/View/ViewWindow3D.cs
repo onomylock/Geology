@@ -23,7 +23,7 @@ namespace Geology.DrawNewWindow.View
             PageType page, int Width, int Height, double[] BoundingBox, IntPtr Handle)
         {
             base.BoundingBox = BoundingBox;
-            base.caption = caption;
+            //base.caption = caption;
             base.project = project;
             base.Height = Height;
             base.model = model;
