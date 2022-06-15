@@ -40,7 +40,19 @@ namespace Geology.DrawNewWindow.Controller
 		}
 	}
 
-	class ControllerCurve : ControllerWindow2D
+	public class FactoryCurve : IFactoryController
+	{
+		public string Name { get { return name; } }
+
+		string name = "ControllerCurve";
+
+		public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap)
+		{
+			return new ControllerCurve(Width, Height, Handle, mnuSaveBitmap);
+		}
+	}
+
+	public class ControllerCurve : ControllerWindow2D
 	{
 		bool png = true;
 		//protected override void OnMouseLeave(EventArgs e)

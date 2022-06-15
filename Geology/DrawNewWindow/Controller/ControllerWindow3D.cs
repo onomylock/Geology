@@ -18,7 +18,19 @@ using Geology.DrawWindow;
 
 namespace Geology.DrawNewWindow.Controller
 {
-    public class ControllerWindow3D : IControllerWindow
+	public class Factory3D : IFactoryController
+	{
+		public string Name { get { return name; } }
+
+        string name = "Controller3D";
+
+		public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap)
+		{
+            return new ControllerWindow3D(Width, Height, Handle, mnuSaveBitmap);
+		}
+	}
+
+	public class ControllerWindow3D : IControllerWindow
     {
         public IViewWindow View { get { return view; } set { view = value; } }
         public PageType Page { get { return page; } set { page = value; } }
@@ -75,8 +87,9 @@ namespace Geology.DrawNewWindow.Controller
             window = null;
             project = new CPerspective();
             Cursor = new Cursor(Handle);
+            BoundingBox = new double[] { -10000, 10000, -10000, 10000, -10000, 10000 };
             view = new ViewWindow3D(project, model, page, Width, Height, BoundingBox, Handle);
-
+            
             //Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContex);
             //caption = new FontGeology(view.Hdc, view.OglContex, FontGeology.TypeFont.Horizontal, "Arial", 16);
             fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);

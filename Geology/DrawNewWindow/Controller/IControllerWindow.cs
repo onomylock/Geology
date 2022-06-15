@@ -36,4 +36,11 @@ namespace Geology.DrawNewWindow.Controller
 		//COrthoControlProport Ortho { get; set; }
 		//CPerspective project { get; set; }
 	}
+
+	public interface IFactoryController
+	{
+		string Name { get; }
+		IControllerWindow CreateController(int Width, int Height, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap);
+	}
 }
+ 

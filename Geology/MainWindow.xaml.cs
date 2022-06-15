@@ -94,7 +94,7 @@ namespace Geology
 			//	geoModel1.Objects[index].Y1 = mesh.RZ[mesh.Elements[index].VertexArr.ToArray()[2]].Z;
 			//	index++;
 			//}
-
+			geoModel1.Objects.Add(new CGeoObject());
 			geoModel1.GlobalBoundingBox[0] = -10000;
 			geoModel1.GlobalBoundingBox[1] = 10000;
 			geoModel1.GlobalBoundingBox[2] = -10000;
@@ -110,9 +110,9 @@ namespace Geology
 			//	Controller2DMesh.Model.drawableObjects[PageType.Model].Add(DrawObj);
 			//}
 
-			Controller3D.SetCostructor(OpenGL.OpenGLControl.ConstructorType.ThreeDimensional);
-
-			Controller3D.Controller.BoundingBox = geoModel1.GlobalBoundingBox;
+			//Controller3D.SetCostructor(OpenGL.OpenGLControl.ConstructorType.ThreeDimensional);
+			Controller3D.Controller.Model = geoModel1;
+			//Controller3D.Controller.BoundingBox = geoModel1.GlobalBoundingBox;
 			//Controller3D.Controller.SetMainRef(this);
 
 			//Controller2DYZ.setRotateAndNameAxes(EPlaneType.YZ);

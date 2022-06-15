@@ -154,7 +154,7 @@
                                 </WindowsFormsHost>-->
 
                                 <WindowsFormsHost x:Uid="WindowsFormsHost_3" Grid.Column="6" Grid.Row="0" Grid.RowSpan="4" Grid.ColumnSpan="2" Margin="3.666,0,0.334,-0.333">
-                                    <openglwinnew:OpenGLControl  x:Uid="Controller3D" x:Name="Controller3D" />
+                                    <openglwinnew:OpenGLControl ConstructorType="ThreeDimensional"  x:Uid="Controller3D" x:Name="Controller3D" />
                                 </WindowsFormsHost>
                                 
                        
@@ -167,9 +167,9 @@
                     </TabItem>
                     <TabItem x:Uid="TabItem_2" Header="Graphs" x:Name="TabItemGraphs">
                         <TabControl x:Uid="TabControl_8">
-                            <TabItem x:Uid="TabItem_3" Header="InPoint" x:Name="TabItemGraphsInPoint">
+                            <!--<TabItem x:Uid="TabItem_3" Header="InPoint" x:Name="TabItemGraphsInPoint">
                                 <controls:GraphControl  x:Uid="graphViewerControl" x:Name="graphViewerControl"  Margin="0"/>
-                            </TabItem>
+                            </TabItem>-->
                             <!--<TabItem x:Uid="TabItem_7" Header="newInPoint" x:Name="newTabItemGraphsInPoint">
                                 
                             <controls:GraphControl  x:Uid="graphViewerControl" x:Name="graphViewerControl"  Margin="0"/>

@@ -22,61 +22,85 @@ namespace Geology.OpenGL.OpenGLControl
     public partial class OpenGLControl : UserControl
     {
         IViewWindow View;
+        IFactoryController Factory;
         public IControllerWindow Controller;
         System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap;
 
-        public ConstructorType constructorType;
+        public ConstructorType ConstructorType { get; set; }
         //private delegate void InvalidateDekegate();
         //Cursor Cursor;
         
         public OpenGLControl()
         {
-            InitializeComponent();
+            this.ConstructorType = ConstructorType;
+            
+			switch (ConstructorType)
+			{
+				case ConstructorType.ThreeDimensional:
+                    Factory = new Factory3D();
+					break;
+				case ConstructorType.TwoDimensional:
+                    Factory = new Factory3DDraw2D();
+					break;
+				case ConstructorType.Curve:
+                    Factory = new FactoryCurve();
+					break;
+				default:
+					break;
+			}
+
+            mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
+            mnuSaveBitmap.Click += mnuSaveBitmap_Click;
+
+            Controller = Factory.CreateController(Width, Height, Handle, mnuSaveBitmap);
+            //Controller.BoundingBox = new double[] { -10000, 10000, -10000, 10000, -10000, 10000 };
+			InitializeComponent();
 			//Cursor = new Cursor(Handle);
 			mnuSaveBitmap.Click += mnuSaveBitmap_Click;
             Controller.InvalidateEvent += Invalidate;
 			this.Disposed += Controller.DisposedController;
             this.ContextMenuStrip = Controller.mnu;
-        }
-
-		public void SetCostructor(ConstructorType constructorType)
-		{
-            this.constructorType = constructorType;
-            mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
-
-            switch (constructorType)
-			{
-				case ConstructorType.ThreeDimensional:
-                    {
-                        Controller = new ControllerWindow3D(Width, Height, Handle, mnuSaveBitmap);                        
-                        break; 
-                    }
-
-				case ConstructorType.TwoDimensional:
-					{
-                        Controller = new ControllerWindow3DDraw2D(Width, Height, Handle);
-                        break;
-                    }
-				case ConstructorType.Curve:
-					{
-                        Controller = new ControllerCurve(Width, Height, Handle, mnuSaveBitmap);
-                        break;
-                    }
-					
-				default:
-					break;
-			}
-
             View = Controller.View;
             mnuSaveBitmap.Click += mnuSaveBitmap_Click;
-
         }
+
+		//public void SetCostructor(ConstructorType constructorType)
+		//{
+  //          this.constructorType = constructorType;
+  //          mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
+
+  //          switch (constructorType)
+		//	{
+		//		case ConstructorType.ThreeDimensional:
+  //                  {
+  //                      Controller = new ControllerWindow3D(Width, Height, Handle, mnuSaveBitmap);                        
+  //                      break; 
+  //                  }
+
+		//		case ConstructorType.TwoDimensional:
+		//			{
+  //                      Controller = new ControllerWindow3DDraw2D(Width, Height, Handle);
+  //                      break;
+  //                  }
+		//		case ConstructorType.Curve:
+		//			{
+  //                      Controller = new ControllerCurve(Width, Height, Handle, mnuSaveBitmap);
+  //                      break;
+  //                  }
+					
+		//		default:
+		//			break;
+		//	}
+
+           
+
+  //      }
 
         private void OpenGLControl_Paint(object sender, PaintEventArgs e)
         {
             if (View.OglContext != 0)
 			{
-                View.Paint(sender, e);
+                View?.Paint(sender, e);
 			}
             //if (oglcontext != 0)
             //{
@@ -106,12 +130,12 @@ namespace Geology.OpenGL.OpenGLControl
             //Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
             //UpdateViewMatrix();
             //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-            View.ResizeWindow();
+            View?.ResizeWindow();
         }
 
         protected void OpenGLControl_Prepare()
         {
-            View.Prepare();
+            View?.Prepare();
             //Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
             //UpdateViewMatrix();
         }
@@ -119,7 +143,7 @@ namespace Geology.OpenGL.OpenGLControl
         protected void OpenGLControl_Release()
         {
             //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-            View.Release();
+            View?.Release();
         }
 
         private System.Drawing.Imaging.ImageCodecInfo GetEncoder(System.Drawing.Imaging.ImageFormat format)

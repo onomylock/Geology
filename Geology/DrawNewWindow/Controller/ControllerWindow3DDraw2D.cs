@@ -15,10 +15,19 @@ using System.Windows.Input;
 
 namespace Geology.DrawNewWindow.Controller
 {
-	//public enum PlaneType
-	//{ XY = 0, XZ, YZ }
+	public class Factory3DDraw2D : IFactoryController
+	{
+        public string Name { get { return name; } }
 
-	class ControllerWindow3DDraw2D : ControllerWindow2D, IControllerWindow
+        string name = "Controller3DDraw2D";
+
+        public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap)
+        {
+            return new ControllerWindow3DDraw2D(Width, Height, Handle, mnuSaveBitmap);
+        }
+    }
+
+    public class ControllerWindow3DDraw2D : ControllerWindow2D, IControllerWindow
 	{	
         public EPlaneType axisType;
 #pragma warning disable CS0108 // Член скрывает унаследованный член: отсутствует новое ключевое слово
@@ -46,7 +55,7 @@ namespace Geology.DrawNewWindow.Controller
         private bool LMBDown = false;
         private bool RMBDown = false;
         
-        public ControllerWindow3DDraw2D(int Width, int Height, IntPtr Handle) : base(true)
+        public ControllerWindow3DDraw2D(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap) : base(true)
 		{
 			axisType = EPlaneType.XY;
 			zRange = 1e+7;
