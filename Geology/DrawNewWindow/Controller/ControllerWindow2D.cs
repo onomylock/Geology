@@ -140,6 +140,7 @@ namespace Geology.DrawNewWindow.Controller
             return captionHorAndVert.myfontHor.StyleFont;
         }
         
+
         //protected void SetBaseContextMenu()
         //{
         //    this.ContextMenuStrip = mnu;
@@ -234,6 +235,11 @@ namespace Geology.DrawNewWindow.Controller
             Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContext);
             captionHorAndVert.ClearFont();
             Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+        }
+
+        public void SetMainRef(MainWindow _window)
+        {
+            window = _window;
         }
     }
 }

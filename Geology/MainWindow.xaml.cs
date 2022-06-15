@@ -113,7 +113,7 @@ namespace Geology
 			//Controller3D.SetCostructor(OpenGL.OpenGLControl.ConstructorType.ThreeDimensional);
 			Controller3D.Controller.Model = geoModel1;
 			//Controller3D.Controller.BoundingBox = geoModel1.GlobalBoundingBox;
-			//Controller3D.Controller.SetMainRef(this);
+			Controller3D.Controller.SetMainRef(this);
 
 			//Controller2DYZ.setRotateAndNameAxes(EPlaneType.YZ);
 			//Controller2DXY.setRotateAndNameAxes(EPlaneType.XY);

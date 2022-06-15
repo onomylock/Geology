@@ -83,10 +83,10 @@ namespace Geology.DrawNewWindow.Controller
 		//	view.Height = Height;
 		//}
 
-		public void SetMainRef(MainWindow _window)
-        {
-            window = _window;
-        }
+		//public void SetMainRef(MainWindow _window)
+  //      {
+  //          window = _window;
+  //      }
 
         private void ContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {

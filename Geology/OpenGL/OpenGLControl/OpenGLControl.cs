@@ -53,14 +53,14 @@ namespace Geology.OpenGL.OpenGLControl
             mnuSaveBitmap.Click += mnuSaveBitmap_Click;
 
             Controller = Factory.CreateController(Width, Height, Handle, mnuSaveBitmap);
-            //Controller.BoundingBox = new double[] { -10000, 10000, -10000, 10000, -10000, 10000 };
+            View = Controller.View;
 			InitializeComponent();
-			//Cursor = new Cursor(Handle);
+			
 			mnuSaveBitmap.Click += mnuSaveBitmap_Click;
             Controller.InvalidateEvent += Invalidate;
 			this.Disposed += Controller.DisposedController;
             this.ContextMenuStrip = Controller.mnu;
-            View = Controller.View;
+            //View = Controller.View;
             mnuSaveBitmap.Click += mnuSaveBitmap_Click;
         }
 
