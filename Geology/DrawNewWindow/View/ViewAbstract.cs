@@ -26,6 +26,10 @@ namespace Geology.DrawNewWindow.View
 		public IntPtr Hdc { get { return hdc; } set { hdc = value; } }
 
 		public FontGeology caption { get; set; }
+		public FontGeology wellFont { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public FontGeology fontReceivers { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public FontGeology paletteFont { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public CaptionAxisHorAndVert CaptionHorAndVert { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 		protected IntPtr hdc;
 		protected int oglcontext;
@@ -45,6 +49,13 @@ namespace Geology.DrawNewWindow.View
 		public virtual void UpdateViewMatrix()
 		{
 			throw new NotImplementedException();
+		}
+
+		public virtual void DisposedView(object sender, EventArgs e)
+		{
+			Win32.wglMakeCurrent(Hdc, (IntPtr)OglContext);
+			caption.ClearFont();
+			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 		}
 
 		public void Paint(object sender, PaintEventArgs e)

@@ -37,10 +37,10 @@ namespace Geology.DrawNewWindow.Controller
         public FontGeology caption { get; set; }
         public ContextMenuStrip mnu { get; set; }
         public COrthoControlProport Ortho { get; set; }
-        public FontGeology wellFont { get; set; }
-        public FontGeology fontReceivers { get; set; }
-        public FontGeology paletteFont { get; set; } 
-        public CaptionAxisHorAndVert CaptionHorAndVert { get { return captionHorAndVert; } set { captionHorAndVert = value; } }
+        //public FontGeology wellFont { get; set; }
+        //public FontGeology fontReceivers { get; set; }
+        //public FontGeology paletteFont { get; set; } 
+        //public CaptionAxisHorAndVert CaptionHorAndVert { get { return captionHorAndVert; } set { captionHorAndVert = value; } }
         public event Action InvalidateEvent;
 
         protected IModelWindow model;
@@ -50,7 +50,7 @@ namespace Geology.DrawNewWindow.Controller
         protected Cursor Cursor;
         protected IntPtr Handle;
 
-        protected CaptionAxisHorAndVert captionHorAndVert;
+        //protected CaptionAxisHorAndVert captionHorAndVert;
         protected Geology.MainWindow window;
         protected int XPrevious = 0, YPrevious = 0;
         protected bool mouseDown = false;
@@ -88,57 +88,57 @@ namespace Geology.DrawNewWindow.Controller
             //this.ContextMenuStrip = mnu;
         }
 
-        public void SetLabelFormat(int FontSize, string NameFontStyle)
-        {
+        //public void SetLabelFormat(int FontSize, string NameFontStyle)
+        //{
 
-            captionHorAndVert.DrawScaleLbls(view.Width, view.Height, 1.0);
-            Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContext);
-            captionHorAndVert.myfontHor.ClearFont();
-            captionHorAndVert.myfontHor = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
-            captionHorAndVert.myfontVert.ClearFont();
-            captionHorAndVert.myfontVert = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, NameFontStyle, FontSize - 2);
-            captionHorAndVert.myfontHor_ind.ClearFont();
-            captionHorAndVert.myfontHor_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize - 4);
-            captionHorAndVert.myfontVert_ind.ClearFont();
-            captionHorAndVert.myfontVert_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, NameFontStyle, FontSize - 6);
-            wellFont.ClearFont();
-            wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
-            fontReceivers.ClearFont();
-            fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
-            paletteFont.ClearFont();
-            paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
-            InvalidateEvent();
-        }
+        //    captionHorAndVert.DrawScaleLbls(view.Width, view.Height, 1.0);
+        //    Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContext);
+        //    captionHorAndVert.myfontHor.ClearFont();
+        //    captionHorAndVert.myfontHor = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
+        //    captionHorAndVert.myfontVert.ClearFont();
+        //    captionHorAndVert.myfontVert = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, NameFontStyle, FontSize - 2);
+        //    captionHorAndVert.myfontHor_ind.ClearFont();
+        //    captionHorAndVert.myfontHor_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize - 4);
+        //    captionHorAndVert.myfontVert_ind.ClearFont();
+        //    captionHorAndVert.myfontVert_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, NameFontStyle, FontSize - 6);
+        //    wellFont.ClearFont();
+        //    wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
+        //    fontReceivers.ClearFont();
+        //    fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
+        //    paletteFont.ClearFont();
+        //    paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
+        //    InvalidateEvent();
+        //}
 
-        public void SetFontSize(int fsize)
-        {
-            Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContext);
-            captionHorAndVert.myfontHor.ClearFont();
-            captionHorAndVert.myfontHor = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
-            captionHorAndVert.myfontVert.ClearFont();
-            captionHorAndVert.myfontVert = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, "Arial", fsize - 2);
-            captionHorAndVert.myfontHor_ind.ClearFont();
-            captionHorAndVert.myfontHor_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize - 2);
-            captionHorAndVert.myfontVert_ind.ClearFont();
-            captionHorAndVert.myfontVert_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, "Arial", fsize - 4);
-            wellFont.ClearFont();
-            wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
-            fontReceivers.ClearFont();
-            fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
-            paletteFont.ClearFont();
-            paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
-            InvalidateEvent();
-        }
+        //public void SetFontSize(int fsize)
+        //{
+        //    Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContext);
+        //    captionHorAndVert.myfontHor.ClearFont();
+        //    captionHorAndVert.myfontHor = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
+        //    captionHorAndVert.myfontVert.ClearFont();
+        //    captionHorAndVert.myfontVert = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, "Arial", fsize - 2);
+        //    captionHorAndVert.myfontHor_ind.ClearFont();
+        //    captionHorAndVert.myfontHor_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize - 2);
+        //    captionHorAndVert.myfontVert_ind.ClearFont();
+        //    captionHorAndVert.myfontVert_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, "Arial", fsize - 4);
+        //    wellFont.ClearFont();
+        //    wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
+        //    fontReceivers.ClearFont();
+        //    fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
+        //    paletteFont.ClearFont();
+        //    paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
+        //    InvalidateEvent();
+        //}
         
-        public int GetFontSize()
-        {
-            return captionHorAndVert.myfontHor.FontSize;
-        }
+        //public int GetFontSize()
+        //{
+        //    return captionHorAndVert.myfontHor.FontSize;
+        //}
         
-        public string GetFontStyle()
-        {
-            return captionHorAndVert.myfontHor.StyleFont;
-        }
+        //public string GetFontStyle()
+        //{
+        //    return captionHorAndVert.myfontHor.StyleFont;
+        //}
         
 
         //protected void SetBaseContextMenu()
@@ -159,7 +159,7 @@ namespace Geology.DrawNewWindow.Controller
 
         protected void mnuShowGrid_Click(object sender, EventArgs e)
         {
-            captionHorAndVert.DrawGridFlag = ((System.Windows.Forms.ToolStripMenuItem)sender).Checked;
+            view.CaptionHorAndVert.DrawGridFlag = ((System.Windows.Forms.ToolStripMenuItem)sender).Checked;
             view.ResizeWindow();
             InvalidateEvent();
         }
@@ -167,8 +167,8 @@ namespace Geology.DrawNewWindow.Controller
         protected void ScreenToWorldCoord(int eX, int eY, out double resX, out double resY)
         {
             //Ortho.ConvertScreenToWorldCoord(WidthLocal, HeightLocal, eX, eY, out resX, out resY, captionHorAndVert.GetIndentVert);
-            Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, eX, eY, out resX, out resY, captionHorAndVert.myfontVert.GetHeightText("0"), captionHorAndVert.myfontHor.GetHeightText("0") +
-                (captionHorAndVert.DoubleAxis ? captionHorAndVert.myfontHor.GetHeightText("0") + 3 : 0));
+            Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, eX, eY, out resX, out resY, view.CaptionHorAndVert.myfontVert.GetHeightText("0"), view.CaptionHorAndVert.myfontHor.GetHeightText("0") +
+                (view.CaptionHorAndVert.DoubleAxis ? view.CaptionHorAndVert.myfontHor.GetHeightText("0") + 3 : 0));
         }
 
         public virtual void OnMouseMove(MouseEventArgs e)
@@ -176,13 +176,13 @@ namespace Geology.DrawNewWindow.Controller
             if (mouseDown)
             {
                 double prevX, prevY, curX, curY;
-                Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, XPrevious, YPrevious, out prevX, out prevY, captionHorAndVert.GetIndentVert);
-                Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, e.X, e.Y, out curX, out curY, captionHorAndVert.GetIndentVert);
+                Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, XPrevious, YPrevious, out prevX, out prevY, view.CaptionHorAndVert.GetIndentVert);
+                Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, e.X, e.Y, out curX, out curY, view.CaptionHorAndVert.GetIndentVert);
                 if (Ortho.DoubleAxis)
                 {
                     double x2, x2Prev;
-                    Ortho.ConvertScreenToWorldCoordAddition(view.WidthLocal, XPrevious, out x2Prev, captionHorAndVert.GetIndentVert);
-                    Ortho.ConvertScreenToWorldCoordAddition(view.WidthLocal, e.X, out x2, captionHorAndVert.GetIndentVert);
+                    Ortho.ConvertScreenToWorldCoordAddition(view.WidthLocal, XPrevious, out x2Prev, view.CaptionHorAndVert.GetIndentVert);
+                    Ortho.ConvertScreenToWorldCoordAddition(view.WidthLocal, e.X, out x2, view.CaptionHorAndVert.GetIndentVert);
                     Ortho.Translate(-curX + prevX, -curY + prevY, -x2 + x2Prev);
                 }
                 else
@@ -215,11 +215,11 @@ namespace Geology.DrawNewWindow.Controller
         public virtual void OnMouseWheel(MouseEventArgs e)
         {
             double resX, resY;
-            Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, e.X, e.Y, out resX, out resY, captionHorAndVert.GetIndentHor, captionHorAndVert.GetIndentVert);
+            Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, e.X, e.Y, out resX, out resY, view.CaptionHorAndVert.GetIndentHor, view.CaptionHorAndVert.GetIndentVert);
             if (Ortho.DoubleAxis)
             {
                 double x2;
-                Ortho.ConvertScreenToWorldCoordAddition(view.WidthLocal, e.X, out x2, captionHorAndVert.GetIndentVert);
+                Ortho.ConvertScreenToWorldCoordAddition(view.WidthLocal, e.X, out x2, view.CaptionHorAndVert.GetIndentVert);
                 Ortho.Scale(resX, resY, x2, e.Delta);
             }
             else
@@ -229,13 +229,13 @@ namespace Geology.DrawNewWindow.Controller
             InvalidateEvent();
         }
 
-        public void DisposedController(object sender, EventArgs e)
-        {
-            // здесь происходит очистка шрифта, необходимая функция, чтобы не утекала память
-            Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContext);
-            captionHorAndVert.ClearFont();
-            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-        }
+        //public void DisposedController(object sender, EventArgs e)
+        //{
+        //    // здесь происходит очистка шрифта, необходимая функция, чтобы не утекала память
+        //    Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContext);
+        //    captionHorAndVert.ClearFont();
+        //    Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+        //}
 
         public void SetMainRef(MainWindow _window)
         {

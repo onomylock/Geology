@@ -24,11 +24,11 @@ namespace Geology.DrawNewWindow.View
 	{
 		public double scaleV;
 		//private int widthLocal, heightLocal;
-
+		//public FontGeology wellFont { get; set; }
 		protected readonly EPlaneType axisType;
 		//private readonly Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects;
 		private readonly IViewportObjectsDrawable[] viewportObjectsDrawables;
-		private readonly CaptionAxisHorAndVert captionHorAndVert;
+		//private readonly CaptionAxisHorAndVert captionHorAndVert;
 		private COrthoControlProport Ortho;
 		private bool selectionStarted = false;
 		private bool selectionFinished = true;
@@ -36,28 +36,22 @@ namespace Geology.DrawNewWindow.View
 		private double selectionX0, selectionX1;
 		private double selectionY0, selectionY1;
 		//protected int _Width, _Height;
-		private readonly FontGeology fontReceivers;
-		private readonly FontGeology paletteFont;
+		//private readonly FontGeology fontReceivers;
+		//private readonly FontGeology paletteFont;
 
-		public ViewWindow2D(IntPtr Handle)
+		//public ViewWindow2D(IntPtr Handle)
+		//{
+			
+		//}
+
+		public ViewWindow2D(COrthoControlProport Ortho,
+			IViewportObjectsDrawable[] viewportObjectsDrawables, EPlaneType axisType, double zRange, PageType page,
+			int Width, int Height, double[] BoundingBox, IntPtr Handle) : base()
 		{
-			oglcontext = GLContex.InitOpenGL((int)Handle);
-			hdc = Win32.GetDC(Handle);
-			Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-			GLContex.glClearColor(1, 1, 1, 1);
-
-			GLContex.glEnable(GLContex.GL_DEPTH_TEST);
-			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-		}
-
-		public ViewWindow2D(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho, 
-			IViewportObjectsDrawable[] viewportObjectsDrawables, EPlaneType axisType, double zRange, PageType page, 
-			int Width, int Height, double[] BoundingBox, FontGeology fontReceivers, FontGeology paletteFont, IntPtr Handle) : base()
-		{
-			this.captionHorAndVert = captionHorAndVert;
+			//this.captionHorAndVert = captionHorAndVert;
 			this.viewportObjectsDrawables = viewportObjectsDrawables;
-			this.fontReceivers = fontReceivers;
-			this.paletteFont = paletteFont;
+			//this.fontReceivers = fontReceivers;
+			//this.paletteFont = paletteFont;
 			this.BoundingBox = BoundingBox;
 			this.axisType = axisType;
 			this.Height = Height;
@@ -66,7 +60,46 @@ namespace Geology.DrawNewWindow.View
 			this.Width = Width;
 			this.page = page;
 
-			
+			oglcontext = GLContex.InitOpenGL((int)Handle);
+			hdc = Win32.GetDC(Handle);
+			Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
+			GLContex.glClearColor(1, 1, 1, 1);
+
+			CaptionHorAndVert = new CaptionAxisHorAndVert(hdc, oglcontext, "Arial", 16, Ortho, Width, Height);
+			wellFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 14);
+			paletteFont = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+			fontReceivers = new FontGeology(hdc, oglcontext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+
+			GLContex.glEnable(GLContex.GL_DEPTH_TEST);
+			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+		}
+
+
+		//public ViewWindow2D(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho, 
+		//	IViewportObjectsDrawable[] viewportObjectsDrawables, EPlaneType axisType, double zRange, PageType page, 
+		//	int Width, int Height, double[] BoundingBox, FontGeology fontReceivers, FontGeology paletteFont, IntPtr Handle) : base()
+		//{
+		//	//this.captionHorAndVert = captionHorAndVert;
+		//	this.viewportObjectsDrawables = viewportObjectsDrawables;
+		//	//this.fontReceivers = fontReceivers;
+		//	//this.paletteFont = paletteFont;
+		//	this.BoundingBox = BoundingBox;
+		//	this.axisType = axisType;
+		//	this.Height = Height;
+		//	this.zRange = zRange;
+		//	this.Ortho = Ortho;
+		//	this.Width = Width;
+		//	this.page = page;
+
+
+		//}
+
+		public override void DisposedView(object sender, EventArgs e)
+		{
+			// здесь происходит очистка шрифта, необходимая функция, чтобы не утекала память
+			Win32.wglMakeCurrent(Hdc, (IntPtr)OglContext);
+			CaptionHorAndVert.ClearFont();
+			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 		}
 
 		public override void Draw()
@@ -77,8 +110,8 @@ namespace Geology.DrawNewWindow.View
 				scaleV = GlobalDrawingSettings.ScaleZ;
 			else
 				scaleV = 1.0;
-			captionHorAndVert.GenerateGrid(widthLocal, heightLocal, scaleV);
-			captionHorAndVert.DrawScaleLbls(widthLocal, heightLocal, scaleV);
+			CaptionHorAndVert.GenerateGrid(widthLocal, heightLocal, scaleV);
+			CaptionHorAndVert.DrawScaleLbls(widthLocal, heightLocal, scaleV);
 			DrawObjetcs();
 		}
 
@@ -86,7 +119,7 @@ namespace Geology.DrawNewWindow.View
 		{
 			try
 			{
-				captionHorAndVert.GetNewViewport(Width, Height, out int[] viewPoint);
+				CaptionHorAndVert.GetNewViewport(Width, Height, out int[] viewPoint);
 				widthLocal = viewPoint[2];
 				heightLocal = viewPoint[3];
 

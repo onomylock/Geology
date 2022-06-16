@@ -26,6 +26,7 @@ namespace Geology.DrawNewWindow.View
         void Release();
         void Prepare();
         void UpdateViewMatrix();
+        void DisposedView(object sender, EventArgs e);
         void Draw();
 		int Width { get; set; }
         int Height { get; set; }
@@ -33,6 +34,10 @@ namespace Geology.DrawNewWindow.View
         int HeightLocal { get; set; }
         int OglContext { get; set; }
         FontGeology caption { get; }
+        FontGeology wellFont { get; set; }
+        FontGeology fontReceivers { get; set; }
+        FontGeology paletteFont { get; set; }
+        CaptionAxisHorAndVert CaptionHorAndVert { get; set; }
         IntPtr Hdc { get; set; }
     }
 

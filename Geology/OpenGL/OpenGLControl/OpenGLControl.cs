@@ -87,7 +87,7 @@ namespace Geology.OpenGL.OpenGLControl
 			
 			mnuSaveBitmap.Click += mnuSaveBitmap_Click;
             Controller.InvalidateEvent += Invalidate;
-			this.Disposed += Controller.DisposedController;
+			this.Disposed += View.DisposedView;
             this.ContextMenuStrip = Controller.mnu;
             this.Resize += OpenGLControl_Resize;
             //View = Controller.View;

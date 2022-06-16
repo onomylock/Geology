@@ -22,11 +22,21 @@ namespace Geology.DrawNewWindow.Controller
 	{
 		public string Name { get { return name; } }
 
-        string name = "Controller3D";
+		public IControllerWindow Controller { get; set; }
 
-		public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
+		public IViewWindow View { get; set; }
+
+		string name = "Controller3D";
+
+		//public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
+		//{
+  //          return new ControllerWindow3D(Width, Height, Handle, mnuSaveBitmap, axisType);
+		//}
+
+		public void CreateControllerAndView(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
 		{
-            return new ControllerWindow3D(Width, Height, Handle, mnuSaveBitmap, axisType);
+            Controller = new ControllerWindow3D(Width, Height, Handle, mnuSaveBitmap, axisType);
+            View = new ViewWindow3D();
 		}
 	}
 
@@ -153,12 +163,12 @@ namespace Geology.DrawNewWindow.Controller
         //    View.Draw();
         //}
 
-		public void DisposedController(object sender, EventArgs e)
-		{
-			Win32.wglMakeCurrent(View.Hdc, (IntPtr)View.OglContext);
-			View?.caption.ClearFont();
-			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-		}
+		//public void DisposedController(object sender, EventArgs e)
+		//{
+		//	Win32.wglMakeCurrent(View.Hdc, (IntPtr)View.OglContext);
+		//	View?.caption.ClearFont();
+		//	Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+		//}
 
 		private void uncheckMenuItem(ToolStripItem itemClick)
         {

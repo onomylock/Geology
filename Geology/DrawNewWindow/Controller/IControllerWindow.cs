@@ -25,7 +25,7 @@ namespace Geology.DrawNewWindow.Controller
 		void OnMouseWheel(MouseEventArgs e);
 		event Action InvalidateEvent;
 		//event EventHandler ResizeView;
-		void DisposedController(object sender, EventArgs e);
+		//void DisposedController(object sender, EventArgs e);
 		void SetMainRef(MainWindow _window);
 		//delegate InvalidateEventArgs
 		//event InvalidateEventArgs e;
@@ -42,7 +42,9 @@ namespace Geology.DrawNewWindow.Controller
 	public interface IFactoryController
 	{
 		string Name { get; }
-		IControllerWindow CreateController(int Width, int Height, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType);
+		IControllerWindow Controller { get; set; }
+		IViewWindow View { get; set; }
+		void CreateControllerAndView(int Width, int Height, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType);
 	
 	}
 }

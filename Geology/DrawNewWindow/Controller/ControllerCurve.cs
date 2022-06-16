@@ -139,7 +139,7 @@ String lpszFile // File
 			//base.MouseDown -= CView2D_MouseDown;
 			//base.MouseUp -= CView2D_MouseUp;
 
-			base.captionHorAndVert.SetForCurves();
+			view.CaptionHorAndVert.SetForCurves();
 
 			_Arg = 0;
 
@@ -177,7 +177,7 @@ String lpszFile // File
 			mnuSaveMetaFile.Click += mnuSaveMetaFileClick;
 			mnuShowGrid.CheckOnClick = true;
 			mnuShowGrid.Click += mnuShowGrid_Click;
-			mnuShowGrid.Checked = captionHorAndVert.DrawGridFlag;
+			mnuShowGrid.Checked = view.CaptionHorAndVert.DrawGridFlag;
 
 			mnuProp.Items.Add(mnuSetCursor);
 			mnuProp.Items.Add(new ToolStripSeparator());
@@ -202,7 +202,7 @@ String lpszFile // File
 
 			drawLegend = false;
 
-			view = new ViewWindowCurve(captionHorAndVert, Ortho, CurvesInfoList, mRect, mZoomStarted, Curves, Arg, Handle);
+			//view = new ViewWindowCurve(captionHorAndVert, Ortho, CurvesInfoList, mRect, mZoomStarted, Curves, Arg, Handle);
 			//this.Resize += Controller_Resize;
 		}
 
@@ -259,10 +259,10 @@ String lpszFile // File
 				if (!CurvesInfoList[i].Visible)
 					continue;
 				Curves[i].GetMinMax(_g,
-					base.captionHorAndVert.LogH,
-					base.captionHorAndVert.ZeroLogH,
-					base.captionHorAndVert.LogV,
-					base.captionHorAndVert.ZeroLogV);
+					view.CaptionHorAndVert.LogH,
+					view.CaptionHorAndVert.ZeroLogH,
+					view.CaptionHorAndVert.LogV,
+					view.CaptionHorAndVert.ZeroLogV);
 
 				if (Curves[i].ThreeColumns)
 					hasDoubleAxis = true;
@@ -748,10 +748,10 @@ String lpszFile // File
 
 			if (e.Button == MouseButtons.Right)
 			{
-				if (clickOnHor = captionHorAndVert.ClickOnHor(e.X, e.Y, view.WidthLocal, view.HeightLocal))
+				if (clickOnHor = view.CaptionHorAndVert.ClickOnHor(e.X, e.Y, view.WidthLocal, view.HeightLocal))
 					//this.ContextMenuStrip = mnuAxis;
 					mnu = mnuAxis;
-				else if (clickOnVer = captionHorAndVert.ClickOnVer(e.X, e.Y, view.WidthLocal, view.HeightLocal))
+				else if (clickOnVer = view.CaptionHorAndVert.ClickOnVer(e.X, e.Y, view.WidthLocal, view.HeightLocal))
 					//this.ContextMenuStrip = mnuAxis;
 					mnu = mnuAxis;
 				else
@@ -766,7 +766,7 @@ String lpszFile // File
 				base.OnMouseDown(e);
 				double x, y;
 				ScreenToWorldCoord(e.X, e.Y, out x, out y);
-				Arg = (base.captionHorAndVert.LogH ? Objects.CCurve.GetLinear(x, base.captionHorAndVert.ZeroLogH) : x);
+				Arg = (view.CaptionHorAndVert.LogH ? Objects.CCurve.GetLinear(x, view.CaptionHorAndVert.ZeroLogH) : x);
 				InvalidateEvent();
 			}
 			else
@@ -850,10 +850,10 @@ String lpszFile // File
 
 		public void SetLog(bool LogX, double zLogX, bool LogY, double zLogY)
 		{
-			base.captionHorAndVert.LogH = LogX;
-			base.captionHorAndVert.ZeroLogH = zLogX;
-			base.captionHorAndVert.LogV = LogY;
-			base.captionHorAndVert.ZeroLogV = zLogY;
+			view.CaptionHorAndVert.LogH = LogX;
+			view.CaptionHorAndVert.ZeroLogH = zLogX;
+			view.CaptionHorAndVert.LogV = LogY;
+			view.CaptionHorAndVert.ZeroLogV = zLogY;
 			double[] newOrtho = new double[] { -1, 1, -1, 1, -1, 1, -1, 1 };
 			GetGabarit(newOrtho);
 			if (LogX)
@@ -1015,7 +1015,7 @@ String lpszFile // File
 					// clears the image and colors the entire background
 					g.Clear(System.Drawing.Color.White);
 
-					captionHorAndVert.DrawGridMetaFile(view.WidthLocal, view.HeightLocal, g, horzValue, vertValue, horzAxcis);
+					view.CaptionHorAndVert.DrawGridMetaFile(view.WidthLocal, view.HeightLocal, g, horzValue, vertValue, horzAxcis);
 					for (int i = Math.Min(Curves.Count, CurvesInfoList.Count) - 1; i >= 0; i--)
 					{
 						if (CurvesInfoList == null || !CurvesInfoList[i].Visible)
@@ -1029,13 +1029,13 @@ String lpszFile // File
 
 					// clears the image and colors the entire background
 					g.Clear(System.Drawing.Color.White);
-					captionHorAndVert.DrawScaleLblsHorzMetaFile(view.WidthLocal, view.HeightLocal, g, horzValue, vertValue, horzAxcis);
+					view.CaptionHorAndVert.DrawScaleLblsHorzMetaFile(view.WidthLocal, view.HeightLocal, g, horzValue, vertValue, horzAxcis);
 
 					g.SetClip(new System.Drawing.RectangleF(0, 0, view.Width - view.WidthLocal, view.HeightLocal));
 
 					// clears the image and colors the entire background
 					g.Clear(System.Drawing.Color.White);
-					captionHorAndVert.DrawScaleLblsVertMetaFile(view.WidthLocal, view.HeightLocal, g, horzValue, vertValue, horzAxcis);
+					view.CaptionHorAndVert.DrawScaleLblsVertMetaFile(view.WidthLocal, view.HeightLocal, g, horzValue, vertValue, horzAxcis);
 
 					g.Dispose();
 

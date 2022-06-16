@@ -81,13 +81,13 @@ namespace Geology.DrawNewWindow.Controller
             //fontReceivers = new FontGeology(IntPtr.Zero, 0, FontGeology.TypeFont.Horizontal, "Arial", 16);
             //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 
-            view = new ViewWindow2D(captionHorAndVert, Ortho, model.viewportObjectsDrawablesGet(page), axisType, zRange, page, Width, Height, BoundingBox, fontReceivers, paletteFont, Handle);
+            //view = new ViewWindow2D(captionHorAndVert, Ortho, model.viewportObjectsDrawablesGet(page), axisType, zRange, page, Width, Height, BoundingBox, fontReceivers, paletteFont, Handle);
             Win32.wglMakeCurrent((IntPtr)view?.Hdc, (IntPtr)view?.OglContext);
 
-			captionHorAndVert = new CaptionAxisHorAndVert(view.Hdc, view.OglContext, "Arial", 16, Ortho, Width, Height);
-			wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 14);
-			paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-			fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+			//captionHorAndVert = new CaptionAxisHorAndVert(view.Hdc, view.OglContext, "Arial", 16, Ortho, Width, Height);
+			//wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 14);
+			//paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+			//fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
 			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 
 			//this.Disposed += OpenGLControl_Disposed;
@@ -102,7 +102,7 @@ namespace Geology.DrawNewWindow.Controller
 
 
             mnuShowGrid.CheckOnClick = true;
-            mnuShowGrid.Checked = captionHorAndVert.DrawGridFlag;
+            mnuShowGrid.Checked = view.CaptionHorAndVert.DrawGridFlag;
             mnuShowGrid.Click += mnuShowGrid_Click;
             mnuLabelSettings.Click += mnuLabelSettings_Click;
             mnuStartView.Click += mnuStartView_Click;
@@ -186,18 +186,18 @@ namespace Geology.DrawNewWindow.Controller
 
         private void ConvertScreenToWorldCoord(int screenX, int screenY, out double x, out double y)
         {
-            Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, screenX, screenY, out x, out y, captionHorAndVert.myfontVert.GetHeightText("0"), captionHorAndVert.myfontHor.GetHeightText("0"));
+            Ortho.ConvertScreenToWorldCoord(view.WidthLocal, view.HeightLocal, screenX, screenY, out x, out y, view.CaptionHorAndVert.myfontVert.GetHeightText("0"), view.CaptionHorAndVert.myfontHor.GetHeightText("0"));
             double c;
             int indent;
             double[] orthV;
             Ortho.GetOrtho(out orthV);
 
-            indent = captionHorAndVert.myfontVert.GetHeightText("0");
+            indent = view.CaptionHorAndVert.myfontVert.GetHeightText("0");
             c = (orthV[1] - orthV[0]) / (view.WidthLocal - indent);
             x = orthV[0] + (screenX - indent) * c;
 
             screenY = view.HeightLocal + indent - screenY;
-            indent = captionHorAndVert.myfontHor.GetHeightText("0");
+            indent = view.CaptionHorAndVert.myfontHor.GetHeightText("0");
             c = (orthV[3] - orthV[2]) / (view.HeightLocal - indent);
             y = orthV[2] + (screenY - indent) * c;
         }
@@ -206,7 +206,7 @@ namespace Geology.DrawNewWindow.Controller
         {
             double[] orthV;
             Ortho.GetOrtho(out orthV);
-            int indent = captionHorAndVert.myfontVert.GetHeightText("0");
+            int indent = view.CaptionHorAndVert.myfontVert.GetHeightText("0");
             return (orthV[1] - orthV[0]) / (view.WidthLocal - indent);
         }
 
