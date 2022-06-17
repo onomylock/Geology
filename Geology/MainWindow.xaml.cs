@@ -99,7 +99,7 @@ namespace Geology
 				}
 				sum /= 4;
 				geoModel1.Objects[index].Color = new Color();
-				geoModel1.Objects[index].Color = Color.FromRgb((byte)(sum + 128), 0, 0);
+				geoModel1.Objects[index].Color = Color.FromRgb((byte)(sum + 128), (byte)(sum + 64), (byte)(sum + 100));
 				index++;
 			}
 
