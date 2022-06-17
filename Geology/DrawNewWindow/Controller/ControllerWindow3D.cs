@@ -18,7 +18,7 @@ using Geology.DrawWindow;
 
 namespace Geology.DrawNewWindow.Controller
 {
-	public class Factory3D : IFactoryController
+	public class Factory3D : IFactory
 	{
 		public string Name { get { return name; } }
 
@@ -33,9 +33,11 @@ namespace Geology.DrawNewWindow.Controller
   //          return new ControllerWindow3D(Width, Height, Handle, mnuSaveBitmap, axisType);
 		//}
 
+
+
 		public void CreateControllerAndView(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
 		{
-            Controller = new ControllerWindow3D(Width, Height, Handle, mnuSaveBitmap, axisType);
+            Controller = new ControllerWindow3D(Handle, mnuSaveBitmap);
             View = new ViewWindow3D();
 		}
 	}
@@ -54,20 +56,15 @@ namespace Geology.DrawNewWindow.Controller
                 else
                 {
                     model = value;
-                    //this.ResizeView();
                     this.View.UpdateViewMatrix();
                     this.View.Draw();
                 }
             }
         }
-        public double[] BoundingBox { get; set; }
-        public FontGeology caption { get; set; }
+        public double[] BoundingBox { get; set; }        
         public ContextMenuStrip mnu { get; set; }
         public CPerspective project { get; set; }
-		public FontGeology fontReceivers { get; set; }
-		public FontGeology paletteFont { get; set; }  
-        public event Action InvalidateEvent;
-		//public event EventHandler ResizeView;
+		public event Action InvalidateEvent;
 
 		protected IModelWindow model;
         protected IViewWindow view;
@@ -92,21 +89,22 @@ namespace Geology.DrawNewWindow.Controller
         private ToolStripMenuItem mnuStartView;
         private ToolStripMenuItem mnuSelect;
 
-        public ControllerWindow3D(int Width, int Height, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
+        public ControllerWindow3D(IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap)
         {
-            Model = new ModelWindow();
-            window = null;
+            //Model = new ModelWindow();
+            //window = null;
             project = new CPerspective();
-            Cursor = new Cursor(Handle);
-            BoundingBox = new double[] { -10000, 10000, -10000, 10000, -10000, 10000 };
-            view = new ViewWindow3D(project, model, page, Width, Height, BoundingBox, Handle);
-            
+
+            //BoundingBox = new double[] { -10000, 10000, -10000, 10000, -10000, 10000 };
+            //view = new ViewWindow3D(project, model, page, Width, Height, BoundingBox, Handle);
+
             //Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContex);
             //caption = new FontGeology(view.Hdc, view.OglContex, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            //fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
+            //paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
 
             //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);       
+            Cursor = new Cursor(Handle);
 
             mnu = new ContextMenuStrip();
 			mnuAlongWindow = new ToolStripMenuItem("Along Window");
@@ -114,18 +112,15 @@ namespace Geology.DrawNewWindow.Controller
 			mnuAroundY = new ToolStripMenuItem("Around Y");
 			mnuAroundZ = new ToolStripMenuItem("Around Z");
 			mnuNone = new ToolStripMenuItem("None");
-			//mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
 			mnuStartView = new ToolStripMenuItem("Start view");
 			mnuSelect = new ToolStripMenuItem("Select");
 			
-			//this.Disposed += DisposedController;
-            //this.Resize += Controller_Resize;
+			
 
             mnuAlongWindow.CheckOnClick = true;
             mnuAlongWindow.Checked = true;
             typeTransform = TypeTransformation.alongWindow;
             mnuAlongWindow.Click += mnuAlongWindow_Click;
-            //mnuSaveBitmap.Click += mnuSaveBitmap_Click;
             mnuAroundX.CheckOnClick = true;
             mnuAroundX.Click += mnuAroundX_Click;
             mnuAroundY.CheckOnClick = true;
@@ -142,33 +137,12 @@ namespace Geology.DrawNewWindow.Controller
             mnu.Items.AddRange(new ToolStripItem[] { mnuAlongWindow,/* mnuAlongX, mnuAlongY, mnuAlongZ,*/ 
                 mnuAroundX, mnuAroundY, mnuAroundZ, mnuNone, 
                 mnuSaveBitmap, mnuStartView, mnuSelect });
-            //this.ContextMenuStrip = mnu;
         }
-
-  //      public void ResizeView()
-		//{
-  //          view.Width = Width;
-  //          view.Height = Height;
-		//}
 
         public void SetMainRef(MainWindow _window)
         {
             window = _window;
         }
-
-        //private void Controller_Resize(object sender, EventArgs e)
-        //{
-        //    //this.ResizeView();
-        //    View.ResizeWindow();
-        //    View.Draw();
-        //}
-
-		//public void DisposedController(object sender, EventArgs e)
-		//{
-		//	Win32.wglMakeCurrent(View.Hdc, (IntPtr)View.OglContext);
-		//	View?.caption.ClearFont();
-		//	Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-		//}
 
 		private void uncheckMenuItem(ToolStripItem itemClick)
         {
@@ -185,9 +159,6 @@ namespace Geology.DrawNewWindow.Controller
 			project.ClearView();
 			Array.Copy(model.GlobalBoundingBox, BoundingBox, BoundingBox.Length);
             view.ResizeWindow();
-            //ResizeView();
-            //view.Height = Height;
-            //view.Width = Width;
             InvalidateEvent();
 		}
 
@@ -234,21 +205,8 @@ namespace Geology.DrawNewWindow.Controller
             typeTransform = TypeTransformation.None;
         }
 
-        //private void InitializeComponent()
-        //{
-        //    this.SuspendLayout();
-        //    // 
-        //    // ViewControllerWindow3D
-        //    // 
-        //    this.Name = "ViewControllerWindow3D";
-        //    this.ResumeLayout(false);
-
-        //}
-
         public void OnMouseMove(MouseEventArgs e)
-        {
-            //if (!Focused) Focus();
-
+        {         
             if (mouseDown)
             {
                 switch (typeTransform)
@@ -265,15 +223,9 @@ namespace Geology.DrawNewWindow.Controller
                 }
 
                 XPrevious = e.X; YPrevious = e.Y;
-                view.ResizeWindow();
-                //ResizeView();
-                //view.Height = Height;
-                //view.Width = Width;
-                //InvalidateM();
+                view.ResizeWindow();  
                 InvalidateEvent();
-            }
-            //if (window != null)
-            //    window.StatusBarView.Text = "View: 3D";
+            }          
         }
 
         private void _GetSceneCoord(int x, int y, double fZDepth, double[] p)
@@ -295,13 +247,10 @@ namespace Geology.DrawNewWindow.Controller
         }
 
         public void OnMouseDown(MouseEventArgs e)
-        {
-            //if (!Focused) Focus();
-
+        {           
             if (selecting && e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                view.Prepare();
-                //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+                view.Prepare();             
 
                 double[] p1 = new double[3];
                 double[] p2 = new double[3];
@@ -319,8 +268,7 @@ namespace Geology.DrawNewWindow.Controller
                 view.Release();
                 if (!selected)
                     return;
-                InvalidateEvent();
-                //Invalidate();
+                InvalidateEvent();                
             }
             else
             {
@@ -330,16 +278,13 @@ namespace Geology.DrawNewWindow.Controller
         }
 
         public void OnMouseUp(MouseEventArgs e)
-        {
-            //if (!Focused) Focus();
-
+        {            
             if (selecting && e.Button == System.Windows.Forms.MouseButtons.Left)
             {
                 foreach (var p in model.Objects)
                     if (p.Selected)
                     {
                         p.Selected = false;
-                        //Invalidate();
                         InvalidateEvent();
                         break;
                     }
@@ -352,11 +297,7 @@ namespace Geology.DrawNewWindow.Controller
             double scal = e.Delta < 0 ? 1.05 : 1 / 1.05;
             project.Scale *= scal;
 
-            view.ResizeWindow();
-            //ResizeView();
-            //view.Height = Height;
-            //view.Width = Width;
-            //Invalidate();
+            view.ResizeWindow();          
             InvalidateEvent();
         }
 	}

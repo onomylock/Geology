@@ -39,7 +39,7 @@ namespace Geology.DrawNewWindow.Controller
 		//CPerspective project { get; set; }
 	}
 
-	public interface IFactoryController
+	public interface IFactory
 	{
 		string Name { get; }
 		IControllerWindow Controller { get; set; }

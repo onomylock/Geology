@@ -19,13 +19,16 @@ namespace Geology.DrawNewWindow.Controller
 	{
         public string Name { get { return name; } }
 
-        string name = "Controller3DDraw2D";
+		public IControllerWindow Controller { get; set; }
+		public IViewWindow View { get; set; }
 
-        public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
-        {
-            return new ControllerWindow3DDraw2D(Width, Height, Handle, mnuSaveBitmap, axisType);
-        }
-    }
+		string name = "Controller3DDraw2D";
+
+		public void CreateControllerAndView(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
+		{
+			
+		}
+	}
 
     public class ControllerWindow3DDraw2D : ControllerWindow2D, IControllerWindow
 	{	

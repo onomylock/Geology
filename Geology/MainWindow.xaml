@@ -135,9 +135,9 @@
                                     <ColumnDefinition x:Uid="ColumnDefinition_94" Width="606*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <WindowsFormsHost x:Uid="WindowsFormsHost_1" Grid.Column="5" Margin="0,0,3.667,0.333" Grid.Row="0">
-                                    <openglwinnew:OpenGLControl x:Uid="XZOpenGlWindow" x:Name="XZOpenGlWindow" axisType="XZ" nameConstructor ="TwoDimencional"/>
-                                </WindowsFormsHost>
+                                <!--<WindowsFormsHost x:Uid="WindowsFormsHost_1" Grid.Column="5" Margin="0,0,3.667,0.333" Grid.Row="0">
+                                    <openglwinnew: x:Uid="XZOpenGlWindow" x:Name="XZOpenGlWindow" />
+                                </WindowsFormsHost>-->
 
 
 
@@ -153,9 +153,9 @@
                                     <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2DYZ" x:Name="Controller2DYZ" />
                                 </WindowsFormsHost>-->
 
-                                <!--<WindowsFormsHost x:Uid="WindowsFormsHost_3" Grid.Column="6" Grid.Row="0" Grid.RowSpan="4" Grid.ColumnSpan="2" Margin="3.666,0,0.334,-0.333">
-                                    <openglwinnew:OpenGLControl ConstructorType="ThreeDimensional"  x:Uid="Controller3D" x:Name="Controller3D" />
-                                </WindowsFormsHost>-->
+                                <WindowsFormsHost x:Uid="WindowsFormsHost_3" Grid.Column="6" Grid.Row="0" Grid.RowSpan="4" Grid.ColumnSpan="2" Margin="3.666,0,0.334,-0.333">
+                                    <openglwinnew:OpenGlControl x:Uid="Controller3D" x:Name="Controller3D" />
+                                </WindowsFormsHost>
                                 
                        
 

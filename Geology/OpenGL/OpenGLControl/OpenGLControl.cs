@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using Geology.DrawNewWindow.Controller;
 using Geology.DrawNewWindow.View;
+using Geology.DrawNewWindow.Model;
 using Geology.DrawWindow;
 using System.Windows;
 using System.Reflection;
@@ -28,7 +29,7 @@ namespace Geology.OpenGL.OpenGLControl
 
         IViewWindow View;
         IFactoryController Factory;
-        public IControllerWindow Controller;
+        IControllerWindow Controller;
         System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap;
 
         public string nameConstructor { get; set; }
@@ -44,45 +45,50 @@ namespace Geology.OpenGL.OpenGLControl
 		//private delegate void InvalidateDekegate();
 		//Cursor Cursor;
 
-		public OpenGLControl()
+		public OpenGLControl(IFactory factory, IModelWindow model, EPlaneType axisType)
         {
-			//constructorType = ConstructorType;
+            //constructorType = ConstructorType;
 
-			//switch (nameConstructor)
-			//{
-			//	case "ThreeDimensional":
-			//		Factory = new Factory3D();
-			//		break;
-			//	case "TwoDimensional":
-			//		Factory = new Factory3DDraw2D();
-			//		break;
-			//	case "Curve":
-			//		Factory = new FactoryCurve();
-			//		break;
-			//	default:
-			//		break;
-			//}
+            //switch (nameConstructor)
+            //{
+            //	case "ThreeDimensional":
+            //		Factory = new Factory3D();
+            //		break;
+            //	case "TwoDimensional":
+            //		Factory = new Factory3DDraw2D();
+            //		break;
+            //	case "Curve":
+            //		Factory = new FactoryCurve();
+            //		break;
+            //	default:
+            //		break;
+            //}
 
-			switch (constructorType)
-			{
-				case ConstructorType.ThreeDimensional:
-					Factory = new Factory3D();
-					break;
-				case ConstructorType.TwoDimensional:
-					Factory = new Factory3DDraw2D();
-					break;
-				case ConstructorType.Curve:
-					Factory = new FactoryCurve();
-					break;
-				default:
-					break;
-			}
+            //switch (constructorType)
+            //{
+            //	case ConstructorType.ThreeDimensional:
+            //		Factory = new Factory3D();
+            //		break;
+            //	case ConstructorType.TwoDimensional:
+            //		Factory = new Factory3DDraw2D();
+            //		break;
+            //	case ConstructorType.Curve:
+            //		Factory = new FactoryCurve();
+            //		break;
+            //	default:
+            //		break;
+            //}
+
+            this.axisType = axisType;
 
 			mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
             mnuSaveBitmap.Click += mnuSaveBitmap_Click;
 
-            Controller = Factory.CreateController(Width, Height, Handle, mnuSaveBitmap, axisType);
-            View = Controller.View;
+            Factory = factory;
+            Factory.CreateControllerAndView(Width, Height, Handle, mnuSaveBitmap, axisType);
+
+            //Controller = Factory.CreateController(Width, Height, Handle, mnuSaveBitmap, axisType);
+            //View = Controller.View;
 			InitializeComponent();
 			
 			mnuSaveBitmap.Click += mnuSaveBitmap_Click;
