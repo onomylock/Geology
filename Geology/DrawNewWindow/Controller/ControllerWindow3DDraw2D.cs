@@ -11,11 +11,12 @@ using System.Threading.Tasks;
 using Geology.Utilities;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Geology.DrawNewWindow.Model;
 
 
 namespace Geology.DrawNewWindow.Controller
 {
-	public class Factory3DDraw2D : IFactoryController
+	public class Factory3DDraw2D : IFactory
 	{
         public string Name { get { return name; } }
 

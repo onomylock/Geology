@@ -9,6 +9,7 @@ using Geology.OpenGL;
 using System.Windows.Forms;
 using Geology.DrawNewWindow.View;
 using Geology.DrawNewWindow.Model;
+using Geology.Projection;
 
 namespace Geology.DrawNewWindow.Controller
 {
@@ -37,11 +38,13 @@ namespace Geology.DrawNewWindow.Controller
         public FontGeology caption { get; set; }
         public ContextMenuStrip mnu { get; set; }
         public COrthoControlProport Ortho { get; set; }
-        //public FontGeology wellFont { get; set; }
-        //public FontGeology fontReceivers { get; set; }
-        //public FontGeology paletteFont { get; set; } 
-        //public CaptionAxisHorAndVert CaptionHorAndVert { get { return captionHorAndVert; } set { captionHorAndVert = value; } }
-        public event Action InvalidateEvent;
+		public CPerspective project { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+		//public FontGeology wellFont { get; set; }
+		//public FontGeology fontReceivers { get; set; }
+		//public FontGeology paletteFont { get; set; } 
+		//public CaptionAxisHorAndVert CaptionHorAndVert { get { return captionHorAndVert; } set { captionHorAndVert = value; } }
+		public event Action InvalidateEvent;
 
         protected IModelWindow model;
         protected IViewWindow view;

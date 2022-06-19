@@ -19,6 +19,7 @@ namespace Geology.DrawNewWindow.Controller
 		PageType Page { get; set; }
 		IModelWindow Model { get; set; }
 		ContextMenuStrip mnu { get; set; }
+		CPerspective project { get; set; }
 		void OnMouseDown(MouseEventArgs e);
 		void OnMouseMove(MouseEventArgs e);
 		void OnMouseUp(MouseEventArgs e);

@@ -15,122 +15,32 @@ using System.Reflection;
 
 namespace Geology.OpenGL.OpenGLControl
 {
-	public enum ConstructorType
-	{
-        TwoDimensional,
-        ThreeDimensional, 
-        Curve
-	}
+	
 
     public partial class OpenGLControl : UserControl
     {
         //public readonly DependencyProperty dependencyProperty = 
         //    DependencyProperty.Register(nameof(constructorType), typeof(ConstructorType), typeof(OpenGLControl), new PropertyMetadata(default(ConstructorType)));
-
+        public enum ConstructorType
+        {
+            TwoDimensional,
+            ThreeDimensional,
+            Curve
+        }
         IViewWindow View;
-        IFactoryController Factory;
+        IFactory Factory;
         IControllerWindow Controller;
+        //public IModelWindow Model { get; set; }
         System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap;
 
         public string nameConstructor { get; set; }
         public EPlaneType axisType { get; set; }
         public ConstructorType constructorType { get; set; }
-		//{
-		//	get { return (ConstructorType)DependencyObject.GetValue(dependencyProperty); }
-		//	set
-		//	{
-		//		DependencyObject.SetValue(dependencyProperty, value);
-		//	}
-		//}
-		//private delegate void InvalidateDekegate();
-		//Cursor Cursor;
 
-		public OpenGLControl(IFactory factory, IModelWindow model, EPlaneType axisType)
+        public OpenGLControl()
         {
-            //constructorType = ConstructorType;
-
-            //switch (nameConstructor)
-            //{
-            //	case "ThreeDimensional":
-            //		Factory = new Factory3D();
-            //		break;
-            //	case "TwoDimensional":
-            //		Factory = new Factory3DDraw2D();
-            //		break;
-            //	case "Curve":
-            //		Factory = new FactoryCurve();
-            //		break;
-            //	default:
-            //		break;
-            //}
-
-            //switch (constructorType)
-            //{
-            //	case ConstructorType.ThreeDimensional:
-            //		Factory = new Factory3D();
-            //		break;
-            //	case ConstructorType.TwoDimensional:
-            //		Factory = new Factory3DDraw2D();
-            //		break;
-            //	case ConstructorType.Curve:
-            //		Factory = new FactoryCurve();
-            //		break;
-            //	default:
-            //		break;
-            //}
-
-            this.axisType = axisType;
-
-			mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
-            mnuSaveBitmap.Click += mnuSaveBitmap_Click;
-
-            Factory = factory;
-            Factory.CreateControllerAndView(Width, Height, Handle, mnuSaveBitmap, axisType);
-
-            //Controller = Factory.CreateController(Width, Height, Handle, mnuSaveBitmap, axisType);
-            //View = Controller.View;
-			InitializeComponent();
 			
-			mnuSaveBitmap.Click += mnuSaveBitmap_Click;
-            Controller.InvalidateEvent += Invalidate;
-			this.Disposed += View.DisposedView;
-            this.ContextMenuStrip = Controller.mnu;
-            this.Resize += OpenGLControl_Resize;
-            //View = Controller.View;
-            mnuSaveBitmap.Click += mnuSaveBitmap_Click;
         }
-
-		//public void SetCostructor(ConstructorType constructorType)
-		//{
-  //          this.constructorType = constructorType;
-  //          mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
-
-  //          switch (constructorType)
-		//	{
-		//		case ConstructorType.ThreeDimensional:
-  //                  {
-  //                      Controller = new ControllerWindow3D(Width, Height, Handle, mnuSaveBitmap);                        
-  //                      break; 
-  //                  }
-
-		//		case ConstructorType.TwoDimensional:
-		//			{
-  //                      Controller = new ControllerWindow3DDraw2D(Width, Height, Handle);
-  //                      break;
-  //                  }
-		//		case ConstructorType.Curve:
-		//			{
-  //                      Controller = new ControllerCurve(Width, Height, Handle, mnuSaveBitmap);
-  //                      break;
-  //                  }
-					
-		//		default:
-		//			break;
-		//	}
-
-           
-
-  //      }
 
         private void OpenGLControl_Paint(object sender, PaintEventArgs e)
         {
@@ -151,10 +61,42 @@ namespace Geology.OpenGL.OpenGLControl
             //}
         }
 
-        private void OpenGLControl_Load(object sender, EventArgs e)
-        {
-          
-        }
+		public void OpenGLControl_Load(object sender, EventArgs e)
+		{
+			switch (constructorType)
+			{
+				case ConstructorType.ThreeDimensional:
+					Factory = new Factory3D();
+					break;
+				case ConstructorType.TwoDimensional:
+					Factory = new Factory3DDraw2D();
+					break;
+				case ConstructorType.Curve:
+					Factory = new FactoryCurve();
+					break;
+				default:
+					break;
+			}
+            
+			mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
+			mnuSaveBitmap.Click += mnuSaveBitmap_Click;
+
+			Factory.CreateControllerAndView(Width, Height, Handle, mnuSaveBitmap, axisType);
+
+			Controller = Factory.Controller;
+			View = Factory.View;
+            Controller.View = View;
+
+			InitializeComponent();
+
+			mnuSaveBitmap.Click += mnuSaveBitmap_Click;
+			Controller.InvalidateEvent += Invalidate;
+			this.Disposed += View.DisposedView;
+			this.ContextMenuStrip = Controller.mnu;
+			this.Resize += OpenGLControl_Resize;
+
+			mnuSaveBitmap.Click += mnuSaveBitmap_Click;
+		}
 
 		public virtual void OpenGLControl_Resize(object sender, EventArgs e)
 		{

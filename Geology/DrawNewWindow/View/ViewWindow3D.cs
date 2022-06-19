@@ -20,9 +20,9 @@ namespace Geology.DrawNewWindow.View
     public class ViewWindow3D : ViewAbstract, IViewWindow
     {
         public ViewWindow3D(CPerspective project, IModelWindow model, 
-            PageType page, int Width, int Height, double[] BoundingBox, IntPtr Handle)
+            PageType page, int Width, int Height, IntPtr Handle)
         {
-            base.BoundingBox = BoundingBox;
+            base.BoundingBox = model.GlobalBoundingBox;
             //base.caption = caption;
             base.project = project;
             base.Height = Height;

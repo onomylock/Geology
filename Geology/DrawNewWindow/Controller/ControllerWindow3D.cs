@@ -38,7 +38,7 @@ namespace Geology.DrawNewWindow.Controller
 		public void CreateControllerAndView(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
 		{
             Controller = new ControllerWindow3D(Handle, mnuSaveBitmap);
-            View = new ViewWindow3D();
+            View = new ViewWindow3D(Controller.project, Controller.Model, Controller.Page, Width, Height, Handle);
 		}
 	}
 
@@ -48,17 +48,46 @@ namespace Geology.DrawNewWindow.Controller
         public PageType Page { get { return page; } set { page = value; } }
         public IModelWindow Model
         {
-            get { return model; }
-            set
+            get 
             {
                 if (model == null)
-                    model = new ModelWindow();
-                else
                 {
-                    model = value;
-                    this.View.UpdateViewMatrix();
-                    this.View.Draw();
+                    model = new ModelWindow();
+                    model.Objects.Add(new CGeoObject());
+                    model.GlobalBoundingBox[0] = -10000;
+                    model.GlobalBoundingBox[1] = 10000;
+                    model.GlobalBoundingBox[2] = -10000;
+                    model.GlobalBoundingBox[3] = 10000;
+                    model.GlobalBoundingBox[4] = -10000;
+                    model.GlobalBoundingBox[5] = 10000;
+                    BoundingBox = model.GlobalBoundingBox;
                 }
+                return model; 
+            }
+            set
+            {
+                model = value;
+                this.View.UpdateViewMatrix();
+                this.View.Draw();
+
+                //if (model == null)
+                //{
+                //    model = new ModelWindow();
+                //    model.Objects.Add(new CGeoObject());
+                //    model.GlobalBoundingBox[0] = -10000;
+                //    model.GlobalBoundingBox[1] = 10000;
+                //    model.GlobalBoundingBox[2] = -10000;
+                //    model.GlobalBoundingBox[3] = 10000;
+                //    model.GlobalBoundingBox[4] = -10000;
+                //    model.GlobalBoundingBox[5] = 10000;
+                //    BoundingBox = model.GlobalBoundingBox;
+                //}
+                //else
+                //{
+                //    model = value;
+                //    this.View.UpdateViewMatrix();
+                //    this.View.Draw();
+                //}
             }
         }
         public double[] BoundingBox { get; set; }        
@@ -91,10 +120,10 @@ namespace Geology.DrawNewWindow.Controller
 
         public ControllerWindow3D(IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap)
         {
-            //Model = new ModelWindow();
+            //this.Model = Model;
             //window = null;
             project = new CPerspective();
-
+            //BoundingBox = model.GlobalBoundingBox;
             //BoundingBox = new double[] { -10000, 10000, -10000, 10000, -10000, 10000 };
             //view = new ViewWindow3D(project, model, page, Width, Height, BoundingBox, Handle);
 
@@ -114,8 +143,7 @@ namespace Geology.DrawNewWindow.Controller
 			mnuNone = new ToolStripMenuItem("None");
 			mnuStartView = new ToolStripMenuItem("Start view");
 			mnuSelect = new ToolStripMenuItem("Select");
-			
-			
+            this.mnuSaveBitmap = mnuSaveBitmap; 
 
             mnuAlongWindow.CheckOnClick = true;
             mnuAlongWindow.Checked = true;

@@ -81,8 +81,12 @@ namespace Geology
 #endif
             InitializeComponent();
 
+
+
+			
+
 			//Mesh mesh = new Mesh();
-			ModelWindow geoModel1 = new ModelWindow();
+			//ModelWindow geoModel1 = new ModelWindow();
 			//int index = 0;
 			//foreach(Element ver in mesh.Elements)
 			//{
@@ -102,7 +106,7 @@ namespace Geology
 			//Controller3D.Controller.Model.GlobalBoundingBox[4] = -10000;
 			//Controller3D.Controller.Model.GlobalBoundingBox[5] = 10000;
 
-						
+
 			//Controller2DMesh.setRotateAndNameAxes(EPlaneType.XY);
 			//Controller2DMesh.ChangeOrtho(geoModel1.GlobalBoundingBox);
 			//Controller2DMesh.BoundingBox = geoModel1.GlobalBoundingBox;
@@ -138,9 +142,26 @@ namespace Geology
 			//Controller2DXZ.drawableObjects[PageType.Model].Add(geoModel1.Objects.First());
 		}
 	
-		private void Button_Click(object sender, RoutedEventArgs e)
-        {
+		//private void Button_Click(object sender, RoutedEventArgs e)
+  //      {
 
-        }
-    }
+  //      }
+
+		private void OpenGLControl_3D_Load(object sender, EventArgs e)
+		{
+			OpenGLControl_3D.constructorType = OpenGL.OpenGLControl.OpenGLControl.ConstructorType.ThreeDimensional;
+			OpenGLControl_3D.OpenGLControl_Load(sender, e);
+		}
+
+		//private void Controller3D_Load(object sender, EventArgs e)
+		//{
+		//	Controller3D.constructorType = OpenGL.OpenGLControl.OpenGLControl.ConstructorType.ThreeDimensional;
+
+		//}
+
+		//private void Window_Loaded(object sender, RoutedEventArgs e)
+		//{
+		//	Controller3D.constructorType = OpenGL.OpenGLControl.ConstructorType.ThreeDimensional;
+		//}
+	}
 }

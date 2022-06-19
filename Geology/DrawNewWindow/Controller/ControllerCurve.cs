@@ -14,6 +14,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using Geology.DrawNewWindow.View;
 using Geology.DrawWindow;
+using Geology.DrawNewWindow.Model;
 
 namespace Geology.DrawNewWindow.Controller
 {
@@ -40,15 +41,23 @@ namespace Geology.DrawNewWindow.Controller
 		}
 	}
 
-	public class FactoryCurve : IFactoryController
+	public class FactoryCurve : IFactory
 	{
 		public string Name { get { return name; } }
+
+		public IControllerWindow Controller { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public IViewWindow View { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 		string name = "ControllerCurve";
 
 		public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
 		{
 			return new ControllerCurve(Width, Height, Handle, mnuSaveBitmap, axisType);
+		}
+
+		public void CreateControllerAndView(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
+		{
+			throw new NotImplementedException();
 		}
 	}
 

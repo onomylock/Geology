@@ -154,7 +154,7 @@
                                 </WindowsFormsHost>-->
 
                                 <WindowsFormsHost x:Uid="WindowsFormsHost_3" Grid.Column="6" Grid.Row="0" Grid.RowSpan="4" Grid.ColumnSpan="2" Margin="3.666,0,0.334,-0.333">
-                                    <openglwinnew:OpenGlControl x:Uid="Controller3D" x:Name="Controller3D" />
+                                    <openglwinnew:OpenGLControl x:Uid="OpenGLControl_3D" x:Name="OpenGLControl_3D" Load="OpenGLControl_3D_Load" />
                                 </WindowsFormsHost>
                                 
                        
