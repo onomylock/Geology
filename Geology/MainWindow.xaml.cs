@@ -153,15 +153,27 @@ namespace Geology
 			OpenGLControl_3D.OpenGLControl_Load(sender, e);
 		}
 
-		//private void Controller3D_Load(object sender, EventArgs e)
-		//{
-		//	Controller3D.constructorType = OpenGL.OpenGLControl.OpenGLControl.ConstructorType.ThreeDimensional;
+		private void OpenGLControl_2DXY_Load(object sender, EventArgs e)
+		{
+			OpenGLControl_2DXY.constructorType = OpenGL.OpenGLControl.OpenGLControl.ConstructorType.TwoDimensional;
+			OpenGLControl_2DXY.axisType = EPlaneType.XY;
+			OpenGLControl_2DXY.OpenGLControl_Load(sender, e);
+		}
 
-		//}
+		private void OpenGLControl_2DXZ_Load(object sender, EventArgs e)
+		{
+			OpenGLControl_2DXZ.constructorType = OpenGL.OpenGLControl.OpenGLControl.ConstructorType.TwoDimensional;
+			OpenGLControl_2DXZ.axisType = EPlaneType.XZ;
+			OpenGLControl_2DXZ.OpenGLControl_Load(sender, e);
+		}
 
-		//private void Window_Loaded(object sender, RoutedEventArgs e)
-		//{
-		//	Controller3D.constructorType = OpenGL.OpenGLControl.ConstructorType.ThreeDimensional;
-		//}
+		private void OpenGLControl_2DYZ_Load(object sender, EventArgs e)
+		{
+			OpenGLControl_2DYZ.constructorType = OpenGL.OpenGLControl.OpenGLControl.ConstructorType.TwoDimensional;
+			OpenGLControl_2DYZ.axisType = EPlaneType.YZ;
+			OpenGLControl_2DYZ.OpenGLControl_Load(sender, e);
+		}
+
+
 	}
 }

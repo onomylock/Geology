@@ -26,19 +26,17 @@ namespace Geology.DrawNewWindow.Controller
 
 		public IViewWindow View { get; set; }
 
+        public IModelWindow Model { get; set; }
+
 		string name = "Controller3D";
-
-		//public IControllerWindow CreateController(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
-		//{
-  //          return new ControllerWindow3D(Width, Height, Handle, mnuSaveBitmap, axisType);
-		//}
-
-
 
 		public void CreateControllerAndView(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
 		{
-            Controller = new ControllerWindow3D(Handle, mnuSaveBitmap);
-            View = new ViewWindow3D(Controller.project, Controller.Model, Controller.Page, Width, Height, Handle);
+            Model = new ModelWindow();
+            Model.Objects.Add(new CGeoObject());
+            Model.viewportObjectsDrawablesSet(PageType.Model, Model.Objects.ToList());
+            Controller = new ControllerWindow3D(Model, Handle, mnuSaveBitmap);
+            View = new ViewWindow3D(Controller.project, Model.viewportObjectsDrawablesGet(Controller.Page), Controller.BoundingBox, Controller.Page, Width, Height, Handle);
 		}
 	}
 
@@ -67,8 +65,8 @@ namespace Geology.DrawNewWindow.Controller
             set
             {
                 model = value;
-                this.View.UpdateViewMatrix();
-                this.View.Draw();
+                //this.View.UpdateViewMatrix();
+                //this.View.Draw();
 
                 //if (model == null)
                 //{
@@ -93,6 +91,8 @@ namespace Geology.DrawNewWindow.Controller
         public double[] BoundingBox { get; set; }        
         public ContextMenuStrip mnu { get; set; }
         public CPerspective project { get; set; }
+		public COrthoControlProport Ortho { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
 		public event Action InvalidateEvent;
 
 		protected IModelWindow model;
@@ -118,22 +118,12 @@ namespace Geology.DrawNewWindow.Controller
         private ToolStripMenuItem mnuStartView;
         private ToolStripMenuItem mnuSelect;
 
-        public ControllerWindow3D(IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap)
+        public ControllerWindow3D(IModelWindow Model, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap)
         {
-            //this.Model = Model;
-            //window = null;
+            this.Model = Model;
             project = new CPerspective();
-            //BoundingBox = model.GlobalBoundingBox;
-            //BoundingBox = new double[] { -10000, 10000, -10000, 10000, -10000, 10000 };
-            //view = new ViewWindow3D(project, model, page, Width, Height, BoundingBox, Handle);
-
-            //Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContex);
-            //caption = new FontGeology(view.Hdc, view.OglContex, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            //fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-            //paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", 16);
-
-            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);       
             Cursor = new Cursor(Handle);
+            BoundingBox = Model.GlobalBoundingBox;
 
             mnu = new ContextMenuStrip();
 			mnuAlongWindow = new ToolStripMenuItem("Along Window");

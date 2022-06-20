@@ -14,19 +14,20 @@ using Geology.Objects.GeoModel;
 using Geology.Objects;
 using Geology.DrawNewWindow.Model;
 using Geology.DrawWindow;
+using Geology.Utilities;
 
 namespace Geology.DrawNewWindow.View
 {
     public class ViewWindow3D : ViewAbstract, IViewWindow
     {
-        public ViewWindow3D(CPerspective project, IModelWindow model, 
+        public ViewWindow3D(CPerspective project, List<IViewportObjectsDrawable> viewportObjectsDrawables, double[] BoundingBox,
             PageType page, int Width, int Height, IntPtr Handle)
         {
-            base.BoundingBox = model.GlobalBoundingBox;
+            base.viewportObjectsDrawables = viewportObjectsDrawables;
+            base.BoundingBox = BoundingBox;
             //base.caption = caption;
             base.project = project;
             base.Height = Height;
-            base.model = model;
             base.Width = Width;
             base.page = page;
 
@@ -87,8 +88,8 @@ namespace Geology.DrawNewWindow.View
             // Следующая строка позволяет закрашивать полигоны цветом при включенном освещении:
             GLContex.glEnable(GLContex.GL_COLOR_MATERIAL);
 
-            foreach (var p in model.Objects)
-                p.Draw3D(model.DrawObjectsBounds, p.DrawColor);
+            foreach (var p in viewportObjectsDrawables)
+                p.Draw3D(true, p.DrawColor);
 
             GLContex.glDisable(GLContex.GL_LIGHT0);
             GLContex.glDisable(GLContex.GL_LIGHT1);

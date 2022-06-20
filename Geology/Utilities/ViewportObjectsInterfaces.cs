@@ -34,6 +34,8 @@ namespace Geology.Utilities
     public interface IViewportObjectsDrawable
     {
         void Draw(EPlaneType planeType, double[] boundingBox, int widthLocal, int heightLocal, FontGeology labelFont, FontGeology paletteFont);
+        void Draw3D(bool drawBounds, System.Windows.Media.Color col);
+        System.Windows.Media.Color DrawColor { get; }
     }
     public interface IViewportCurveDrawable
     {

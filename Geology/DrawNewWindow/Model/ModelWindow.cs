@@ -876,18 +876,56 @@ namespace Geology.DrawNewWindow.Model
         public Dictionary<PageType, List<IViewportObjectsContextmenuClickable>> contextMenuClickableObjects = new Dictionary<PageType, List<IViewportObjectsContextmenuClickable>>();
         public Dictionary<PageType, List<IViewportMouseMoveReaction>> mouseMoveReactionObjects = new Dictionary<PageType, List<IViewportMouseMoveReaction>>();
 
-        public IViewportObjectsSelectable[] viewportObjectsSelectablesGet(PageType pageType) => selectableObjects[pageType].ToArray();
-        public IViewportObjectsDrawable[] viewportObjectsDrawablesGet(PageType pageType) => drawableObjects[pageType].ToArray();
-        public IViewportObjectsClickable[] viewportObjectsClickablesGet(PageType pageType) => clickableObjects[pageType].ToArray();
-        public IViewportObjectsContextmenuClickable[] viewportObjectsContextmenuClickablesGet(PageType pageType) => contextMenuClickableObjects[pageType].ToArray();
-        public IViewportMouseMoveReaction[] viewportMouseMoveReactionsGet(PageType pageType) => mouseMoveReactionObjects[pageType].ToArray();
-        
+        public List<IViewportObjectsSelectable> viewportObjectsSelectablesGet(PageType pageType) => selectableObjects[pageType];
+        public List<IViewportObjectsDrawable> viewportObjectsDrawablesGet(PageType pageType) => drawableObjects[pageType];
+        public List<IViewportObjectsClickable> viewportObjectsClickablesGet(PageType pageType) => clickableObjects[pageType];
+        public List<IViewportObjectsContextmenuClickable> viewportObjectsContextmenuClickablesGet(PageType pageType) => contextMenuClickableObjects[pageType];
+        public List<IViewportMouseMoveReaction> viewportMouseMoveReactionsGet(PageType pageType) => mouseMoveReactionObjects[pageType];
 
-        //public IViewportObjectsSelectable[] viewportObjectsSelectables { get { return selectableObjects[PageType.Model].ToArray(); }}
-        //public IViewportObjectsDrawable[] viewportObjectsDrawables { get { return drawableObjects[PageType.Model].ToArray(); } }
-        //public IViewportObjectsClickable[] viewportObjectsClickables { get { return clickableObjects[PageType.Model].ToArray(); } }
-        //public IViewportObjectsContextmenuClickable[] viewportObjectsContextmenuClickables { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        //public IViewportMouseMoveReaction[] viewportMouseMoveReactions { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+   //     public void viewportObjectsSelectablesSet(PageType pageType, List<CGeoObject> cGeoObjects)
+   //     {
+   //         foreach (var selected in selectableObjects)
+			//{
+   //             this.selectableObjects[pageType].Add(selected);
+   //         }
+   //     }
+
+        public void viewportObjectsDrawablesSet(PageType pageType, List<CGeoObject> cGeoObjects)
+        {
+   //         if (drawableObjects.Empty)
+			//{
+   //             drawableObjects[pageType] = new List<IViewportObjectsDrawable>();
+			//}
+			foreach (var drawable in cGeoObjects)
+			{
+                this.drawableObjects[pageType].Add(drawable);
+			}
+        }
+
+   //     public void viewportObjectsClickablesSet(PageType pageType, List<CGeoObject> cGeoObjects)
+   //     {
+			//foreach (var clickable in clickableObjects)
+			//{
+   //             this.clickableObjects[pageType].Add(clickable);
+			//}
+   //     }
+
+   //     public void viewportObjectsContextmenuClickablesSet(PageType pageType, List<CGeoObject> cGeoObjects)
+   //     {
+			//foreach (var contestMenuClickable in contextMenuClickableObjects)
+			//{
+   //             this.contextMenuClickableObjects[pageType].Add(contestMenuClickable);
+			//}
+   //     }
+
+   //     public void viewportMouseMoveReactionsSet(PageType pageType, List<CGeoObject> cGeoObjects)
+   //     {
+			//foreach (var mouseMoveReaction in cGeoObjects)
+			//{
+   //             this.mouseMoveReactionObjects[pageType].Add(mouseMoveReaction);
+			//}
+   //     }
 
         private class HighlightedObjectInfo
         {
@@ -1175,7 +1213,12 @@ namespace Geology.DrawNewWindow.Model
         public ObservableCollection<CGeoObject> Objects
         {
             get { return objects; }
-            set { objects = value; OnPropertyChanged("Objects"); }
+            set 
+            {
+                objects = value;
+                //viewportObjectsDrawablesSet(PageType.Model, (List<IViewportObjectsDrawable>)value);
+                OnPropertyChanged("Objects"); 
+            }
         }
         public ObservableCollection<SaturationVolumeStack> Stacks
         {
@@ -1253,10 +1296,20 @@ namespace Geology.DrawNewWindow.Model
             set { drawObjectsBounds = value; OnPropertyChanged("DrawObjectsBounds"); }
         }
 
-		
+		public Color DrawColor => throw new NotImplementedException();
 
 		public ModelWindow()
         {
+			foreach (PageType page in Enum.GetValues(typeof(PageType)))
+			{
+                selectableObjects.Add(page, new List<IViewportObjectsSelectable>());
+                drawableObjects.Add(page, new List<IViewportObjectsDrawable>());
+                clickableObjects.Add(page, new List<IViewportObjectsClickable>());
+                contextMenuClickableObjects.Add(page, new List<IViewportObjectsContextmenuClickable>());
+                mouseMoveReactionObjects.Add(page, new List<IViewportMouseMoveReaction>());
+            }
+            
+
             objects.CollectionChanged += this.OnCollectionChanged;
             layers.CollectionChanged += this.OnLayersCollectionChanged;
         }
@@ -1815,6 +1868,10 @@ namespace Geology.DrawNewWindow.Model
             }
         }
 
-		
+		public void Draw3D(bool drawBounds, Color col)
+		{
+			throw new NotImplementedException();
+		}
+
 	}
 }

@@ -88,14 +88,13 @@ namespace Geology.OpenGL.OpenGLControl
             Controller.View = View;
 
 			InitializeComponent();
+            this.ContextMenuStrip = Controller.mnu;
 
-			mnuSaveBitmap.Click += mnuSaveBitmap_Click;
+            mnuSaveBitmap.Click += mnuSaveBitmap_Click;
 			Controller.InvalidateEvent += Invalidate;
 			this.Disposed += View.DisposedView;
-			this.ContextMenuStrip = Controller.mnu;
 			this.Resize += OpenGLControl_Resize;
-
-			mnuSaveBitmap.Click += mnuSaveBitmap_Click;
+            mnuSaveBitmap.Click += mnuSaveBitmap_Click;
 		}
 
 		public virtual void OpenGLControl_Resize(object sender, EventArgs e)
@@ -186,7 +185,10 @@ namespace Geology.OpenGL.OpenGLControl
             Controller.OnMouseUp(e);
         }
         protected override void OnMouseWheel(MouseEventArgs e) => Controller.OnMouseWheel(e);
-        protected override void OnMouseMove(MouseEventArgs e) => Controller.OnMouseMove(e);
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            Controller.OnMouseMove(e);
+        }
         protected virtual void Draw() => View?.Draw();
         protected virtual void UpdateViewMatrix() => View?.UpdateViewMatrix();
     }

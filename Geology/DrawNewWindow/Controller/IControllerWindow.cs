@@ -12,8 +12,12 @@ using Geology.DrawWindow;
 
 namespace Geology.DrawNewWindow.Controller
 {
+	//event Action InvalidateEvent;
+	
+
 	public interface IControllerWindow
 	{
+		COrthoControlProport Ortho { get; set; }
 		double[] BoundingBox { get; set; }
 		IViewWindow View { get; set; }
 		PageType Page { get; set; }
@@ -25,6 +29,7 @@ namespace Geology.DrawNewWindow.Controller
 		void OnMouseUp(MouseEventArgs e);
 		void OnMouseWheel(MouseEventArgs e);
 		event Action InvalidateEvent;
+		//delegate void InvalidateDelegate;
 		//event EventHandler ResizeView;
 		//void DisposedController(object sender, EventArgs e);
 		void SetMainRef(MainWindow _window);
@@ -43,6 +48,7 @@ namespace Geology.DrawNewWindow.Controller
 	public interface IFactory
 	{
 		string Name { get; }
+		IModelWindow Model { get; set; }
 		IControllerWindow Controller { get; set; }
 		IViewWindow View { get; set; }
 		void CreateControllerAndView(int Width, int Height, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType);

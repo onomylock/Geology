@@ -47,6 +47,7 @@ namespace Geology.DrawNewWindow.Controller
 
 		public IControllerWindow Controller { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 		public IViewWindow View { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public IModelWindow Model { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 		string name = "ControllerCurve";
 

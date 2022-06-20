@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Geology.DrawNewWindow.View;
 using Geology.DrawNewWindow.Model;
 using Geology.Projection;
+using Geology.Objects;
 
 namespace Geology.DrawNewWindow.Controller
 {
@@ -20,18 +21,34 @@ namespace Geology.DrawNewWindow.Controller
         public PageType Page { get { return page; } set { page = value; } }
         public IModelWindow Model
         {
-            get { return model; }
-            set
+            get 
             {
                 if (model == null)
-                    model = new ModelWindow();
-                else
                 {
-                    model = value;
-                    //this.ResizeView();
-                    this.View.UpdateViewMatrix();
-                    this.View.Draw();
+                    model = new ModelWindow();
+                    model.Objects.Add(new CGeoObject());
+                    model.GlobalBoundingBox[0] = -10000;
+                    model.GlobalBoundingBox[1] = 10000;
+                    model.GlobalBoundingBox[2] = -10000;
+                    model.GlobalBoundingBox[3] = 10000;
+                    model.GlobalBoundingBox[4] = -10000;
+                    model.GlobalBoundingBox[5] = 10000;
+                    BoundingBox = model.GlobalBoundingBox;
                 }
+                return model; 
+            }
+            set
+            {
+                model = value;
+                //if (model == null)
+                //    model = new ModelWindow();
+                //else
+                //{
+                //    model = value;
+                //    //this.ResizeView();
+                //    this.View.UpdateViewMatrix();
+                //    this.View.Draw();
+                //}
             }
         }
         public double[] BoundingBox { get; set; }
@@ -39,12 +56,12 @@ namespace Geology.DrawNewWindow.Controller
         public ContextMenuStrip mnu { get; set; }
         public COrthoControlProport Ortho { get; set; }
 		public CPerspective project { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-		//public FontGeology wellFont { get; set; }
-		//public FontGeology fontReceivers { get; set; }
-		//public FontGeology paletteFont { get; set; } 
-		//public CaptionAxisHorAndVert CaptionHorAndVert { get { return captionHorAndVert; } set { captionHorAndVert = value; } }
-		public event Action InvalidateEvent;
+        //public event InvalidateDelegate;
+        //public FontGeology wellFont { get; set; }
+        //public FontGeology fontReceivers { get; set; }
+        //public FontGeology paletteFont { get; set; } 
+        //public CaptionAxisHorAndVert CaptionHorAndVert { get { return captionHorAndVert; } set { captionHorAndVert = value; } }
+        public event Action InvalidateEvent;
 
         protected IModelWindow model;
         protected IViewWindow view;
@@ -149,6 +166,11 @@ namespace Geology.DrawNewWindow.Controller
         //    this.ContextMenuStrip = mnu;
         //}
 
+        protected void Invalidate_event()
+		{
+            InvalidateEvent();
+		}
+
         protected void mnuLabelSettings_Click(object sender, EventArgs e)
         {
         }
@@ -191,7 +213,7 @@ namespace Geology.DrawNewWindow.Controller
                 else
                 {
                     if (-curX + prevX != 0 || -curY + prevY != 0)
-                        curX = curX;
+                        //curX = curX;
                     Ortho.Translate(-curX + prevX, -curY + prevY);
                 }
                 XPrevious = e.X; YPrevious = e.Y;

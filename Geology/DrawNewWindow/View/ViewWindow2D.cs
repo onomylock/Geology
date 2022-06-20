@@ -27,7 +27,7 @@ namespace Geology.DrawNewWindow.View
 		//public FontGeology wellFont { get; set; }
 		protected readonly EPlaneType axisType;
 		//private readonly Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects;
-		private readonly IViewportObjectsDrawable[] viewportObjectsDrawables;
+		
 		//private readonly CaptionAxisHorAndVert captionHorAndVert;
 		private COrthoControlProport Ortho;
 		private bool selectionStarted = false;
@@ -45,7 +45,7 @@ namespace Geology.DrawNewWindow.View
 		//}
 
 		public ViewWindow2D(COrthoControlProport Ortho,
-			IViewportObjectsDrawable[] viewportObjectsDrawables, EPlaneType axisType, double zRange, PageType page,
+			List<IViewportObjectsDrawable> viewportObjectsDrawables, EPlaneType axisType, PageType page,
 			int Width, int Height, double[] BoundingBox, IntPtr Handle) : base()
 		{
 			//this.captionHorAndVert = captionHorAndVert;
@@ -55,7 +55,7 @@ namespace Geology.DrawNewWindow.View
 			this.BoundingBox = BoundingBox;
 			this.axisType = axisType;
 			this.Height = Height;
-			this.zRange = zRange;
+			this.zRange = 1e+7;
 			this.Ortho = Ortho;
 			this.Width = Width;
 			this.page = page;

@@ -1240,7 +1240,10 @@ namespace Geology.Objects.GeoModel
             get { return drawObjectsBounds; }
             set { drawObjectsBounds = value; OnPropertyChanged("DrawObjectsBounds"); }
         }
-        public GeoModel()
+
+		public Color DrawColor => throw new NotImplementedException();
+
+		public GeoModel()
         {
             objects.CollectionChanged += this.OnCollectionChanged;
             layers.CollectionChanged += this.OnLayersCollectionChanged;
@@ -1799,7 +1802,12 @@ namespace Geology.Objects.GeoModel
                 if (boundingBox[5] < obj.Z1) boundingBox[5] = obj.Z1;
             }
         }
-    }
+
+		public void Draw3D(bool drawBounds, Color col)
+		{
+			throw new NotImplementedException();
+		}
+	}
 
        
 }

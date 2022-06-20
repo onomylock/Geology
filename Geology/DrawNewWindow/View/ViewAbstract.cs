@@ -11,6 +11,7 @@ using Geology.Objects.GeoModel;
 using Geology.Objects;
 using Geology.DrawNewWindow.Model;
 using Geology.DrawWindow;
+using Geology.Utilities;
 
 namespace Geology.DrawNewWindow.View
 {
@@ -26,20 +27,21 @@ namespace Geology.DrawNewWindow.View
 		public IntPtr Hdc { get { return hdc; } set { hdc = value; } }
 
 		public FontGeology caption { get; set; }
-		public FontGeology wellFont { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-		public FontGeology fontReceivers { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-		public FontGeology paletteFont { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-		public CaptionAxisHorAndVert CaptionHorAndVert { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public FontGeology wellFont { get; set; }
+		public FontGeology fontReceivers { get; set; }
+		public FontGeology paletteFont { get; set; }
+		public CaptionAxisHorAndVert CaptionHorAndVert { get; set; }
 
 		protected IntPtr hdc;
 		protected int oglcontext;
 		protected CPerspective project;
-		protected IModelWindow model;
+		//protected IModelWindow model;
 		protected PageType page;
 		protected int widthLocal, heightLocal;
 		protected int height;
 		protected int width;
 		protected double[] BoundingBox;
+		protected List<IViewportObjectsDrawable> viewportObjectsDrawables;
 
 		public virtual void Draw()
 		{
