@@ -93,7 +93,7 @@ namespace Geology.DrawNewWindow.Controller
         public CPerspective project { get; set; }
 		public COrthoControlProport Ortho { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-		public event Action InvalidateEvent;
+		//public event Action InvalidateEvent;
 
 		protected IModelWindow model;
         protected IViewWindow view;
@@ -157,7 +157,9 @@ namespace Geology.DrawNewWindow.Controller
                 mnuSaveBitmap, mnuStartView, mnuSelect });
         }
 
-        public void SetMainRef(MainWindow _window)
+        public event InvalidateDelegate InvalidateEvent;
+
+		public void SetMainRef(MainWindow _window)
         {
             window = _window;
         }

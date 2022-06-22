@@ -79,7 +79,7 @@ namespace Geology.OpenGL.OpenGLControl
 			}
             
 			mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
-			mnuSaveBitmap.Click += mnuSaveBitmap_Click;
+			//mnuSaveBitmap.Click += mnuSaveBitmap_Click;
 
 			Factory.CreateControllerAndView(Width, Height, Handle, mnuSaveBitmap, axisType);
 

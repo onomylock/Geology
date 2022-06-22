@@ -61,7 +61,13 @@ namespace Geology.DrawNewWindow.Controller
         //public FontGeology fontReceivers { get; set; }
         //public FontGeology paletteFont { get; set; } 
         //public CaptionAxisHorAndVert CaptionHorAndVert { get { return captionHorAndVert; } set { captionHorAndVert = value; } }
-        public event Action InvalidateEvent;
+        //public event A InvalidateEvent;
+        public event InvalidateDelegate InvalidateEvent;
+
+        public void InvokeEvent()
+		{
+            InvalidateEvent.Invoke();
+		}
 
         protected IModelWindow model;
         protected IViewWindow view;
@@ -108,67 +114,71 @@ namespace Geology.DrawNewWindow.Controller
             //this.ContextMenuStrip = mnu;
         }
 
-        //public void SetLabelFormat(int FontSize, string NameFontStyle)
-        //{
+		//
 
-        //    captionHorAndVert.DrawScaleLbls(view.Width, view.Height, 1.0);
-        //    Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContext);
-        //    captionHorAndVert.myfontHor.ClearFont();
-        //    captionHorAndVert.myfontHor = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
-        //    captionHorAndVert.myfontVert.ClearFont();
-        //    captionHorAndVert.myfontVert = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, NameFontStyle, FontSize - 2);
-        //    captionHorAndVert.myfontHor_ind.ClearFont();
-        //    captionHorAndVert.myfontHor_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize - 4);
-        //    captionHorAndVert.myfontVert_ind.ClearFont();
-        //    captionHorAndVert.myfontVert_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, NameFontStyle, FontSize - 6);
-        //    wellFont.ClearFont();
-        //    wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
-        //    fontReceivers.ClearFont();
-        //    fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
-        //    paletteFont.ClearFont();
-        //    paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
-        //    InvalidateEvent();
-        //}
-
-        //public void SetFontSize(int fsize)
-        //{
-        //    Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContext);
-        //    captionHorAndVert.myfontHor.ClearFont();
-        //    captionHorAndVert.myfontHor = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
-        //    captionHorAndVert.myfontVert.ClearFont();
-        //    captionHorAndVert.myfontVert = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, "Arial", fsize - 2);
-        //    captionHorAndVert.myfontHor_ind.ClearFont();
-        //    captionHorAndVert.myfontHor_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize - 2);
-        //    captionHorAndVert.myfontVert_ind.ClearFont();
-        //    captionHorAndVert.myfontVert_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, "Arial", fsize - 4);
-        //    wellFont.ClearFont();
-        //    wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
-        //    fontReceivers.ClearFont();
-        //    fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
-        //    paletteFont.ClearFont();
-        //    paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
-        //    InvalidateEvent();
-        //}
-        
-        //public int GetFontSize()
-        //{
-        //    return captionHorAndVert.myfontHor.FontSize;
-        //}
-        
-        //public string GetFontStyle()
-        //{
-        //    return captionHorAndVert.myfontHor.StyleFont;
-        //}
         
 
-        //protected void SetBaseContextMenu()
-        //{
-        //    this.ContextMenuStrip = mnu;
-        //}
+		//public void SetLabelFormat(int FontSize, string NameFontStyle)
+		//{
 
-        protected void Invalidate_event()
+		//    captionHorAndVert.DrawScaleLbls(view.Width, view.Height, 1.0);
+		//    Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContext);
+		//    captionHorAndVert.myfontHor.ClearFont();
+		//    captionHorAndVert.myfontHor = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
+		//    captionHorAndVert.myfontVert.ClearFont();
+		//    captionHorAndVert.myfontVert = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, NameFontStyle, FontSize - 2);
+		//    captionHorAndVert.myfontHor_ind.ClearFont();
+		//    captionHorAndVert.myfontHor_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize - 4);
+		//    captionHorAndVert.myfontVert_ind.ClearFont();
+		//    captionHorAndVert.myfontVert_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, NameFontStyle, FontSize - 6);
+		//    wellFont.ClearFont();
+		//    wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
+		//    fontReceivers.ClearFont();
+		//    fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
+		//    paletteFont.ClearFont();
+		//    paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, NameFontStyle, FontSize);
+		//    InvalidateEvent();
+		//}
+
+		//public void SetFontSize(int fsize)
+		//{
+		//    Win32.wglMakeCurrent(view.Hdc, (IntPtr)view.OglContext);
+		//    captionHorAndVert.myfontHor.ClearFont();
+		//    captionHorAndVert.myfontHor = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
+		//    captionHorAndVert.myfontVert.ClearFont();
+		//    captionHorAndVert.myfontVert = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, "Arial", fsize - 2);
+		//    captionHorAndVert.myfontHor_ind.ClearFont();
+		//    captionHorAndVert.myfontHor_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize - 2);
+		//    captionHorAndVert.myfontVert_ind.ClearFont();
+		//    captionHorAndVert.myfontVert_ind = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Vertical, "Arial", fsize - 4);
+		//    wellFont.ClearFont();
+		//    wellFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
+		//    fontReceivers.ClearFont();
+		//    fontReceivers = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
+		//    paletteFont.ClearFont();
+		//    paletteFont = new FontGeology(view.Hdc, view.OglContext, FontGeology.TypeFont.Horizontal, "Arial", fsize);
+		//    InvalidateEvent();
+		//}
+
+		//public int GetFontSize()
+		//{
+		//    return captionHorAndVert.myfontHor.FontSize;
+		//}
+
+		//public string GetFontStyle()
+		//{
+		//    return captionHorAndVert.myfontHor.StyleFont;
+		//}
+
+
+		//protected void SetBaseContextMenu()
+		//{
+		//    this.ContextMenuStrip = mnu;
+		//}
+
+		protected void Invalidate_event()
 		{
-            InvalidateEvent();
+            InvalidateEvent?.Invoke();
 		}
 
         protected void mnuLabelSettings_Click(object sender, EventArgs e)
@@ -179,14 +189,14 @@ namespace Geology.DrawNewWindow.Controller
         {
             Ortho.ClearView();
             view.ResizeWindow();
-            InvalidateEvent();
+            InvalidateEvent.Invoke();
         }
 
         protected void mnuShowGrid_Click(object sender, EventArgs e)
         {
             view.CaptionHorAndVert.DrawGridFlag = ((System.Windows.Forms.ToolStripMenuItem)sender).Checked;
             view.ResizeWindow();
-            InvalidateEvent();
+            InvalidateEvent.Invoke();
         }
 
         protected void ScreenToWorldCoord(int eX, int eY, out double resX, out double resY)
@@ -218,7 +228,7 @@ namespace Geology.DrawNewWindow.Controller
                 }
                 XPrevious = e.X; YPrevious = e.Y;
                 view.ResizeWindow();
-                InvalidateEvent();
+                InvalidateEvent?.Invoke();
             }
         }
 
@@ -251,7 +261,7 @@ namespace Geology.DrawNewWindow.Controller
                 Ortho.Scale(resX, resY, e.Delta);
 
             view.ResizeWindow();
-            InvalidateEvent();
+            InvalidateEvent.Invoke();
         }
 
         //public void DisposedController(object sender, EventArgs e)

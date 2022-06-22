@@ -13,10 +13,13 @@ using Geology.DrawWindow;
 namespace Geology.DrawNewWindow.Controller
 {
 	//event Action InvalidateEvent;
+
+	public delegate void InvalidateDelegate();
 	
 
 	public interface IControllerWindow
 	{
+		event InvalidateDelegate InvalidateEvent;
 		COrthoControlProport Ortho { get; set; }
 		double[] BoundingBox { get; set; }
 		IViewWindow View { get; set; }
@@ -28,7 +31,8 @@ namespace Geology.DrawNewWindow.Controller
 		void OnMouseMove(MouseEventArgs e);
 		void OnMouseUp(MouseEventArgs e);
 		void OnMouseWheel(MouseEventArgs e);
-		event Action InvalidateEvent;
+		//event Action InvalidateEvent
+		//event Action InvalidateEventChild;
 		//delegate void InvalidateDelegate;
 		//event EventHandler ResizeView;
 		//void DisposedController(object sender, EventArgs e);
