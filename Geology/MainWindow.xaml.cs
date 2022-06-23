@@ -118,6 +118,33 @@ namespace Geology
 				Controller2DMesh.drawableObjects[PageType.Model].Add(DrawObj);
 			}
 
+			ModelWindow modelWindow = new ModelWindow();
+			modelWindow.Objects.Add(new CGeoObject());
+
+			modelWindow.GlobalBoundingBox[0] = -10000;
+			modelWindow.GlobalBoundingBox[1] = 10000;
+			modelWindow.GlobalBoundingBox[2] = -10000;
+			modelWindow.GlobalBoundingBox[3] = 10000;
+			modelWindow.GlobalBoundingBox[4] = -10000;
+			modelWindow.GlobalBoundingBox[5] = 10000;
+
+			Controller2DXY.setRotateAndNameAxes(EPlaneType.XY);
+			Controller2DXY.ChangeOrtho(modelWindow.GlobalBoundingBox);
+			Controller2DXY.SetBoundingBox(modelWindow.GlobalBoundingBox);
+			Controller2DXY.drawableObjects[PageType.Model].Add(modelWindow.Objects.First());
+
+			Controller2DXZ.setRotateAndNameAxes(EPlaneType.XY);
+			Controller2DXZ.ChangeOrtho(modelWindow.GlobalBoundingBox);
+			Controller2DXZ.SetBoundingBox(modelWindow.GlobalBoundingBox);
+			Controller2DXZ.drawableObjects[PageType.Model].Add(modelWindow.Objects.First());
+
+			Controller2DYZ.setRotateAndNameAxes(EPlaneType.XY);
+			Controller2DYZ.ChangeOrtho(modelWindow.GlobalBoundingBox);
+			Controller2DYZ.SetBoundingBox(modelWindow.GlobalBoundingBox);
+			Controller2DYZ.drawableObjects[PageType.Model].Add(modelWindow.Objects.First());
+
+			Controller3D.SetBoundingBox(modelWindow.GlobalBoundingBox);
+			Controller3D.SetMainRef(this);
 
 			//Controller3D.SetBoundingBox(geoModel1.GlobalBoundingBox);
 			//Controller3D.SetMainRef(this);
