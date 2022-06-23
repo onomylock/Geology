@@ -181,15 +181,12 @@ namespace Geology.OpenGL.OpenGLControl
         protected override void OnMouseUp(MouseEventArgs e)
         {
             if (!Focused) Focus();
-            //Controller.OpenGLControl_Prepare() => this.OpenGLControl_Prepare();
             Controller.OnMouseUp(e);
         }
         protected override void OnMouseWheel(MouseEventArgs e) => Controller.OnMouseWheel(e);
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            Controller.OnMouseMove(e);
-        }
-        protected virtual void Draw() => View?.Draw();
-        protected virtual void UpdateViewMatrix() => View?.UpdateViewMatrix();
+        protected override void OnMouseMove(MouseEventArgs e) => Controller.OnMouseMove(e);
+        
+        protected void Draw() => View?.Draw();
+        protected void UpdateViewMatrix() => View?.UpdateViewMatrix();
     }
 }

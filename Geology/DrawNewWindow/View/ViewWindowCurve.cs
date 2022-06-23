@@ -50,10 +50,10 @@ namespace Geology.DrawNewWindow.View
 			captionHorAndVert.GenerateGrid(Width, Height);
 			captionHorAndVert.DrawScaleLbls(Width, Height);
 			if (CurvesInfoList != null)
-				DrawObjetcs();
+				DrawObjects();
 		}
 
-		protected void DrawObjetcs()
+		protected void DrawObjects()
 		{
 			double[] ortho;
 			Ortho.GetOrtho(out ortho);
