@@ -31,18 +31,17 @@ namespace Geology.DrawNewWindow.Controller
 		void OnMouseMove(MouseEventArgs e);
 		void OnMouseUp(MouseEventArgs e);
 		void OnMouseWheel(MouseEventArgs e);
-		//event Action InvalidateEvent
-		//event Action InvalidateEventChild;
-		//delegate void InvalidateDelegate;
-		//event EventHandler ResizeView;
-		//void DisposedController(object sender, EventArgs e);
 		void SetMainRef(MainWindow _window);
 		//delegate InvalidateEventArgs
 		//event InvalidateEventArgs e;
 		//delegate void InvalidateMethod();
 		//event InvalidateEventArgs();
 		//void Resize_Window();
-
+		//event Action InvalidateEvent
+		//event Action InvalidateEventChild;
+		//delegate void InvalidateDelegate;
+		//event EventHandler ResizeView;
+		//void DisposedController(object sender, EventArgs e);
 		//FontGeology caption { get; set; }
 		//CaptionAxisHorAndVert CaptionHorAndVert { get; set; }
 		//COrthoControlProport Ortho { get; set; }
