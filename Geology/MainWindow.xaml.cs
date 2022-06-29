@@ -110,13 +110,14 @@ namespace Geology
 			geoModel1.GlobalBoundingBox[4] = -10000;
 			geoModel1.GlobalBoundingBox[5] = 10000;
 
+			Controller2DMesh.SetController(EPlaneType.XY, geoModel1);
 			//Controller2DMesh.setRotateAndNameAxes(EPlaneType.XY);
-			//Controller2DMesh.ChangeOrtho(geoModel1.GlobalBoundingBox);
-			//Controller2DMesh.SetBoundingBox(geoModel1.GlobalBoundingBox);
-			//foreach(var DrawObj in geoModel1.Objects)
-			//{
-			//	Controller2DMesh.drawableObjects[PageType.Model].Add(DrawObj);
-			//}
+			Controller2DMesh.ChangeOrtho(geoModel1.GlobalBoundingBox);
+			Controller2DMesh.SetBoundingBox(geoModel1.GlobalBoundingBox);
+			foreach (var DrawObj in geoModel1.Objects)
+			{
+				Controller2DMesh.drawableObjects[PageType.Model].Add(DrawObj);
+			}
 
 			ModelWindow modelWindow = new ModelWindow();
 			//modelWindow.Objects.Add(new CGeoObject());
