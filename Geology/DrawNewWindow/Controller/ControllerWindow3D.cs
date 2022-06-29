@@ -65,27 +65,6 @@ namespace Geology.DrawNewWindow.Controller
             set
             {
                 model = value;
-                //this.View.UpdateViewMatrix();
-                //this.View.Draw();
-
-                //if (model == null)
-                //{
-                //    model = new ModelWindow();
-                //    model.Objects.Add(new CGeoObject());
-                //    model.GlobalBoundingBox[0] = -10000;
-                //    model.GlobalBoundingBox[1] = 10000;
-                //    model.GlobalBoundingBox[2] = -10000;
-                //    model.GlobalBoundingBox[3] = 10000;
-                //    model.GlobalBoundingBox[4] = -10000;
-                //    model.GlobalBoundingBox[5] = 10000;
-                //    BoundingBox = model.GlobalBoundingBox;
-                //}
-                //else
-                //{
-                //    model = value;
-                //    this.View.UpdateViewMatrix();
-                //    this.View.Draw();
-                //}
             }
         }
         public double[] BoundingBox { get; set; }        
@@ -93,7 +72,6 @@ namespace Geology.DrawNewWindow.Controller
         public CPerspective project { get; set; }
 		public COrthoControlProport Ortho { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-		//public event Action InvalidateEvent;
 
 		protected IModelWindow model;
         protected IViewWindow view;

@@ -23,35 +23,19 @@ namespace Geology.DrawNewWindow.View
 	class ViewWindow2D : ViewAbstract, IViewWindow
 	{
 		public double scaleV;
-		//private int widthLocal, heightLocal;
-		//public FontGeology wellFont { get; set; }
 		protected readonly EPlaneType axisType;
-		//private readonly Dictionary<PageType, List<IViewportObjectsDrawable>> drawableObjects;
-		
-		//private readonly CaptionAxisHorAndVert captionHorAndVert;
 		private COrthoControlProport Ortho;
 		private bool selectionStarted = false;
 		private bool selectionFinished = true;
 		private readonly double zRange = 1e+7;
 		private double selectionX0, selectionX1;
 		private double selectionY0, selectionY1;
-		//protected int _Width, _Height;
-		//private readonly FontGeology fontReceivers;
-		//private readonly FontGeology paletteFont;
-
-		//public ViewWindow2D(IntPtr Handle)
-		//{
-			
-		//}
 
 		public ViewWindow2D(COrthoControlProport Ortho,
 			List<IViewportObjectsDrawable> viewportObjectsDrawables, EPlaneType axisType, PageType page,
 			int Width, int Height, double[] BoundingBox, IntPtr Handle) : base()
 		{
-			//this.captionHorAndVert = captionHorAndVert;
 			this.viewportObjectsDrawables = viewportObjectsDrawables;
-			//this.fontReceivers = fontReceivers;
-			//this.paletteFont = paletteFont;
 			this.BoundingBox = BoundingBox;
 			this.axisType = axisType;
 			this.Height = Height;
@@ -73,26 +57,6 @@ namespace Geology.DrawNewWindow.View
 			GLContex.glEnable(GLContex.GL_DEPTH_TEST);
 			Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
 		}
-
-
-		//public ViewWindow2D(CaptionAxisHorAndVert captionHorAndVert, COrthoControlProport Ortho, 
-		//	IViewportObjectsDrawable[] viewportObjectsDrawables, EPlaneType axisType, double zRange, PageType page, 
-		//	int Width, int Height, double[] BoundingBox, FontGeology fontReceivers, FontGeology paletteFont, IntPtr Handle) : base()
-		//{
-		//	//this.captionHorAndVert = captionHorAndVert;
-		//	this.viewportObjectsDrawables = viewportObjectsDrawables;
-		//	//this.fontReceivers = fontReceivers;
-		//	//this.paletteFont = paletteFont;
-		//	this.BoundingBox = BoundingBox;
-		//	this.axisType = axisType;
-		//	this.Height = Height;
-		//	this.zRange = zRange;
-		//	this.Ortho = Ortho;
-		//	this.Width = Width;
-		//	this.page = page;
-
-
-		//}
 
 		public override void DisposedView(object sender, EventArgs e)
 		{

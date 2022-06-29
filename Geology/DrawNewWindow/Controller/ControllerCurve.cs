@@ -133,21 +133,13 @@ String lpszFile // File
 			Curves = new ObservableCollection<Objects.CCurve>();
 			CurvesCopy = new ObservableCollection<Objects.CCurve>();
 			CurvesInfoList = new ObservableCollection<Objects.CCurveInfo>();
-			//CurvesInfoList = null;
+
 			OrthoHistory = new Stack<Rect>();
 
 			mRect = new Rect();
 
 			mState = MouseState.msNormal;
 			mZoomStarted = false;
-
-			//this.MouseDown += CView2DGraph_MouseDown;
-			//this.MouseUp += CView2DGraph_MouseUp;
-			//this.MouseMove += CView2DGraph_MouseMove;
-
-			//base.MouseMove -= CView2D_MouseMove;
-			//base.MouseDown -= CView2D_MouseDown;
-			//base.MouseUp -= CView2D_MouseUp;
 
 			view.CaptionHorAndVert.SetForCurves();
 
@@ -172,17 +164,12 @@ String lpszFile // File
 			ToolStripMenuItem mnuSetFontSize = new ToolStripMenuItem("Font size");
 			ToolStripMenuItem mnuSetXAxisLabel = new ToolStripMenuItem("X-axis label");
 			ToolStripMenuItem mnuSetYAxisLabel = new ToolStripMenuItem("Y-axis label");
-			//ToolStripMenuItem mnuSaveBitmap = png ? new ToolStripMenuItem("Save as PNG") : new ToolStripMenuItem("Save as JPG");
 			ToolStripMenuItem mnuSaveMetaFile = new ToolStripMenuItem("Save as EMF");
 			ToolStripMenuItem mnuLegendSettings = new ToolStripMenuItem("Legend settings");
 			ToolStripMenuItem mnuShowGrid = new ToolStripMenuItem("Show grid");
 
 			mnuSetCursor.Click += mnuSetCursorClick;
-			//mnuSetFontSize.Click += mnuSetFontSizeClick;
-			//mnuSetXAxisLabel.Click += mnuSetXAxisLabelClick;
-			//mnuSetYAxisLabel.Click += mnuSetYAxisLabelClick;
 			mnuLabelSettings.Click += mnuLabelSettingsClick;
-			//mnuSaveBitmap.Click += mnuSaveBitmapClick;
 			mnuLegendSettings.Click += mnuLegendSettingsClick;
 			mnuSaveMetaFile.Click += mnuSaveMetaFileClick;
 			mnuShowGrid.CheckOnClick = true;
@@ -194,10 +181,6 @@ String lpszFile // File
 			mnuProp.Items.Add(mnuLabelSettings);
 			mnuProp.Items.Add(mnuLegendSettings);
 			mnuProp.Items.Add(new ToolStripSeparator());
-			//mnuProp.Items.Add(mnuSetFontSize);
-			//mnuProp.Items.Add(new ToolStripSeparator());
-			//mnuProp.Items.Add(mnuSetXAxisLabel);
-			//mnuProp.Items.Add(mnuSetYAxisLabel);
 			mnuProp.Items.Add(mnuSaveBitmap);
 			mnuProp.Items.Add(mnuSaveMetaFile);
 			mnuProp.Items.Add(new ToolStripSeparator());
@@ -212,15 +195,7 @@ String lpszFile // File
 
 			drawLegend = false;
 
-			//view = new ViewWindowCurve(captionHorAndVert, Ortho, CurvesInfoList, mRect, mZoomStarted, Curves, Arg, Handle);
-			//this.Resize += Controller_Resize;
 		}
-
-		//public void ResizeView()
-		//{
-		//	view.Width = Width;
-		//	view.Height = Height;
-		//}
 
 		public virtual void AddCurve(Objects.CCurve c)
 		{
@@ -320,7 +295,6 @@ String lpszFile // File
 
 		private void Controller_Resize(object sender, EventArgs e)
 		{
-			//this.ResizeView();
 			view.ResizeWindow();
 			view.Draw();
 		}
@@ -722,55 +696,21 @@ String lpszFile // File
 			InvalidateEvent();
 		}
 
-		//protected void CView2DGraph_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
-		//{
-		//    if (e.Button == MouseButtons.Right)
-		//    {
-		//        if (clickOnHor = captionHorAndVert.ClickOnHor(e.X, e.Y, WidthLocal, HeightLocal))
-		//            this.ContextMenuStrip = mnuAxis;
-		//        else if (clickOnVer = captionHorAndVert.ClickOnVer(e.X, e.Y, WidthLocal, HeightLocal))
-		//            this.ContextMenuStrip = mnuAxis;
-		//        else
-		//            this.ContextMenuStrip = mnuProp;
-		//        CView2D_MouseDown(sender, e);
-		//        return;
-		//    }
-		//    this.ContextMenuStrip = null;
-		//    if (mState == MouseState.msNormal)
-		//    {
-		//        CView2D_MouseDown(sender, e);
-		//        double x, y;
-		//        ScreenToWorldCoord(e.X, e.Y, out x, out y);
-		//        Arg = (base.captionHorAndVert.LogH ? Objects.CCurve.GetLinear(x, base.captionHorAndVert.ZeroLogH) : x);
-		//        Invalidate();
-		//    }
-		//    else
-		//    {
-		//        ScreenToWorldCoord(e.X, e.Y, out mRect.x1, out mRect.y1);
-		//        mRect.x2 = mRect.x1;
-		//        mRect.y2 = mRect.y1;
-		//        mZoomStarted = true;
-		//    }
-		//}
+	
 		public override void OnMouseDown(MouseEventArgs e)
 		{
-			//if (!Focused) Focus();
 
 			if (e.Button == MouseButtons.Right)
 			{
 				if (clickOnHor = view.CaptionHorAndVert.ClickOnHor(e.X, e.Y, view.WidthLocal, view.HeightLocal))
-					//this.ContextMenuStrip = mnuAxis;
 					mnu = mnuAxis;
 				else if (clickOnVer = view.CaptionHorAndVert.ClickOnVer(e.X, e.Y, view.WidthLocal, view.HeightLocal))
-					//this.ContextMenuStrip = mnuAxis;
 					mnu = mnuAxis;
 				else
-					//this.ContextMenuStrip = mnuProp;
 					mnu = mnuProp;
 					base.OnMouseDown(e);
 				return;
 			}
-			//this.ContextMenuStrip = null;
 			if (mState == MouseState.msNormal)
 			{
 				base.OnMouseDown(e);
@@ -788,32 +728,9 @@ String lpszFile // File
 			}
 		}
 
-		//protected void CView2DGraph_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
-		//{
-		//    if (mState == MouseState.msNormal)
-		//        CView2D_MouseUp(sender, e);
-		//    else
-		//    {
-		//        ScreenToWorldCoord(e.X, e.Y, out mRect.x2, out mRect.y2);
-		//        mState = MouseState.msNormal;
-		//        mZoomStarted = false;
-		//        double[] newOrtho = new double[] { -1, 1, -1, 1, -1, 1 };
-		//        double[] oldOrtho;
-		//        Ortho.GetOrtho(out oldOrtho);
-		//        newOrtho[0] = Math.Min(mRect.x1, mRect.x2);
-		//        newOrtho[1] = Math.Max(mRect.x1, mRect.x2);
-		//        newOrtho[2] = Math.Min(mRect.y1, mRect.y2);
-		//        newOrtho[3] = Math.Max(mRect.y1, mRect.y2);
-		//        OrthoHistory.Push(new Rect(oldOrtho));
-		//        Ortho.SetOrtho(newOrtho);
-		//        Resize_Window();
-		//        Invalidate();
-		//    }
-		//}
+		
 		public override void OnMouseUp(MouseEventArgs e)
 		{
-			//if (!Focused) Focus();
-
 			if (mState == MouseState.msNormal)
 				base.OnMouseUp(e);
 			else
@@ -835,20 +752,9 @@ String lpszFile // File
 			}
 		}
 
-		//protected void CView2DGraph_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
-		//{
-		//    if (mState == MouseState.msNormal)
-		//        CView2D_MouseMove(sender, e);
-		//    else
-		//    {
-		//        ScreenToWorldCoord(e.X, e.Y, out mRect.x2, out mRect.y2);
-		//        Invalidate();
-		//    }
-		//}
+		
 		public override void OnMouseMove(MouseEventArgs e)
 		{
-			//if (!Focused) Focus();
-
 			if (mState == MouseState.msNormal)
 				base.OnMouseMove(e);
 			else
@@ -888,21 +794,6 @@ String lpszFile // File
 			}
 		}
 
-		//private System.Drawing.Imaging.ImageCodecInfo GetEncoder(System.Drawing.Imaging.ImageFormat format)
-		//{
-
-		//	System.Drawing.Imaging.ImageCodecInfo[] codecs = System.Drawing.Imaging.ImageCodecInfo.GetImageDecoders();
-
-		//	foreach (System.Drawing.Imaging.ImageCodecInfo codec in codecs)
-		//	{
-		//		if (codec.FormatID == format.Guid)
-		//		{
-		//			return codec;
-		//		}
-		//	}
-		//	return null;
-		//}
-
 		protected String GetLastOpenSaveDirectory()
 		{
 			String mru = @"Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU";
@@ -937,41 +828,6 @@ String lpszFile // File
 			}
 			return "";
 		}
-
-		//private void mnuSaveBitmapClick(object sender, EventArgs e)
-		//{
-		//	System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-		//	//saveFileDialog.InitialDirectory = FilesWorking.LastOpenSaveDirectory;
-
-
-		//	//saveFileDialog.InitialDirectory = GetLastOpenSaveDirectory();
-		//	saveFileDialog.Filter = png ? "png-files (*.png)|*.png" : "Jpg-files (*.jpg)|*.jpg";
-		//	saveFileDialog.FilterIndex = 0;
-		//	if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-		//	{
-		//		System.Drawing.Bitmap b = new System.Drawing.Bitmap(this.Size.Width, this.Size.Height);
-		//		System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(b);
-		//		System.Drawing.Point loc = this.PointToScreen(new System.Drawing.Point(0, 0));
-		//		g.CopyFromScreen(loc, new System.Drawing.Point(0, 0), this.Size);
-		//		System.Drawing.Size size = new System.Drawing.Size(b.Width, b.Height);
-		//		using (System.Drawing.Bitmap newb = new System.Drawing.Bitmap(b, size))
-		//		{
-		//			System.Drawing.Imaging.ImageCodecInfo jgpEncoder = GetEncoder(png ? System.Drawing.Imaging.ImageFormat.Png : System.Drawing.Imaging.ImageFormat.Jpeg);
-		//			var encoder = System.Drawing.Imaging.Encoder.Quality;
-		//			//var encoder2 = System.Drawing.Imaging.Encoder.ColorDepth;
-		//			var myEncoderParameters = new System.Drawing.Imaging.EncoderParameters(1);
-		//			var myEncoderParameter = new System.Drawing.Imaging.EncoderParameter(encoder, 100L);
-		//			//var myEncoderParameter2 = new System.Drawing.Imaging.EncoderParameter(encoder2, 100L);
-
-		//			myEncoderParameters.Param[0] = myEncoderParameter;
-		//			//myEncoderParameters.Param[1] = myEncoderParameter2;
-
-		//			newb.Save(saveFileDialog.FileName, jgpEncoder, myEncoderParameters);
-		//		}
-		//		//b.Save(saveFileDialog.FileName);
-		//		g.Dispose();
-		//	}
-		//}
 
 		private void mnuSaveMetaFileClick(object sender, EventArgs e)
 		{

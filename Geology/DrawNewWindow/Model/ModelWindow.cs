@@ -882,50 +882,13 @@ namespace Geology.DrawNewWindow.Model
         public List<IViewportObjectsContextmenuClickable> viewportObjectsContextmenuClickablesGet(PageType pageType) => contextMenuClickableObjects[pageType];
         public List<IViewportMouseMoveReaction> viewportMouseMoveReactionsGet(PageType pageType) => mouseMoveReactionObjects[pageType];
 
-
-   //     public void viewportObjectsSelectablesSet(PageType pageType, List<CGeoObject> cGeoObjects)
-   //     {
-   //         foreach (var selected in selectableObjects)
-			//{
-   //             this.selectableObjects[pageType].Add(selected);
-   //         }
-   //     }
-
         public void viewportObjectsDrawablesSet(PageType pageType, List<CGeoObject> cGeoObjects)
-        {
-   //         if (drawableObjects.Empty)
-			//{
-   //             drawableObjects[pageType] = new List<IViewportObjectsDrawable>();
-			//}
+        {         
 			foreach (var drawable in cGeoObjects)
 			{
                 this.drawableObjects[pageType].Add(drawable);
 			}
         }
-
-   //     public void viewportObjectsClickablesSet(PageType pageType, List<CGeoObject> cGeoObjects)
-   //     {
-			//foreach (var clickable in clickableObjects)
-			//{
-   //             this.clickableObjects[pageType].Add(clickable);
-			//}
-   //     }
-
-   //     public void viewportObjectsContextmenuClickablesSet(PageType pageType, List<CGeoObject> cGeoObjects)
-   //     {
-			//foreach (var contestMenuClickable in contextMenuClickableObjects)
-			//{
-   //             this.contextMenuClickableObjects[pageType].Add(contestMenuClickable);
-			//}
-   //     }
-
-   //     public void viewportMouseMoveReactionsSet(PageType pageType, List<CGeoObject> cGeoObjects)
-   //     {
-			//foreach (var mouseMoveReaction in cGeoObjects)
-			//{
-   //             this.mouseMoveReactionObjects[pageType].Add(mouseMoveReaction);
-			//}
-   //     }
 
         private class HighlightedObjectInfo
         {

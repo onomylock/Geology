@@ -15,12 +15,8 @@ using System.Reflection;
 
 namespace Geology.OpenGL.OpenGLControl
 {
-	
-
     public partial class OpenGLControl : UserControl
     {
-        //public readonly DependencyProperty dependencyProperty = 
-        //    DependencyProperty.Register(nameof(constructorType), typeof(ConstructorType), typeof(OpenGLControl), new PropertyMetadata(default(ConstructorType)));
         public enum ConstructorType
         {
             TwoDimensional,
@@ -47,18 +43,7 @@ namespace Geology.OpenGL.OpenGLControl
             if (View.OglContext != 0)
 			{
                 View?.Paint(sender, e);
-			}
-            //if (oglcontext != 0)
-            //{
-            //    Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-            //    OpenGL.glClearColor(1, 1, 1, 1);
-            //    OpenGL.glClear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-
-            //    Draw();
-
-            //    Win32.SwapBuffers(hdc);
-            //    Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-            //}
+			}      
         }
 
 		public void OpenGLControl_Load(object sender, EventArgs e)
@@ -78,9 +63,7 @@ namespace Geology.OpenGL.OpenGLControl
 					break;
 			}
             
-			mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
-			//mnuSaveBitmap.Click += mnuSaveBitmap_Click;
-
+			mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");			
 			Factory.CreateControllerAndView(Width, Height, Handle, mnuSaveBitmap, axisType);
 
 			Controller = Factory.Controller;
@@ -102,26 +85,15 @@ namespace Geology.OpenGL.OpenGLControl
             View?.ResizeWindow();
             View.Height = Height;
             View.Width = Width;
-        }
-
-		//public void Resize_Window()
-  //      {
-  //          //Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-  //          //UpdateViewMatrix();
-  //          //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-            
-  //      }
+        }	
 
         protected void OpenGLControl_Prepare()
         {
-            View?.Prepare();
-            //Win32.wglMakeCurrent(hdc, (IntPtr)oglcontext);
-            //UpdateViewMatrix();
+            View?.Prepare();            
         }
 
         protected void OpenGLControl_Release()
-        {
-            //Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+        {           
             View?.Release();
         }
 
