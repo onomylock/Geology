@@ -73,8 +73,13 @@ namespace Geology.DrawNewWindow.Controller
         public ControllerWindow3D() : base()
         {
 
-            Model = new ModelWindow();
-            model.Objects.Add(new CGeoObject());
+            
+        }
+
+        public void SetController(EPlaneType axisType, IModelWindow model)
+        {
+            Model = model;
+            //model.Objects.Add(new CGeoObject());
             window = null;
 
             // Может собираться и внешне
@@ -97,17 +102,17 @@ namespace Geology.DrawNewWindow.Controller
             view = new ViewWindow3D(project, model, page, Width, Height, BoundingBox, caption);
 
             mnu = new ContextMenuStrip();
-			mnuAlongWindow = new ToolStripMenuItem("Along Window");
-			mnuAroundX = new ToolStripMenuItem("Around X");
-			mnuAroundY = new ToolStripMenuItem("Around Y");
-			mnuAroundZ = new ToolStripMenuItem("Around Z");
-			mnuNone = new ToolStripMenuItem("None");
-			mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
-			mnuStartView = new ToolStripMenuItem("Start view");
-			mnuSelect = new ToolStripMenuItem("Select");
+            mnuAlongWindow = new ToolStripMenuItem("Along Window");
+            mnuAroundX = new ToolStripMenuItem("Around X");
+            mnuAroundY = new ToolStripMenuItem("Around Y");
+            mnuAroundZ = new ToolStripMenuItem("Around Z");
+            mnuNone = new ToolStripMenuItem("None");
+            mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");
+            mnuStartView = new ToolStripMenuItem("Start view");
+            mnuSelect = new ToolStripMenuItem("Select");
 
-			
-			this.Disposed += CView3D_Disposed;
+
+            this.Disposed += CView3D_Disposed;
             this.Resize += Controller_Resize;
 
             mnuAlongWindow.CheckOnClick = true;
@@ -126,15 +131,13 @@ namespace Geology.DrawNewWindow.Controller
             mnuStartView.Click += mnuStartView_Click;
             mnuSelect.CheckOnClick = true;
             mnuSelect.Click += mnuSelect_Click;
-            
+
 
             mnu.Items.AddRange(new ToolStripItem[] { mnuAlongWindow,/* mnuAlongX, mnuAlongY, mnuAlongZ,*/ 
-                mnuAroundX, mnuAroundY, mnuAroundZ, mnuNone, 
+                mnuAroundX, mnuAroundY, mnuAroundZ, mnuNone,
                 mnuSaveBitmap, mnuStartView, mnuSelect });
             ContextMenuStrip = mnu;
         }
-
-
 
         public void ResizeView()
 		{
@@ -401,6 +404,8 @@ namespace Geology.DrawNewWindow.Controller
 
         protected override void Draw() => view?.Draw();
 		protected override void UpdateViewMatrix() => view?.UpdateViewMatrix();
+
+		
 	}
 }
 

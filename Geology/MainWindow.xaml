@@ -142,15 +142,15 @@
                                 
 
                                 <WindowsFormsHost x:Uid="WindowsFormsHost_5" Grid.Column="5" Grid.Row="0" Grid.RowSpan="4" Margin="3.666,0,0.334,-0.333">
-                                    <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2DXY" x:Name="Controller2DXY" />
+                                    <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2DXY" x:Name="Controller2DXY" Load="Controller2DXY_Load" />
                                 </WindowsFormsHost>
 
                                 <WindowsFormsHost x:Uid="WindowsFormsHost_5" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" Margin="3.666,0,0.334,-0.333">
-                                    <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2DXZ" x:Name="Controller2DXZ" />
+                                    <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2DXZ" x:Name="Controller2DXZ" Load="Controller2DXZ_Load"/>
                                 </WindowsFormsHost>
 
                                 <WindowsFormsHost x:Uid="WindowsFormsHost_5" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="4" Margin="3.666,0,0.334,-0.333">
-                                    <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2DYZ" x:Name="Controller2DYZ" />
+                                    <openglwinnew:ControllerWindow3DDraw2D x:Uid="Controller2DYZ" x:Name="Controller2DYZ" Load="Controller2DYZ_Load"/>
                                 </WindowsFormsHost>
 
                                 <WindowsFormsHost x:Uid="WindowsFormsHost_3" Grid.Column="6" Grid.Row="0" Grid.RowSpan="4" Grid.ColumnSpan="2" Margin="3.666,0,0.334,-0.333">

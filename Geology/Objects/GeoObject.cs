@@ -328,6 +328,8 @@ namespace Geology.Objects
             set {  groupPriority = value; OnPropertyChanged("GroupPriority"); }
         }
 
+
+        public int Number { get { return number; } set { number = value; } }
         public PhysicalMaterial Material
         {
             get { return material; }

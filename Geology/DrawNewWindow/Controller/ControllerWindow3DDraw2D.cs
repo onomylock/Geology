@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Geology.Utilities;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Geology.DrawNewWindow.Model;
 
 
 namespace Geology.DrawNewWindow.Controller
@@ -44,26 +45,52 @@ namespace Geology.DrawNewWindow.Controller
         
         public ControllerWindow3DDraw2D() : base(true)
 		{
-			axisType = EPlaneType.XY;
-			zRange = 1e+7;
-			//ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });
 
-			foreach (var item in (PageType[])Enum.GetValues(typeof(PageType)))
-			{
-				selectableObjects.Add(item, new List<IViewportObjectsSelectable>());
-				drawableObjects.Add(item, new List<IViewportObjectsDrawable>());
-				clickableObjects.Add(item, new List<IViewportObjectsClickable>());
-				contextMenuClickableObjects.Add(item, new List<IViewportObjectsContextmenuClickable>());
-				mouseMoveReactionObjects.Add(item, new List<IViewportMouseMoveReaction>());
-			}
+		}
 
-			this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
+        public void SetController(EPlaneType axisType, IModelWindow model)
+        {
+            this.axisType = axisType;
+            zRange = 1e+7;
+            //ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });
+
+            foreach (var item in (PageType[])Enum.GetValues(typeof(PageType)))
+            {
+                selectableObjects.Add(item, new List<IViewportObjectsSelectable>());
+                drawableObjects.Add(item, new List<IViewportObjectsDrawable>());
+                clickableObjects.Add(item, new List<IViewportObjectsClickable>());
+                contextMenuClickableObjects.Add(item, new List<IViewportObjectsContextmenuClickable>());
+                mouseMoveReactionObjects.Add(item, new List<IViewportMouseMoveReaction>());
+            }
+
+            this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
 
             view = new ViewWindow2D(captionHorAndVert, Ortho, drawableObjects, axisType, zRange, page, Width, Height, BoundingBox, fontReceivers, paletteFont);
-            this.Resize += Controller_Resize;	
+            this.Resize += Controller_Resize;
         }
 
-		public void ResizeView()
+        //      public ControllerWindow3DDraw2D() : base(true)
+        //{
+        //	axisType = EPlaneType.XY;
+        //	zRange = 1e+7;
+        //	//ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });
+
+        //	foreach (var item in (PageType[])Enum.GetValues(typeof(PageType)))
+        //	{
+        //		selectableObjects.Add(item, new List<IViewportObjectsSelectable>());
+        //		drawableObjects.Add(item, new List<IViewportObjectsDrawable>());
+        //		clickableObjects.Add(item, new List<IViewportObjectsClickable>());
+        //		contextMenuClickableObjects.Add(item, new List<IViewportObjectsContextmenuClickable>());
+        //		mouseMoveReactionObjects.Add(item, new List<IViewportMouseMoveReaction>());
+        //	}
+
+        //	this.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
+
+        //          view = new ViewWindow2D(captionHorAndVert, Ortho, drawableObjects, axisType, zRange, page, Width, Height, BoundingBox, fontReceivers, paletteFont);
+        //          this.Resize += Controller_Resize;	
+        //      }
+
+        public void ResizeView()
 		{
 			view.Width = Width;
 			view.Height = Height;

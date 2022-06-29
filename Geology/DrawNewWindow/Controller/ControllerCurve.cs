@@ -14,6 +14,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using Geology.DrawNewWindow.View;
 using Geology.DrawWindow;
+using Geology.DrawNewWindow.Model;
 
 namespace Geology.DrawNewWindow.Controller
 {
@@ -1127,6 +1128,10 @@ String lpszFile // File
 			//view.HeightLocal = view.HeightLocal;
 		}
 
+		public void SetController(EPlaneType axisType, IModelWindow model)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
 

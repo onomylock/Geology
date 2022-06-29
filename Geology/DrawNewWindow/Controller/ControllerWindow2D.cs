@@ -11,7 +11,7 @@ using Geology.DrawNewWindow.View;
 
 namespace Geology.DrawNewWindow.Controller
 {
-	public class ControllerWindow2D : OpenGLControl, IControllerWindow
+	public class ControllerWindow2D : OpenGLControl
 	{
         public PageType Page { get { return page; } set { page = value; } }
         public COrthoControlProport Ortho;

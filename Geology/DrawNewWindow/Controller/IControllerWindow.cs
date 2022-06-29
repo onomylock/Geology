@@ -13,6 +13,7 @@ namespace Geology.DrawNewWindow.Controller
 {
 	public interface IControllerWindow
 	{
+		void SetController(EPlaneType axisType, IModelWindow model);
 		void SetBoundingBox(double[] newBoundingBox);
 		IViewWindow View { get; set; }
 		PageType Page { get; set; }
