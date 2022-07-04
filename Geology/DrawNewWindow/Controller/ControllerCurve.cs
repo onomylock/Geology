@@ -56,7 +56,7 @@ namespace Geology.DrawNewWindow.Controller
 			return new ControllerCurve(Width, Height, Handle, mnuSaveBitmap, axisType);
 		}
 
-		public void CreateControllerAndView(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
+		public void CreateControllerAndView(IModelWindow Model, int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
 		{
 			throw new NotImplementedException();
 		}

@@ -30,11 +30,11 @@ namespace Geology.DrawNewWindow.Controller
 
 		string name = "Controller3D";
 
-		public void CreateControllerAndView(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
+		public void CreateControllerAndView(IModelWindow Model, int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
 		{
-            Model = new ModelWindow();
-            Model.Objects.Add(new CGeoObject());
-            Model.viewportObjectsDrawablesSet(PageType.Model, Model.Objects.ToList());
+            //Model = new ModelWindow();
+            //Model.Objects.Add(new CGeoObject());
+            //Model.viewportObjectsDrawablesSet(PageType.Model, Model.Objects.ToList());
             Controller = new ControllerWindow3D(Model, Handle, mnuSaveBitmap);
             View = new ViewWindow3D(Controller.project, Model.viewportObjectsDrawablesGet(Controller.Page), Controller.BoundingBox, Controller.Page, Width, Height, Handle);
 		}

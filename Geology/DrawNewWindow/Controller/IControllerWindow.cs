@@ -54,7 +54,7 @@ namespace Geology.DrawNewWindow.Controller
 		IModelWindow Model { get; set; }
 		IControllerWindow Controller { get; set; }
 		IViewWindow View { get; set; }
-		void CreateControllerAndView(int Width, int Height, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType);
+		void CreateControllerAndView(IModelWindow Model, int Width, int Height, IntPtr Handle, System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType);
 	
 	}
 }

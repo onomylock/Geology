@@ -27,11 +27,11 @@ namespace Geology.DrawNewWindow.Controller
 
 		string name = "Controller3DDraw2D";
 
-		public void CreateControllerAndView(int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
+		public void CreateControllerAndView(IModelWindow Model, int Width, int Height, IntPtr Handle, ToolStripMenuItem mnuSaveBitmap, EPlaneType axisType)
 		{
-            Model = new ModelWindow();
-            Model.Objects.Add(new CGeoObject());
-            Model.viewportObjectsDrawablesSet(PageType.Model, Model.Objects.ToList());
+            //Model = new ModelWindow();
+            //Model.Objects.Add(new CGeoObject());
+            //Model.viewportObjectsDrawablesSet(PageType.Model, Model.Objects.ToList());
             Controller = new ControllerWindow3DDraw2D(Model, Width, Height, Handle, mnuSaveBitmap, axisType);
             View = new ViewWindow2D(Controller.Ortho, Model.viewportObjectsDrawablesGet(PageType.Model), axisType, Controller.Page, Width, Height, Controller.BoundingBox, Handle);
 		}
@@ -59,10 +59,12 @@ namespace Geology.DrawNewWindow.Controller
 			this.axisType = axisType;
 			zRange = 1e+7;
             this.Handle = Handle;
-            BoundingBox = new double[] { -10000, 10000, -10000, 10000, -10000, 10000 };
+            BoundingBox = Model.GlobalBoundingBox;
+            //BoundingBox = new double[] { -10000, 10000, -10000, 10000, -10000, 10000 };
             Ortho = new COrthoControlProport("X", "Y", Height / (double)Width, BoundingBox, true);
-            ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });  
-			window = null;
+            //ChangeOrtho(new double[] { -1, 1, -1, 1, -1, 1 });  
+            ChangeOrtho(BoundingBox);
+            window = null;
 
             mnu = new System.Windows.Forms.ContextMenuStrip();
             System.Windows.Forms.ToolStripMenuItem mnuShowGrid = new System.Windows.Forms.ToolStripMenuItem("Show grid");

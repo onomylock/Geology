@@ -26,7 +26,7 @@ namespace Geology.OpenGL.OpenGLControl
         IViewWindow View;
         IFactory Factory;
         IControllerWindow Controller;
-        //public IModelWindow Model { get; set; }
+        public IModelWindow Model { get; set; }
         System.Windows.Forms.ToolStripMenuItem mnuSaveBitmap;
 
         public string nameConstructor { get; set; }
@@ -64,7 +64,7 @@ namespace Geology.OpenGL.OpenGLControl
 			}
             
 			mnuSaveBitmap = new ToolStripMenuItem("Save as JPG");			
-			Factory.CreateControllerAndView(Width, Height, Handle, mnuSaveBitmap, axisType);
+			Factory.CreateControllerAndView(Model, Width, Height, Handle, mnuSaveBitmap, axisType);
 
 			Controller = Factory.Controller;
 			View = Factory.View;

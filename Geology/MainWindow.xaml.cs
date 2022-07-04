@@ -136,7 +136,22 @@ namespace Geology
                 this.Close();
 #endif
             InitializeComponent();
-			
+
+			IModelWindow Model = new ModelWindow();
+			Model.GlobalBoundingBox[0] = -10000;
+			Model.GlobalBoundingBox[1] = 10000;
+			Model.GlobalBoundingBox[2] = -10000;
+			Model.GlobalBoundingBox[3] = 10000;
+			Model.GlobalBoundingBox[4] = -10000;
+			Model.GlobalBoundingBox[5] = 10000;
+			Model.Objects.Add(new CGeoObject());
+			Model.viewportObjectsDrawablesSet(PageType.Model, Model.Objects.ToList());
+
+
+			OpenGLControl_3D.Model = Model;
+			OpenGLControl_2DYZ.Model = Model;
+			OpenGLControl_2DXZ.Model = Model;
+			OpenGLControl_2DXY.Model = Model;
 		}
 
 		private void OpenGLControl_3D_Load(object sender, EventArgs e)
